@@ -1,0 +1,66 @@
+This repository contains set of tools for collaborating in patches sharing.
+This document also describes patch sharing conventions.
+
+Patch repository should have following structure:
+
++ packagename-patches
++ tools
+- README
+- MAINTAINERS
+
+where ''README'' contains basic description of the software these patches are
+for and ''MAINTAINERS'' file contains list of people to contact in case of any
+questions. ''README'' should include at least URL to the upstream whenever
+possible. Brief description is also recommended. ''tools'' directory should be
+in fact submodule pointing to this repository. ''packagename-patches''
+directory contains patches in the format described bellow. ''packagename''
+should be replaced with some generic package name, not really distribution
+specific, preferably upstream specific.
+
+All patches follows same naming conventions. Patch
+name consists of "${package name}-${package version}-${patch name}.patch".
+Package name and version denotes against which version was patch created. If
+you look into the patch, you'll see detailed description. On first line, there
+is always a tag. It contains four words separated by dash. First word is always
+PATCH. Second is in form P[0-9]+ and denotes how long prefix should be stripped
+when applying patch. Third one can be FIX, HACK or FEATURE.
+
+FIX          clean fix of error that anybody can be proud of and should be
+             published.
+HACK         ugly fix that's certainly not right, but makes it works somehow
+             and should be replaced by better fix in the future
+FEATURE      patch adds new feature which wasn't there before
+
+Last field in tag specifies intended audience for the patch. It can contain
+following values:
+
+SUSE         patch specific to SuSE integration. Probably not interesting for
+             anybody else.
+UPSTREAM     patch that either should be upstream or is already at upstream.
+             This includes backports of security patches and fixes, that should
+             be reported and corrected in upstream.
+DOWNSTREAM   This patch will never make it to the upstream version for whatever
+             reason. But every sane distribution has something like this. In
+             this category falls patches like fixing build scripts to follow
+             LSB even though upstream don't want to, striping out embedded
+             libraries and fixing compilation against system ones and such.
+
+Second line of patch is optional and it can contain line starting with BUGS:
+and then list all bug numbers. Following abbreviations can be used:
+
+upstream#[0-9]+   upstream bug tracking number
+bnc#[0-9]+        Novell Bugzilla number
+
+Optional third line is TAGS. It contain blank separated set of patch features
+that patch has. apply-series.sh script can take additional arguments that
+specifies which features you DON'T like so patches with these tags will be
+excluded even if they are mentioned in series file.
+
+Optionally after empty line, patch description can continue with more detailed
+description of the patch.
+
+Detailed description (if it is there) should be followed by empty line and list
+of maintainers in following format:
+
+Maintainer: Joe Hacker <joe.hacker@gmail.com>
+Maintainer: Ben Lamer <ben.lamer@msn.com>
