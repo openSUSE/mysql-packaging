@@ -1,0 +1,57 @@
+Notes about MySQL 5.1 package:
+==============================
+
+With MySQL 5.1 package we introduced some changes you may like to know. Most of
+them will affect you only if you are upgrading from previous version and you
+did some changes to your configuration.
+
+1) Plugins:
+===========
+
+One of the new features in MySQL 5.1 is support for plugins. So some of the
+storage engines are now shipped like that. You can use following plugins:
+
+ - archive
+ - blackhole
+ - federated
+ - example
+
+InnoDB is still compiled as internal part of MySQL. If you are upgrading from
+version 5.0 or if this is your first installation of MySQL 5.1, all plugins
+will be enabled by default and you can disable them manually later (see
+http://dev.mysql.com/doc/refman/5.1/en/uninstall-plugin.html).
+
+With this change you need to remove skip-federated option from your my.cnf file
+if you have changed it manually. This option was there by default in previous
+versions of MySQL.
+
+2) File locations:
+==================
+
+There were some changes in files locations. Most of them were made in the
+default configuration file so if you are experiencing problems and you have
+made some manual adjustments to your /etc/my.cnf, try to merge this file with
+/etc/my.cnf.rpmnew.
+
+File locations changes:
+ - MySQL socket file and pid file were moved from /var/lib/mysql to more
+   reasonable location ( /var/run/mysql ) by default.
+ - MySQL log files are in /var/log/mysql.
+
+3) BerkeleyDB:
+==============
+
+MySQL no longer contains BerkeleyDB as storage engine. There is no fix for that
+and if you used it before, you have to migrate your data to different storage
+engine BEFORE updating. This can be done for example using following command:
+
+	ALTER TABLE foo ENGINE = INNODB;
+
+4) MySQL Upgrade Log
+====================
+
+If you missed messages displayed during automatic MySQL database upgrade, you
+can find them from now on in
+
+	/var/log/mysql/mysqld-upgrade.log
+

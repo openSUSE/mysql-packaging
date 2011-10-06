@@ -1,0 +1,102 @@
+Debugging mysqld crashes
+========================
+Author: Michal Marek <mmarek@suse.cz>
+Last modified: 2006-07-31
+
+Contents
+--------
+1) Query log
+2) Coredumps and Backtraces
+3) Trace files
+
+In case your MySQL server crashes, here are some hints on what to
+include in a bugreport at https://bugzilla.novell.com/ . Please report
+there only bugs in the MySQL packages packaged by Novell/SUSE, bugs in
+binaries / source provided by MySQL AB should be reported at
+http://bugs.mysql.com/ .
+
+1) Query log
+------------
+  Note: Skip this chapter if you already have an exact query that
+  crashes the server
+
+To find out which query possibly crashed the server, add the following
+line to your /etc/my.cnf into section [mysqld]:
+
+    log=/var/lib/mysql/mysqld-query.log
+
+Mysqld then will, at some performance cost, log all queries into this
+file. After a server crash, you can examine the queries from the time it
+crashed and try to reproduce the crash with single queries (this might
+not allways work, eg. if the crash is caused by some race condition).
+
+Note that this log file may become extremly large, so if you decide to
+attach it whole to the bugzilla, don't forget to
+
+    bzip2 -k /var/lib/mysql/mysqld-query.log
+
+and attach the bzipped file instead.
+
+2) Coredumps and Backtraces
+---------------------------
+Another valuable information for the developers is the backtrace. The
+easies way to get one is to let mysqld produce a coredump. Add the
+following line to your /etc/my.cnf into section [mysqld]:
+
+    core-file
+
+  Note: this unfortunatelly doesn't work in SUSE Linux 10.1 and older.
+  On these systems, you need to run safe_mysqld directly under user
+  mysql:
+
+    su - mysql
+    mysqld_safe --socket=/var/lib/mysql/mysql.sock \
+        --datadir=/var/lib/mysql --core-file &
+
+The core file will be written to the /var/lib/mysql/ directory. I
+suggest setting the kernel variable kernel.core_uses_pid to 1
+
+    sysctl -w kernel.core_uses_pid=1
+
+so that the coredumps don't overwrite each other if you experience
+multiple crashes.
+
+After you got the core file, install the gdb and mysql-debuginfo
+packages and run
+
+    gdb /usr/sbin/mysqld /var/lib/mysql/core
+    (gdb) bt
+
+Replace mysqld with the mysqld version you used (mysqld, mysqld-max or
+mysqld-debug) and core with the actual name of the coredump.
+
+3) Trace files
+--------------
+You'll need the mysqld-debug binary from the mysql-debug package to get
+a trace file. Install the mysqld-debug package and the start mysqld
+using following command:
+
+    $ MYSQLD_DEBUG=yes rcmysql start
+
+  Note: The init script doesn't automatically pick up the mysqld-debug
+  binary (as it does with mysqld-max), because it is expected to be used
+  just temporarily to help solving a particular problem.
+
+The init script will then start mysqld-debug and add the --core-file,
+--log and --debug options for you. The query log will be stored in
+
+    /var/lib/mysql/myqld-query.log
+
+and the trace file in
+
+    /var/lib/mysql/mysqld.trace
+
+If you don't like the options set by the init script, just put your own
+into /etc/my.cnf and the init script will honor it. For information
+about the --debug option, see "The DBUG Package":
+http://dev.mysql.com/doc/refman/5.0/en/the-dbug-package.html .
+
+The trace file will contain various debug information and function
+calls/returns and will become _extremly_ huge after a while, so don't
+attach it to bugzilla unless requested.
+

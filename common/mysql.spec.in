@@ -1,0 +1,505 @@
+#
+# spec file for package {{pkg-name}}
+#
+# Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
+# norootforbuild
+
+# Few definitions which will alter build
+%define prefered   {{prefered}}
+%define use_cmake  {{use_cmake}}
+%define cluster    {{cluster}}
+%define builtin_plugins {{builtin_plugins}}
+
+%if %{?rel:0}%{!?rel:1}
+%define rel 1
+%endif
+#Distribution:   %dist
+#Packager:       %packager
+#Vendor:         %vendor
+
+Name:           {{pkg-name}}
+Summary:        Server part of {{display-name}}
+Version:        {{pkg-version}}
+Release:        1
+%define srv_vers {{srv-version}}
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Group:          Productivity/Databases/Servers
+Url:            {{url}}
+Source:         {{source}}
+Source2:        baselibs.conf
+Source3:        README.debug
+Source4:        suse-test-run
+Source5:        mysql.SuSEfirewall2
+Source7:        rc.mysql-multi
+Source8:        README.SuSE
+Source9:        mysql-patches.tar.bz2
+Source10:       build.inc
+Source11:       install.inc
+Source12:       series
+Source13:       configuration-tweaks.tar.bz2
+Source14:       old-ssl.series
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+%if 0%{?suse_version}
+PreReq:         pwdutils
+PreReq:         %install_info_prereq %insserv_prereq
+%endif
+BuildRequires:  gcc-c++ ncurses-devel openssl-devel procps readline-devel
+BuildRequires:  cmake zlib-devel
+%if 0%{?suse_version}
+BuildRequires:  pwdutils tcpd-devel
+%endif
+%if 0%{?suse_version} > 1030 || 0%{?fedora_version} > 8
+BuildRequires:  fdupes
+%endif
+%if 0%{?fedora_version} > 11
+BuildRequires:  sqlite
+%endif
+%if 0%{?suse_version} > 1030
+Recommends:     logrotate
+%else
+Requires:       logrotate
+%endif
+# required by rcmysql
+Requires:       %{name}-client perl-base
+Provides:       mysql-Max = %{srv_vers}
+Provides:       mysql = %{srv_vers}
+%if 0%{?prefered} > 0
+Obsoletes:      mysql < %{srv_vers}
+Obsoletes:      mysql-Max < %{srv_vers}
+%endif
+Conflicts:      otherproviders(mysql)
+
+%description
+{{description}}
+
+This package only contains the server-side programs.
+
+#######################################################################
+# For favorized version                                               #
+#######################################################################
+
+%if 0%{?prefered} > 0
+%package -n libmysqlclient-devel
+# mysql-devel was last used in openSUSE 10.2
+Provides:       mysql-devel = %srv_vers-%release
+Obsoletes:      mysql-devel < %srv_vers
+Requires:       libmysqlclient{{lib-version}} = %version
+Requires:       libmysqlclient_r{{lib-version}} = %version
+Requires:       glibc-devel
+Requires:       openssl-devel
+Requires:       zlib-devel
+Summary:        {{display-name}} development header files and libraries
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Group:          Development/Libraries/C and C++
+
+%description -n libmysqlclient-devel
+This package contains the development header files and libraries
+necessary to develop client applications for {{display-name}}.
+
+%package -n libmysqld{{lib-version}}
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} embedded server development files
+Group:          Development/Libraries/C and C++
+
+%description -n libmysqld{{lib-version}}
+This package contains the development header files and libraries
+for developing applications that embed the {{display-name}}.
+
+%package -n libmysqld-devel
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} embedded server development files
+# the headers files are the shared
+Requires:       libmysqlclient-devel = %version
+Requires:       tcpd-devel
+Requires:       libmysqld{{lib-version}} = %version
+Group:          Development/Libraries/C and C++
+
+%description -n libmysqld-devel
+This package contains the development header files and libraries
+for developing applications that embed the {{display-name}}.
+
+%endif
+
+#######################################################################
+# For everybody                                                       #
+#######################################################################
+
+%package -n {{libname}}{{libversion}}
+Summary:        Shared Libraries for {{display-name}}
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Group:          Development/Libraries/Other
+
+%description -n {{libname}}{{lib-version}}
+This package contains the shared libraries (.so) which certain
+languages and applications need to dynamically load and use {{display-name}}.
+
+%package -n {{libname}}_r{{lib-version}}
+Summary:        Shared Libraries for {{display-name}}
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Group:          Development/Libraries/Other
+
+%description -n {{libname}}_r{{lib-version}}
+This package contains the shared libraries (.so) which certain
+languages and applications need to dynamically load and use {{display-name}}.
+
+%package client
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        Client for {{display-name}}
+Group:          Productivity/Databases/Clients
+Provides:       mysql-client = %{srv_vers}
+%if 0%{?prefered} > 0
+Obsoletes:      mysql-client < %{srv_vers}
+%endif
+Conflicts:      otherproviders(mysql-client)
+
+%description client
+This package contains the standard clients for {{display-name}}.
+
+%package bench
+Requires:       %{name}-client perl-DBD-mysql
+License:        LGPLv2.1
+Summary:        Benchmarks for {{display-name}}
+Group:          Productivity/Databases/Tools
+Provides:       mysql-bench = %{srv_vers}
+%if 0%{?prefered} > 0
+Obsoletes:      mysql-bench < %{srv_vers}
+%endif
+Conflicts:      otherproviders(mysql-bench)
+
+%description bench
+This package contains benchmark scripts and data for {{display-name}}.
+
+To run these database benchmarks, start the script "run-all-tests" in
+the directory /usr/share/sql-bench after starting {{display-name}}.
+
+%if %{defined mdkversion}
+
+%package debuging
+%else
+
+%package debug
+%endif
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} with debug options turned on
+Group:          Productivity/Databases/Servers
+Requires:       %{name} = %{version}
+Provides:       mysql-debug = %{srv_vers}
+%if 0%{?prefered} > 0
+Obsoletes:      mysql-debug < %{srv_vers}
+%endif
+Conflicts:      otherproviders(mysql-debug)
+
+%if %{defined mdkversion}
+
+%description debuging
+
+%else
+
+%description debug
+
+%endif
+A version of the {{display-name}} that has some debug code turned on.
+It should be only used to track down problems with the standard
+servers. Note that merely installing this package will bot replace the
+standard server. Read /usr/share/doc/packages/mysql/README.debug for
+information on how to use the debug server.
+
+%package test
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        Testsuite for {{display-name}}
+Group:          Productivity/Databases/Servers
+Requires:       %{name} = %{version}
+Requires:       %{name}-client = %{version}
+Requires:       perl-DBD-mysql
+Requires:       %{name}-tools = %{version}
+Requires:       %{name}-bench = %{version}
+Provides:       mysql-test = %{srv_vers}
+%if 0%{?prefered} > 0
+Obsoletes:      mysql-test < %{srv_vers}
+%endif
+Conflicts:      otherproviders(mysql-test)
+
+%description test
+This package contains the test scripts and data for {{display-name}}.
+
+To run the testsuite, run /usr/share/mysql-test/suse-test-run.
+
+%package tools
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} tools
+Group:          Productivity/Databases/Servers
+Requires:       perl-DBD-mysql
+# make sure this package is installed when updating from 10.2 and older
+Provides:       mysql:/usr/bin/mysqlhotcopy mysql-client:/usr/bin/perror
+Provides:       mysql-tools = %{srv_vers}
+%if 0%{?prefered} > 0
+Obsoletes:      mysql-tools < %{srv_vers}
+%endif
+Conflicts:      otherproviders(mysql-tools)
+
+%description tools
+A set of scripts for administering a {{display-name}} or developing
+applications with {{display-name}}.
+
+%if 0%{?cluster} > 0
+
+%package ndb-storage
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} - ndbcluster storage engine
+Group:          Productivity/Databases/Servers
+Provides:       mysql-ndb-storage = %{srv_vers}
+Obsoletes:      mysql-ndb-storage < %{srv_vers}
+Conflicts:      otherproviders(mysql-ndb-storage)
+
+%description ndb-storage
+This package contains the ndbcluster storage engine. 
+It is necessary to have this package installed on all 
+computers that should store ndbcluster table data.
+
+
+%package ndb-management
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} - ndbcluster storage engine management
+Group:          Productivity/Databases/Servers
+Provides:       mysql-ndb-management = %{srv_vers}
+Obsoletes:      mysql-ndb-management < %{srv_vers}
+Conflicts:      otherproviders(mysql-ndb-management)
+
+%description ndb-management
+This package contains ndbcluster storage engine management.
+It is necessary to have this package installed on at least 
+one computer in the cluster.
+
+
+%package ndb-tools
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} - ndbcluster storage engine basic tools
+Group:          Productivity/Databases/Servers
+Provides:       mysql-ndb-tools = %{srv_vers}
+Obsoletes:      mysql-ndb-tools < %{srv_vers}
+Conflicts:      otherproviders(mysql-ndb-tools)
+
+%description ndb-tools
+This package contains ndbcluster storage engine basic tools.
+
+
+%package ndb-extra
+License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
+Summary:        {{display-name}} - ndbcluster storage engine extra tools
+Group:          Productivity/Databases/Servers
+Provides:       mysql-ndb-extra = %{srv_vers}
+Obsoletes:      mysql-ndb-extra < %{srv_vers}
+Conflicts:      otherproviders(mysql-ndb-extra)
+
+%description ndb-extra
+This package contains some extra ndbcluster storage engine tools for the
+advanced user.  They should be used with caution.
+
+%endif
+
+
+%prep
+%setup -q -n mysql-%version -D -a 9
+cp %_sourcedir/README.SuSE .
+cp %_sourcedir/suse-test-run .
+# apply patches from series
+mysql-patches/tools/quilt-setup.sh  "%{S:12}"
+mysql-patches/tools/apply-series.sh "%{S:12}"
+# remove unneeded manpages ('make install' basically installs everything under
+# man/*)
+%patch1
+rm -f man/mysqlman.1        # dummy fallback manpage
+rm -f man/mysql.server.1    # init script, not installed in our rpm
+rm -f man/make_win_*.1      # windows build scripts
+rm -f man/comp_err.1        # built-time utility
+# 5.1 Carrier Grade Edition only / still under development as of 5.1.22
+rm -f man/ndbd_redo_log_reader.1
+# breaks VPATH builds when in sourcedir, is generated in the builddirs
+rm -f sql/sql_builtin.cc
+sed -i 's|@localstatedir@|/var/log|' support-files/mysql-log-rotate.sh
+
+
+%build
+%{expand:%(cat %_sourcedir/build.inc)}
+
+%install
+%{expand:%(cat %_sourcedir/install.inc)}
+
+%pre
+/usr/sbin/groupadd -r mysql >/dev/null 2>/dev/null || :
+/usr/sbin/useradd -r -o -g mysql -c "MySQL database admin" \
+                  -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
+/usr/sbin/usermod -g mysql -s /bin/false mysql || :
+
+%preun
+[ $1 = 1 ] || /usr/sbin/rcmysql stop
+%pretrans
+if [ -x /usr/sbin/rcmysql ]; then
+	RESTART=""
+	/usr/sbin/rcmysql status > /dev/null && RESTART="yes"
+	/usr/sbin/rcmysql stop
+	[ "$RESTART" ] && mkdir -p /var/run/mysql/restart
+fi
+dbfile=var/mysql/mysql/db.ISM
+olddir=var/mysql
+newdir=var/lib/mysql
+# Do the database files still belong to root (very old installation)?
+# Change ownerships
+if [ -O $dbfile ]
+then
+chown -Rv mysql:mysql var/mysql/
+fi
+
+%posttrans
+%install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
+if [ -d /var/lib/mysql ]; then
+	touch /var/lib/mysql/.run-mysql_upgrade
+	chown -R mysql:mysql /var/lib/mysql
+fi
+for i in /var/lib/mysql/{.protected,.tmp}; do
+	( [ -d "$i" ] && rmdir "$i" ) || :
+done
+# start mysql again if it should run
+if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d /var/run/mysql/restart ]; then
+	[ -x /usr/sbin/rcmysql ] && /usr/sbin/rcmysql start
+	rmdir /var/run/mysql/restart || :
+fi
+
+%post -n {{lib-name}}{{lib-version}} -p /sbin/ldconfig
+
+%postun -n {{lib-name}}{{lib-version}} -p /sbin/ldconfig
+
+%post -n {{lib-name}}_r{{lib-version}} -p /sbin/ldconfig
+
+%postun -n {{lib-name}}_r{{lib-version}} -p /sbin/ldconfig
+
+%if 0%{prefered} > 0
+
+%post -n libmysqld18 -p /sbin/ldconfig
+
+%postun -n libmysqld18 -p /sbin/ldconfig
+%endif
+
+%postun
+if [ $1 = 0 ]; then
+	%install_info_delete --info-dir=%{_infodir} %{_infodir}/mysql.info.*
+	%{insserv_cleanup}
+fi
+
+
+%files -f mysql.files
+%defattr(-, root, root)
+%config(noreplace) %attr(0640, root, mysql) /etc/my.cnf
+%dir %attr(0750, root, mysql) /etc/mysql
+%config(noreplace) %attr(0640, root, mysql) /etc/mysql/*
+%config /etc/logrotate.d/mysql
+%doc %{_defaultdocdir}/%{name}
+%doc %{_infodir}/mysql.info.*
+/etc/init.d/mysql
+/usr/sbin/rcmysql
+/usr/share/mysql/
+%ghost %dir %attr(755,mysql,mysql)/var/run/mysql
+%dir %{_libdir}/mysql
+%{_libdir}/mysql/mysqld.sym
+%config /etc/sysconfig/SuSEfirewall2.d/services/mysql
+%dir %_libdir/mysql/plugin
+%_libdir/mysql/plugin/*.so
+
+
+%files client -f mysql-client.files
+%defattr(-, root, root)
+%config /etc/mysqlaccess.conf
+
+%if 0%{prefered} > 0
+
+%files -n libmysqlclient-devel -f libmysqlclient-devel.files
+%defattr(-, root, root)
+/usr/include/mysql
+%{_libdir}/libmysqlclient.so
+%{_libdir}/libmysqlclient_r.so
+/usr/share/aclocal/mysql.m4
+
+
+%files -n libmysqld-devel
+%defattr(-,root,root)
+%_libdir/libmysqld.a
+%_libdir/libmysqld.so
+
+
+%files -n libmysqld18
+%defattr(-,root,root)
+%_libdir/libmysqld.so.*
+%endif
+
+
+%files -n {{lib-name}}{{lib-version}}
+%defattr(-, root, root)
+%{_libdir}/{{lib-name}}.so.*
+
+
+%files -n {{lib-name}}_r{{lib-version}}
+%defattr(-, root, root)
+%{_libdir}/{{lib-name}}_r.so.*
+
+
+%files bench -f mysql-bench.files
+%defattr(-, root, root)
+/usr/share/sql-bench
+
+%if %{defined mdkversion}
+
+%files debuging
+%else
+
+%files debug
+%endif
+%defattr(-, root, root)
+/usr/sbin/mysqld-debug
+%{_libdir}/mysql/mysqld-debug.sym
+
+
+%files test -f mysql-test.files
+%defattr(-, root, root)
+%{_bindir}/my_safe_process
+%_mandir/man1/mysql-test-run.pl.1*
+%_mandir/man1/mysql-stress-test.pl.1*
+/usr/share/mysql-test/valgrind.supp
+%dir %attr(755, root, root)/usr/share/mysql-test
+/usr/share/mysql-test/[^v]*
+%dir %attr(755, mysql, mysql) /usr/share/mysql-test/var
+
+
+%files tools -f mysql-tools.files
+%defattr(-, root, root)
+%_bindir/mysqlrepair
+%_bindir/mysqlanalyze
+%_bindir/mysqloptimize
+
+%if 0%{cluster} > 0
+
+%files ndb-storage -f mysql-ndb-storage.files
+
+
+%files ndb-management -f mysql-ndb-management.files
+
+
+%files ndb-tools -f mysql-ndb-tools.files
+
+
+%files ndb-extra -f mysql-ndb-extra.files
+%endif
+
+%changelog
