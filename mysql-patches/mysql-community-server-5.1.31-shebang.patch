@@ -1,0 +1,30 @@
+PATCH-P1-FIX-UPSTREAM: Adds shebangs
+
+Shebangs were missing at various places, so we are adding them.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+diff -Naru mysql-5.1.31-bak/mysql-test/t/long_tmpdir-master.sh mysql-5.1.31/mysql-test/t/long_tmpdir-master.sh
+--- mysql-5.1.31-bak/mysql-test/t/long_tmpdir-master.sh	2009-02-23 17:18:48.000000000 +0100
++++ mysql-5.1.31/mysql-test/t/long_tmpdir-master.sh	2009-02-24 17:57:42.000000000 +0100
+@@ -1,3 +1,4 @@
++#!/bin/sh
+ d="$MYSQLTEST_VARDIR/tmp/long_temporary_directory_path_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789"
+ test -d "$d" || mkdir "$d"
+ rm -f "$d"/*
+diff -Naru mysql-5.1.31-bak/mysql-test/t/lowercase_mixed_tmpdir-master.sh mysql-5.1.31/mysql-test/t/lowercase_mixed_tmpdir-master.sh
+--- mysql-5.1.31-bak/mysql-test/t/lowercase_mixed_tmpdir-master.sh	2009-02-23 17:18:48.000000000 +0100
++++ mysql-5.1.31/mysql-test/t/lowercase_mixed_tmpdir-master.sh	2009-02-24 17:58:12.000000000 +0100
+@@ -1,3 +1,4 @@
++#!/bin/sh
+ # This test requires a non-lowercase tmpdir directory on a case-sensitive
+ # filesystem.
+ 
+diff -Naru mysql-5.1.31-bak/sql-bench/graph-compare-results.sh mysql-5.1.31/sql-bench/graph-compare-results.sh
+--- mysql-5.1.31-bak/sql-bench/graph-compare-results.sh	2009-02-23 17:18:49.000000000 +0100
++++ mysql-5.1.31/sql-bench/graph-compare-results.sh	2009-02-24 18:00:16.000000000 +0100
+@@ -1,3 +1,4 @@
++#/usr/bin/perl
+ ####
+ #### Hello ... this is a heavily hacked script by Luuk 
+ #### instead of printing the result it makes a nice gif

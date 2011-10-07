@@ -1,0 +1,19 @@
+PATCH-P0-HACK-SUSE: Disabling examples for libmysqld
+
+We are not using libmysqld anyway, we don't need to try to compile all the
+examples (some of them fail anyway).
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: libmysqld/Makefile.am
+===================================================================
+--- libmysqld/Makefile.am.orig
++++ libmysqld/Makefile.am
+@@ -39,7 +39,6 @@ INCLUDES=		-I$(top_builddir)/include -I$
+ 
+ noinst_LIBRARIES =	libmysqld_int.a
+ lib_LIBRARIES =	libmysqld.a
+-SUBDIRS =		. examples
+ libmysqld_sources=	libmysqld.c lib_sql.cc emb_qcache.cc
+ libmysqlsources =	errmsg.c get_password.c libmysql.c client.c pack.c \
+                         my_time.c

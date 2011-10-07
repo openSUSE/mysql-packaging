@@ -1,0 +1,39 @@
+PATCH-P1-HACK-UPSTREAM: Fix abi test
+
+For some reason new gcc follows includes in ABI test but the old one didn't. Because of this I'm commenting out these includes during ABI test.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+diff -Naru mysql-5.1.44-bak/include/mysql.h mysql-5.1.44/include/mysql.h
+--- mysql-5.1.44-bak/include/mysql.h	2010-02-23 00:31:19.000000000 +0100
++++ mysql-5.1.44/include/mysql.h	2010-02-23 10:51:49.000000000 +0100
+@@ -44,7 +44,9 @@
+ #endif
+ 
+ #ifndef _global_h				/* If not standard header */
+-#include <sys/types.h>
++#ifndef _abi_test_
++#include <sys/types.h>
++#endif
+ #ifdef __LCC__
+ #include <winsock2.h>				/* For windows */
+ #endif
+--- mysql-5.1.44-bak/include/mysql.h.pp	2010-02-23 00:31:19.000000000 +0100
++++ mysql-5.1.44/include/mysql.h.pp	2010-02-23 10:54:46.000000000 +0100
+@@ -1,4 +1,3 @@
+-#include <sys/types.h>
+ typedef char my_bool;
+ typedef int my_socket;
+ #include "mysql_version.h"
+--- mysql-5.1.44-bak/Makefile.am	2010-02-23 00:31:18.000000000 +0100
++++ mysql-5.1.44/Makefile.am	2010-02-23 10:50:18.000000000 +0100
+@@ -321,7 +321,8 @@
+ 	                  -I$(top_builddir)/include \
+ 	                  -I$(top_builddir)/include/mysql \
+ 	                  -I$(top_builddir)/sql \
+-	                                 $$file 2>/dev/null | \
++ 	                  -D_abi_test_ \
++	                                 $$file | \
+ 	                  @SED@ -e '/^# /d' \
+ 	                            -e '/^[ 	]*$$/d' \
+ 	                            -e '/^#pragma GCC set_debug_pwd/d' \

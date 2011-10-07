@@ -1,0 +1,35 @@
+PATCH-P0-FEATURE-SUSE: Returning 0 when already upgraded.
+
+Returning non-zero exit status in this case is not nice to scripts using
+mysql_upgrade (eg. our init script)
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: client/mysql_upgrade.c
+===================================================================
+--- client/mysql_upgrade.c.orig
++++ client/mysql_upgrade.c
+@@ -858,7 +858,9 @@ int main(int argc, char **argv)
+     printf("This installation of MySQL is already upgraded to %s, "
+            "use --force if you still need to run mysql_upgrade\n",
+            MYSQL_SERVER_VERSION);
+-    die(NULL);
++    free_used_memory();
++    my_end(MY_CHECK_ERROR);
++    exit(0);
+   }
+ 
+   /*
+Index: mysql-test/t/mysql_upgrade.test
+===================================================================
+--- mysql-test/t/mysql_upgrade.test.orig
++++ mysql-test/t/mysql_upgrade.test
+@@ -40,7 +40,7 @@ file_exists $MYSQLD_DATADIR/mysql_upgrad
+ 
+ --echo Run it again - should say already completed
+ --replace_result $MYSQL_SERVER_VERSION VERSION
+---error 1
++--error 0
+ --exec $MYSQL_UPGRADE --skip-verbose 2>&1
+ 
+ # It should have created a file in the MySQL Servers datadir

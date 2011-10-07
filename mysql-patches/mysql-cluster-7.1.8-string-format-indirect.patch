@@ -1,0 +1,378 @@
+PATCH-P0-FIX-UPSTREAM: Not passing variables directly to printf
+
+This patch fixes all places where variable is used in printf as a format. If
+something bad like %s will get to the format, it may cause troubles, crashes
+and other bad things.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: storage/ndb/src/common/debugger/signaldata/FsRef.cpp
+===================================================================
+--- storage/ndb/src/common/debugger/signaldata/FsRef.cpp.orig
++++ storage/ndb/src/common/debugger/signaldata/FsRef.cpp
+@@ -38,7 +38,7 @@ printFSREF(FILE * output, const Uint32 *
+     fprintf(output, "No error");
+     break;
+   default:
+-    fprintf(output, ndbd_exit_message(sig->getErrorCode(sig->errorCode), &cl));
++    fprintf(output, "%s", ndbd_exit_message(sig->getErrorCode(sig->errorCode), &cl));
+     break;
+   }
+   fprintf(output, "\n");
+Index: storage/ndb/src/common/debugger/EventLogger.cpp
+===================================================================
+--- storage/ndb/src/common/debugger/EventLogger.cpp.orig
++++ storage/ndb/src/common/debugger/EventLogger.cpp
+@@ -758,7 +758,7 @@ void getTextUNDORecordsExecuted(QQQQ) {
+ 		       theData[11]);
+ }
+ void getTextInfoEvent(QQQQ) {
+-  BaseString::snprintf(m_text, m_text_len, (char *)&theData[1]);
++  BaseString::snprintf(m_text, m_text_len, "%s", (char *)&theData[1]);
+ }
+ const char bytes_unit[]= "B";
+ const char kbytes_unit[]= "KB";
+@@ -798,7 +798,7 @@ void getTextEventBufferStatus(QQQQ) {
+ 		       theData[7], theData[6]);
+ }
+ void getTextWarningEvent(QQQQ) {
+-  BaseString::snprintf(m_text, m_text_len, (char *)&theData[1]);
++  BaseString::snprintf(m_text, m_text_len, "%s", (char *)&theData[1]);
+ }
+ void getTextGCP_TakeoverStarted(QQQQ) {
+   BaseString::snprintf(m_text, m_text_len, "GCP Take over started");
+@@ -1267,25 +1267,25 @@ EventLogger::log(int eventType, const Ui
+ 
+     switch (severity){
+     case Logger::LL_ALERT:
+-      alert(log_text);
++      alert("%s",log_text);
+       break;
+     case Logger::LL_CRITICAL:
+-      critical(log_text); 
++      critical("%s",log_text);
+       break;
+     case Logger::LL_WARNING:
+-      warning(log_text); 
++      warning("%s",log_text);
+       break;
+     case Logger::LL_ERROR:
+-      error(log_text); 
++      error("%s",log_text);
+       break;
+     case Logger::LL_INFO:
+-      info(log_text); 
++      info("%s",log_text);
+       break;
+     case Logger::LL_DEBUG:
+-      debug(log_text); 
++      debug("%s",log_text);
+       break;
+     default:
+-      info(log_text); 
++      info("%s",log_text);
+       break;
+     }
+   } // if (..
+Index: storage/ndb/src/common/util/File.cpp
+===================================================================
+--- storage/ndb/src/common/util/File.cpp.orig
++++ storage/ndb/src/common/util/File.cpp
+@@ -80,7 +80,7 @@ File_class::File_class(const char* aFile
+   m_file(NULL), 
+   m_fileMode(mode)
+ {
+-  BaseString::snprintf(m_fileName, PATH_MAX, aFileName);
++  BaseString::snprintf(m_fileName, PATH_MAX, "%s", aFileName);
+ }
+ 
+ bool
+@@ -97,7 +97,7 @@ File_class::open(const char* aFileName,
+     /**
+      * Only copy if it's not the same string
+      */
+-    BaseString::snprintf(m_fileName, PATH_MAX, aFileName);
++    BaseString::snprintf(m_fileName, PATH_MAX, "%s", aFileName);
+   }
+   m_fileMode = mode;
+   bool rc = true;
+Index: storage/ndb/src/mgmapi/mgmapi.cpp
+===================================================================
+--- storage/ndb/src/mgmapi/mgmapi.cpp.orig
++++ storage/ndb/src/mgmapi/mgmapi.cpp
+@@ -500,7 +500,7 @@ ndb_mgm_call(NdbMgmHandle handle,
+   out.println("%s", "");
+ 
+   if (cmd_bulk)
+-    out.println(cmd_bulk);
++    out.println("%s", cmd_bulk);
+ 
+   CHECK_TIMEDOUT_RET(handle, in, out, NULL);
+ 
+Index: storage/ndb/src/ndbapi/NdbDictionaryImpl.cpp
+===================================================================
+--- storage/ndb/src/ndbapi/NdbDictionaryImpl.cpp.orig
++++ storage/ndb/src/ndbapi/NdbDictionaryImpl.cpp
+@@ -7912,7 +7912,7 @@ NdbDictInterface::create_hashmap(const N
+                                  Uint32 flags)
+ {
+   DictHashMapInfo::HashMap hm; hm.init();
+-  BaseString::snprintf(hm.HashMapName, sizeof(hm.HashMapName), src.getName());
++  BaseString::snprintf(hm.HashMapName, sizeof(hm.HashMapName), "%s", src.getName());
+   hm.HashMapBuckets = src.getMapLen();
+   for (Uint32 i = 0; i<hm.HashMapBuckets; i++)
+   {
+Index: storage/ndb/src/kernel/error/ErrorReporter.cpp
+===================================================================
+--- storage/ndb/src/kernel/error/ErrorReporter.cpp.orig
++++ storage/ndb/src/kernel/error/ErrorReporter.cpp
+@@ -240,8 +240,8 @@ ErrorReporter::handleError(int messageID
+   
+   WriteMessage(messageID, problemData, objRef, nst);
+ 
+-  g_eventLogger->info(problemData);
+-  g_eventLogger->info(objRef);
++  g_eventLogger->info("%s", problemData);
++  g_eventLogger->info("%s", objRef);
+ 
+   NdbShutdown(messageID, nst);
+   exit(1); // kill warning
+Index: storage/ndb/src/kernel/blocks/lgman.cpp
+===================================================================
+--- storage/ndb/src/kernel/blocks/lgman.cpp.orig
++++ storage/ndb/src/kernel/blocks/lgman.cpp
+@@ -369,8 +369,8 @@ Lgman::execDUMP_STATE_ORD(Signal* signal
+                            !ptr.p->m_log_buffer_waiters.isEmpty(),
+                            !ptr.p->m_log_sync_waiters.isEmpty());
+       if (signal->theData[0] == 12001)
+-        infoEvent(tmp);
+-      ndbout_c(tmp);
++        infoEvent("%s", tmp);
++      ndbout_c("%s", tmp);
+ 
+       BaseString::snprintf(tmp, sizeof(tmp),
+                            "   callback_buffer_words: %u"
+@@ -379,8 +379,8 @@ Lgman::execDUMP_STATE_ORD(Signal* signal
+                            ptr.p->m_free_buffer_words,
+                            ptr.p->m_free_file_words);
+       if (signal->theData[0] == 12001)
+-        infoEvent(tmp);
+-      ndbout_c(tmp);
++        infoEvent("%s", tmp);
++      ndbout_c("%s", tmp);
+       if (!ptr.p->m_log_buffer_waiters.isEmpty())
+       {
+ 	Ptr<Log_waiter> waiter;
+@@ -392,8 +392,8 @@ Lgman::execDUMP_STATE_ORD(Signal* signal
+                              waiter.p->m_size,
+                              FREE_BUFFER_MARGIN);
+         if (signal->theData[0] == 12001)
+-          infoEvent(tmp);
+-        ndbout_c(tmp);
++          infoEvent("%s", tmp);
++        ndbout_c("%s", tmp);
+       }
+       if (!ptr.p->m_log_sync_waiters.isEmpty())
+       {
+@@ -407,8 +407,8 @@ Lgman::execDUMP_STATE_ORD(Signal* signal
+                              waiter.i,
+                              waiter.p->m_sync_lsn);
+         if (signal->theData[0] == 12001)
+-          infoEvent(tmp);
+-        ndbout_c(tmp);
++          infoEvent("%s", tmp);
++        ndbout_c("%s", tmp);
+ 	
+ 	while(!waiter.isNull())
+ 	{
+Index: storage/ndb/src/kernel/blocks/dbdict/Dbdict.cpp
+===================================================================
+--- storage/ndb/src/kernel/blocks/dbdict/Dbdict.cpp.orig
++++ storage/ndb/src/kernel/blocks/dbdict/Dbdict.cpp
+@@ -3906,7 +3906,7 @@ Dbdict::startRestoreSchema(Signal* signa
+   if (c_restartRecord.m_start_banner)
+   {
+     jam();
+-    infoEvent(c_restartRecord.m_start_banner);
++    infoEvent("%s", c_restartRecord.m_start_banner);
+   }
+ }
+ 
+@@ -4122,7 +4122,7 @@ Dbdict::restart_fromWriteSchemaFile(Sign
+   if (c_restartRecord.m_end_banner)
+   {
+     jam();
+-    infoEvent(c_restartRecord.m_end_banner);
++    infoEvent("%s", c_restartRecord.m_end_banner);
+   }
+ 
+   execute(signal, c_schemaRecord.m_callback, retCode);
+Index: storage/ndb/src/kernel/blocks/dbdih/DbdihMain.cpp
+===================================================================
+--- storage/ndb/src/kernel/blocks/dbdih/DbdihMain.cpp.orig
++++ storage/ndb/src/kernel/blocks/dbdih/DbdihMain.cpp
+@@ -11893,7 +11893,7 @@ void Dbdih::startFragment(Signal* signal
+     BaseString::snprintf(buf, sizeof(buf), "table: %d fragment: %d gci: %d",
+ 			 tableId, fragId, SYSFILE->newestRestorableGCI);
+ 
+-    ndbout_c(buf);
++    ndbout_c("%s",buf);
+     dump_replica_info();
+     
+     progError(__LINE__, NDBD_EXIT_NO_RESTORABLE_REPLICA, buf);
+@@ -16965,7 +16965,7 @@ Dbdih::execDUMP_STATE_ORD(Signal* signal
+ 	  BaseString::snprintf(tmp, sizeof(tmp), "%d ", nodeOrder[k]);
+ 	  strcat(buf, tmp);
+ 	}
+-	infoEvent(buf);
++	infoEvent("%s",buf);
+       }
+     }
+   }
+@@ -17342,7 +17342,7 @@ Dbdih::execDUMP_STATE_ORD(Signal* signal
+ 	num++;
+ 	replicaPtr.i = replicaPtr.p->nextReplica;
+       } while (replicaPtr.i != RNIL);
+-      infoEvent(buf);
++      infoEvent("%s",buf);
+     }
+   }
+ 
+Index: storage/ndb/src/kernel/blocks/dblqh/DblqhMain.cpp
+===================================================================
+--- storage/ndb/src/kernel/blocks/dblqh/DblqhMain.cpp.orig
++++ storage/ndb/src/kernel/blocks/dblqh/DblqhMain.cpp
+@@ -21584,9 +21584,9 @@ Dblqh::match_and_print(Signal* signal, P
+ 		       state);
+   
+   if (!ERROR_INSERTED(4002))
+-    infoEvent(buf);
++    infoEvent("%s",buf);
+   else
+-    ndbout_c(buf);
++    ndbout_c("%s",buf);
+   
+   memcpy(signal->theData, temp, 4*len);
+   return true;
+@@ -22229,7 +22229,7 @@ Dblqh::execDUMP_STATE_ORD(Signal* signal
+ 			   "OP[%u]: transid: 0x%x 0x%x key: %s",
+ 			   tcRec.i,
+ 			   tcRec.p->transid[0], tcRec.p->transid[1], key.c_str());
+-      infoEvent(buf);
++      infoEvent("%s",buf);
+     }
+   }
+   
+Index: storage/ndb/src/kernel/blocks/dbtc/DbtcMain.cpp
+===================================================================
+--- storage/ndb/src/kernel/blocks/dbtc/DbtcMain.cpp.orig
++++ storage/ndb/src/kernel/blocks/dbtc/DbtcMain.cpp
+@@ -7383,10 +7383,10 @@ void Dbtc::sendAbortedAfterTimeout(Signa
+ 	for(Uint32 i = 0; i<TloopCount; i++)
+ 	{
+ 	  BaseString::snprintf(buf2, sizeof(buf2), "%s %d", buf, tmp[i]);
+-	  BaseString::snprintf(buf, sizeof(buf), buf2);
++	  BaseString::snprintf(buf, sizeof(buf), "%s", buf2);
+ 	}
+-	warningEvent(buf);
+-	ndbout_c(buf);
++	warningEvent("%s", buf);
++	ndbout_c("%s", buf);
+ 	ndbrequire(false);
+ 	releaseAbortResources(signal);
+ 	return;
+@@ -12901,7 +12901,7 @@ Dbtc::match_and_print(Signal* signal, Ap
+ 		       apiTimer ? (ctcTimer - apiTimer) / 100 : 0,
+ 		       c_apiConTimer_line[apiPtr.i],
+ 		       stateptr);
+-  infoEvent(buf);
++  infoEvent("%s", buf);
+   
+   memcpy(signal->theData, temp, 4*len);
+   return true;
+Index: storage/ndb/src/kernel/blocks/qmgr/QmgrMain.cpp
+===================================================================
+--- storage/ndb/src/kernel/blocks/qmgr/QmgrMain.cpp.orig
++++ storage/ndb/src/kernel/blocks/qmgr/QmgrMain.cpp
+@@ -1112,7 +1112,7 @@ retry:
+ 		       "I think president is: %d",
+ 		       nodeId, president, cpresident);
+ 
+-  ndbout_c(buf);
++  ndbout_c("%s", buf);
+   CRASH_INSERTION(933);
+ 
+   if (getNodeState().startLevel == NodeState::SL_STARTED)
+@@ -2795,7 +2795,7 @@ void Qmgr::checkStartInterface(Signal* s
+                                nodePtr.i, 
+                                (getNodeInfo(nodePtr.i).m_heartbeat_cnt + 1)/60,
+                                nodePtr.p->failState);
+-	  warningEvent(buf);
++	  warningEvent("%s", buf);
+           if (((getNodeInfo(nodePtr.i).m_heartbeat_cnt + 1) % 300) == 0)
+           {
+             jam();
+@@ -5727,7 +5727,7 @@ Qmgr::execDUMP_STATE_ORD(Signal* signal)
+         sprintf(buf, "Node %d: <UNKNOWN>(%d)", i, nodePtr.p->phase);
+         break;
+       }
+-      infoEvent(buf);
++      infoEvent("%s", buf);
+     }
+   }
+ 
+Index: storage/ndb/src/mgmsrv/Services.cpp
+===================================================================
+--- storage/ndb/src/mgmsrv/Services.cpp.orig
++++ storage/ndb/src/mgmsrv/Services.cpp
+@@ -634,10 +634,10 @@ MgmApiSession::getConfig(Parser_t::Conte
+   {
+     // Return only half the packed config
+     BaseString half64 = pack64.substr(0, pack64.length());
+-    m_output->println(half64.c_str());
++    m_output->println("%s", half64.c_str());
+     return;
+   }
+-  m_output->println(pack64.c_str());
++  m_output->println("%s", pack64.c_str());
+   m_output->print("\n");
+   return;
+ }
+@@ -1447,9 +1447,9 @@ Ndb_mgmd_event_service::log(int eventTyp
+ 
+       int r;
+       if (m_clients[i].m_parsable)
+-        r= out.println(str.c_str());
++        r= out.println("%s", str.c_str());
+       else
+-        r= out.println(pretty_text);
++        r= out.println("%s", pretty_text);
+ 
+       if (r<0)
+       {
+Index: storage/ndb/tools/ndb_test_platform.cpp
+===================================================================
+--- storage/ndb/tools/ndb_test_platform.cpp.orig
++++ storage/ndb/tools/ndb_test_platform.cpp
+@@ -30,7 +30,7 @@ int test_snprintf(const char * fmt, int
+ {
+   int ret;
+   char buf[100];
+-  ret = BaseString::snprintf(buf, buf_sz, fmt);
++  ret = BaseString::snprintf(buf, buf_sz, "%s", fmt);
+   
+   if(ret < 0)
+   {
+Index: storage/ndb/src/common/transporter/SHM_Transporter.unix.cpp
+===================================================================
+--- storage/ndb/src/common/transporter/SHM_Transporter.unix.cpp.orig
++++ storage/ndb/src/common/transporter/SHM_Transporter.unix.cpp
+@@ -77,7 +77,7 @@ SHM_Transporter::checkConnected(){
+ 		    "shmctl(%d, IPC_STAT) errno: %d(%s). ", shmId,
+ 		    errno, strerror(errno));
+     make_error_info(buf+r, sizeof(buf)-r);
+-    DBUG_PRINT("error",(buf));
++    DBUG_PRINT("error", ("%s", buf));
+     switch (errno)
+     {
+     case EACCES:
