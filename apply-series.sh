@@ -75,13 +75,11 @@ while read patch; do
       done
    done
    [ "$end" ] && continue
-   echo " * Running patch \"$patch\"..."
+   echo " * Applying patch \"$patch\"..."
    if patch -p$p --fuzz=0 < "$PATCHDIR/$patch"; then
       echo "   > patch applied..."
    else
       echo " ! Patch \"$patch\" can't be applied !!!"
       exit 3
-   fi | sed \
-      -e 's|^\(patching\)|\ \ \ -\ \1|' \
-      -e 's|^\(Hunk\)|\ \ \ \ \ !\ \1|'
+   fi
 done < "$series"
