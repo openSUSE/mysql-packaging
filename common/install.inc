@@ -14,7 +14,8 @@ rm -f %buildroot%_libdir/mysql/plugin/*a
 # XXX: package these? The ndb tools are linked statically atm
 rm -f %buildroot%_libdir/mysql/libndbclient.*
 rm -f %{buildroot}/usr/share/mysql-test/mysql-test-run  
-rm -f %{buildroot}/usr/share/mysql-test/mtr  
+rm -f %{buildroot}/usr/share/mysql-test/mtr
+rm -f %{buildroot}%{_libdir}/mysql/plugin/daemon_example.ini
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mtr  
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mysql-test-run 
 mv %{buildroot}/usr/share/mysql-test/lib/My/SafeProcess/my_safe_process %{buildroot}%{_bindir}
@@ -45,14 +46,14 @@ filelist mysqlslap >mysql-bench.files
 filelist mysql_client_test mysql_client_test_embedded mysql_waitpid mysqltest mysqltest_embedded >mysql-test.files
 # all binaries that don't need to be in a "default" install (mysql.rpm +
 # mysql-client.rpm)
-filelist msql2mysql mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace >mysql-tools.files
+filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded >mysql-tools.files
 filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 filelist ndb_mgmd >mysql-ndb-management.files
 filelist ndb_{config,desc,error_reporter,mgm,print_backup_file,print_schema_file,print_sys_file,restore,select_all,select_count,show_tables,size.pl,test_platform,waiter} >mysql-ndb-tools.files
 filelist ndb_{cpcd,delete_all,drop_index,drop_table} >mysql-ndb-extra.files
 ### files not installed by make install
 # Create directory structure
-DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/README.SuSE)
+DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/README.SuSE plugin/daemon_example/daemon_example.ini)
 DOCDIR=%buildroot%_defaultdocdir/%name
 install -d -m 755 ${DOCDIR}
 install -d -m 755 %buildroot/etc/logrotate.d
@@ -65,7 +66,9 @@ ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so
 %endif
 install -m 660 _build/support-files/my-medium.cnf %buildroot/etc/my.cnf
 install -m 640 scripts/mysqlaccess.conf %buildroot/etc/mysqlaccess.conf
-install -m 644 "${DOCS[@]}" ${DOCDIR} || true
+for i in "${DOCS[@]}"; do
+	install -m 644 "${i}" "${DOCDIR}" || true
+done
 install -m 755 %_sourcedir/rc.mysql-multi %buildroot/etc/init.d/mysql
 ln -sf ../../etc/init.d/mysql %buildroot/usr/sbin/rcmysql
 # this is used by the init script
@@ -123,4 +126,4 @@ if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
 fi
 mkdir -p '%buildroot'/etc/mysql
-[ -z "`ls -1 %_sourcedir/*.cnf`" ] || cp %_sourcedir/*.cnf '%buildroot'/etc/mysql
+bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/mysql -xvf -

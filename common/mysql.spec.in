@@ -50,7 +50,6 @@ Source10:       build.inc
 Source11:       install.inc
 Source12:       series
 Source13:       configuration-tweaks.tar.bz2
-Source14:       old-ssl.series
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version}
 PreReq:         pwdutils
@@ -88,7 +87,7 @@ Conflicts:      otherproviders(mysql)
 This package only contains the server-side programs.
 
 #######################################################################
-# For favorized version                                               #
+# For favorized version only                                          #
 #######################################################################
 
 %if 0%{?prefered} > 0
@@ -130,28 +129,27 @@ Group:          Development/Libraries/C and C++
 %description -n libmysqld-devel
 This package contains the development header files and libraries
 for developing applications that embed the {{display-name}}.
-
 %endif
 
 #######################################################################
 # For everybody                                                       #
 #######################################################################
 
-%package -n {{libname}}{{libversion}}
+%package -n lib{{lib-name}}{{lib-version}}
 Summary:        Shared Libraries for {{display-name}}
 License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
 Group:          Development/Libraries/Other
 
-%description -n {{libname}}{{lib-version}}
+%description -n lib{{lib-name}}{{lib-version}}
 This package contains the shared libraries (.so) which certain
 languages and applications need to dynamically load and use {{display-name}}.
 
-%package -n {{libname}}_r{{lib-version}}
+%package -n lib{{lib-name}}_r{{lib-version}}
 Summary:        Shared Libraries for {{display-name}}
 License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
 Group:          Development/Libraries/Other
 
-%description -n {{libname}}_r{{lib-version}}
+%description -n lib{{lib-name}}_r{{lib-version}}
 This package contains the shared libraries (.so) which certain
 languages and applications need to dynamically load and use {{display-name}}.
 
@@ -185,11 +183,14 @@ This package contains benchmark scripts and data for {{display-name}}.
 To run these database benchmarks, start the script "run-all-tests" in
 the directory /usr/share/sql-bench after starting {{display-name}}.
 
-%if %{defined mdkversion}
 
+#######################################################################
+# Mandriva creates debug package by itself, so we need something else #
+#######################################################################
+
+%if %{defined mdkversion}
 %package debuging
 %else
-
 %package debug
 %endif
 License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
@@ -203,13 +204,9 @@ Obsoletes:      mysql-debug < %{srv_vers}
 Conflicts:      otherproviders(mysql-debug)
 
 %if %{defined mdkversion}
-
 %description debuging
-
 %else
-
 %description debug
-
 %endif
 A version of the {{display-name}} that has some debug code turned on.
 It should be only used to track down problems with the standard
@@ -254,8 +251,11 @@ Conflicts:      otherproviders(mysql-tools)
 A set of scripts for administering a {{display-name}} or developing
 applications with {{display-name}}.
 
-%if 0%{?cluster} > 0
+#######################################################################
+# For cluster only                                                    #
+#######################################################################
 
+%if 0%{?cluster} > 0
 %package ndb-storage
 License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
 Summary:        {{display-name}} - ndbcluster storage engine
@@ -283,7 +283,6 @@ This package contains ndbcluster storage engine management.
 It is necessary to have this package installed on at least 
 one computer in the cluster.
 
-
 %package ndb-tools
 License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
 Summary:        {{display-name}} - ndbcluster storage engine basic tools
@@ -294,7 +293,6 @@ Conflicts:      otherproviders(mysql-ndb-tools)
 
 %description ndb-tools
 This package contains ndbcluster storage engine basic tools.
-
 
 %package ndb-extra
 License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
@@ -307,12 +305,14 @@ Conflicts:      otherproviders(mysql-ndb-extra)
 %description ndb-extra
 This package contains some extra ndbcluster storage engine tools for the
 advanced user.  They should be used with caution.
-
 %endif
 
+#######################################################################
+# Preparation part                                                    #
+#######################################################################
 
 %prep
-%setup -q -n mysql-%version -D -a 9
+%setup -q -n {{src-dir}} -D -a 9
 cp %_sourcedir/README.SuSE .
 cp %_sourcedir/suse-test-run .
 # apply patches from series
@@ -320,7 +320,6 @@ mysql-patches/tools/quilt-setup.sh  "%{S:12}"
 mysql-patches/tools/apply-series.sh "%{S:12}"
 # remove unneeded manpages ('make install' basically installs everything under
 # man/*)
-%patch1
 rm -f man/mysqlman.1        # dummy fallback manpage
 rm -f man/mysql.server.1    # init script, not installed in our rpm
 rm -f man/make_win_*.1      # windows build scripts
@@ -330,8 +329,15 @@ rm -f man/ndbd_redo_log_reader.1
 # breaks VPATH builds when in sourcedir, is generated in the builddirs
 rm -f sql/sql_builtin.cc
 sed -i 's|@localstatedir@|/var/log|' support-files/mysql-log-rotate.sh
+%if 0%{prefered} < 1
+for i in `grep -Rl mysqlclient .`; do
+	sed -i 's|mysqlclient|{{lib-name}}|g' $i
+done
+%endif
 
-
+#######################################################################
+# build and install are from external file                            #
+#######################################################################
 %build
 %{expand:%(cat %_sourcedir/build.inc)}
 
@@ -344,6 +350,9 @@ sed -i 's|@localstatedir@|/var/log|' support-files/mysql-log-rotate.sh
                   -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
 /usr/sbin/usermod -g mysql -s /bin/false mysql || :
 
+#######################################################################
+# preun and posttran takes care of restart                            #
+#######################################################################
 %preun
 [ $1 = 1 ] || /usr/sbin/rcmysql stop
 %pretrans
@@ -378,16 +387,19 @@ if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d /var/run/mysql/restar
 	rmdir /var/run/mysql/restart || :
 fi
 
-%post -n {{lib-name}}{{lib-version}} -p /sbin/ldconfig
+#######################################################################
+# Various ldconfig post scripts                                       #
+#######################################################################
 
-%postun -n {{lib-name}}{{lib-version}} -p /sbin/ldconfig
+%post -n lib{{lib-name}}{{lib-version}} -p /sbin/ldconfig
 
-%post -n {{lib-name}}_r{{lib-version}} -p /sbin/ldconfig
+%postun -n lib{{lib-name}}{{lib-version}} -p /sbin/ldconfig
 
-%postun -n {{lib-name}}_r{{lib-version}} -p /sbin/ldconfig
+%post -n lib{{lib-name}}_r{{lib-version}} -p /sbin/ldconfig
+
+%postun -n lib{{lib-name}}_r{{lib-version}} -p /sbin/ldconfig
 
 %if 0%{prefered} > 0
-
 %post -n libmysqld18 -p /sbin/ldconfig
 
 %postun -n libmysqld18 -p /sbin/ldconfig
@@ -399,6 +411,9 @@ if [ $1 = 0 ]; then
 	%{insserv_cleanup}
 fi
 
+#######################################################################
+# Files section                                                       #
+#######################################################################
 
 %files -f mysql.files
 %defattr(-, root, root)
@@ -424,7 +439,6 @@ fi
 %config /etc/mysqlaccess.conf
 
 %if 0%{prefered} > 0
-
 %files -n libmysqlclient-devel -f libmysqlclient-devel.files
 %defattr(-, root, root)
 /usr/include/mysql
@@ -445,14 +459,14 @@ fi
 %endif
 
 
-%files -n {{lib-name}}{{lib-version}}
+%files -n lib{{lib-name}}{{lib-version}}
 %defattr(-, root, root)
-%{_libdir}/{{lib-name}}.so.*
+%{_libdir}/lib{{lib-name}}.so.*
 
 
-%files -n {{lib-name}}_r{{lib-version}}
+%files -n lib{{lib-name}}_r{{lib-version}}
 %defattr(-, root, root)
-%{_libdir}/{{lib-name}}_r.so.*
+%{_libdir}/lib{{lib-name}}_r.so.*
 
 
 %files bench -f mysql-bench.files
@@ -460,10 +474,8 @@ fi
 /usr/share/sql-bench
 
 %if %{defined mdkversion}
-
 %files debuging
 %else
-
 %files debug
 %endif
 %defattr(-, root, root)
@@ -489,7 +501,6 @@ fi
 %_bindir/mysqloptimize
 
 %if 0%{cluster} > 0
-
 %files ndb-storage -f mysql-ndb-storage.files
 
 

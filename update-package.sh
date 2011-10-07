@@ -62,11 +62,27 @@ if ! cp -v "$REPOROOT"/"$VARIANT"/* .; then
    exit 4
 fi
 
-echo "Creating .spec file from templates..."
-if ! mustache ./config.yaml ./mysql.spec.in; then
-   echo "Creating .spec file failed!"
+echo "Creating files from templates..."
+for i in ./*.in; do
+   REALNAME="`echo "$i" | sed -e 's|\.in$||' -e "s|mysql|$VARIANT|"`"
+   echo "Creating \"$REALNAME\"..."
+   if ! mustache ./config.yaml "$i" > "$REALNAME"; then
+      echo "Creating \"$REALNAME\" failed!"
+      exit 4
+   fi
+done
+
+echo "Packing configuration..."
+if ! tar -cjf configuration-tweaks.tar.bz2 *.cnf; then
+   echo "Can't create configuration tarball!"
+   exit 4
+fi
+
+echo "Adding patches..."
+if ! "$REPOROOT"/patches/tools/gettar.sh; then
+   echo "Getting patches failed!"
    exit 4
 fi
 
 echo "Cleaning up..."
-rm -f ./mysql.spec.in ./config.yaml
+rm -f ./*.in ./config.yaml ./*.cnf
