@@ -1,0 +1,12 @@
+mysql-community-server-5.1.31-shebang.patch
+mysql-community-server-5.5.6-utf8-test-results.patch
+mysql-community-server-5.1.36-hotcopy.patch
+mysql-community-server-5.5.6-cnf.patch
+mysql-community-server-5.6.3-group.patch
+mysql-community-server-5.1.45-multi-configuration.patch
+mysql-community-server-5.5.6-safe-process-in-bin.patch
+mysql-community-server-5.6.3-logrotate.patch
+mysql-community-server-5.5.6-strncat-overflow.patch
+mysql-community-server-5.1.51-install_db-quiet.patch
+mysql-community-server-5.1.51-mysql_config.patch
+mysql-community-server-5.1.51-upgrade-exit-status.patch
