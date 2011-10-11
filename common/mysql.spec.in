@@ -86,10 +86,6 @@ Conflicts:      otherproviders(mysql)
 
 This package only contains the server-side programs.
 
-#######################################################################
-# For favorized version only                                          #
-#######################################################################
-
 %if 0%{?prefered} > 0
 %package -n libmysqlclient-devel
 # mysql-devel was last used in openSUSE 10.2
@@ -130,10 +126,6 @@ Group:          Development/Libraries/C and C++
 This package contains the development header files and libraries
 for developing applications that embed the {{display-name}}.
 %endif
-
-#######################################################################
-# For everybody                                                       #
-#######################################################################
 
 %package -n lib{{lib-name}}{{lib-version}}
 Summary:        Shared Libraries for {{display-name}}
@@ -183,10 +175,6 @@ This package contains benchmark scripts and data for {{display-name}}.
 To run these database benchmarks, start the script "run-all-tests" in
 the directory /usr/share/sql-bench after starting {{display-name}}.
 
-
-#######################################################################
-# Mandriva creates debug package by itself, so we need something else #
-#######################################################################
 
 %if %{defined mdkversion}
 %package debuging
@@ -251,10 +239,6 @@ Conflicts:      otherproviders(mysql-tools)
 A set of scripts for administering a {{display-name}} or developing
 applications with {{display-name}}.
 
-#######################################################################
-# For cluster only                                                    #
-#######################################################################
-
 %if 0%{?cluster} > 0
 %package ndb-storage
 License:        GPLv2 ; with additional permissions: EXCEPTIONS-CLIENT
@@ -307,10 +291,6 @@ This package contains some extra ndbcluster storage engine tools for the
 advanced user.  They should be used with caution.
 %endif
 
-#######################################################################
-# Preparation part                                                    #
-#######################################################################
-
 %prep
 %setup -q -n {{src-dir}} -D -a 9
 cp %_sourcedir/README.SuSE .
@@ -335,9 +315,6 @@ for i in `grep -Rl mysqlclient .`; do
 done
 %endif
 
-#######################################################################
-# build and install are from external file                            #
-#######################################################################
 %build
 %{expand:%(cat %_sourcedir/build.inc)}
 

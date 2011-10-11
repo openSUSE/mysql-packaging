@@ -3,7 +3,7 @@
 %else
 %define socketpath /var/run/mysql
 %endif
-export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DUNDEF_HAVE_INITGROUPS -DFORCE_INIT_OF_VARS -fno-strict-aliasing -Wno-unused-parameter"
+export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DUNDEF_HAVE_INITGROUPS -DFORCE_INIT_OF_VARS -fno-strict-aliasing -Wno-unused-parameter -Wno-unused-but-set-variable"
 export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
 
 %if 0%{use_cmake} < 1
@@ -45,6 +45,7 @@ BuildMySQL() {
 %endif
 		--with-ssl=/usr \
 		--with-plugins=%{builtin_plugins} \
+		--without-plugin-handlersocket \
 		HOSTNAME="/bin/hostname -f" \
 		"$@"
 	# Add this for MyISAM RAID support:
