@@ -1,3 +1,0 @@
-[submodule "patches"]
-	path = patches
-	url = git://github.com/miska/openSUSE-MySQL-patches.git
