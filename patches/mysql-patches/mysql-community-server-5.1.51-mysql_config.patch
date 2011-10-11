@@ -1,0 +1,18 @@
+PATCH-P0-FIX-UPSTREAM: Fix linking options
+BUGS: upstream#39175, bnc#420313
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: scripts/mysql_config.sh
+===================================================================
+--- scripts/mysql_config.sh.orig
++++ scripts/mysql_config.sh
+@@ -94,7 +94,7 @@ fix_path pkgincludedir include/mysql inc
+ 
+ version='@VERSION@'
+ socket='@MYSQL_UNIX_ADDR@'
+-ldflags='@LDFLAGS@'
++ldflags='@SAVE_LDFLAGS@'
+ 
+ if [ @MYSQL_TCP_PORT_DEFAULT@ -eq 0 ]; then
+   port=0

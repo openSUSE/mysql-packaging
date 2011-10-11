@@ -1,0 +1,88 @@
+PATCH-P0-FIX-SUSE: Fix test results confused by utf-8
+
+We are using utf-8 as a default charset during the compilation and it has some
+effect on the test results. Correct sollution would be to make these results
+charset independent, but easiest one is obviously to modify them to reflect our
+default settings.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: mysql-test/r/information_schema.result
+===================================================================
+--- mysql-test/r/information_schema.result.orig
++++ mysql-test/r/information_schema.result
+@@ -9,7 +9,7 @@ create user mysqltest_3@localhost;
+ create user mysqltest_3;
+ select * from information_schema.SCHEMATA where schema_name > 'm';
+ CATALOG_NAME	SCHEMA_NAME	DEFAULT_CHARACTER_SET_NAME	DEFAULT_COLLATION_NAME	SQL_PATH
+-def	mtr	latin1	latin1_swedish_ci	NULL
++def	mtr	utf8	utf8_unicode_ci	NULL
+ def	mysql	latin1	latin1_swedish_ci	NULL
+ def	performance_schema	utf8	utf8_general_ci	NULL
+ def	test	latin1	latin1_swedish_ci	NULL
+Index: mysql-test/r/mysql_comments.result
+===================================================================
+--- mysql-test/r/mysql_comments.result.orig
++++ mysql-test/r/mysql_comments.result
+@@ -13,23 +13,23 @@ drop trigger if exists t1_bi;
+ foofct("call 1")
+ call 1
+ Function	sql_mode	Create Function	character_set_client	collation_connection	Database Collation
+-foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nreturn\n\n\n\nx	latin1	latin1_swedish_ci	latin1_swedish_ci
++foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nreturn\n\n\n\nx	utf8	utf8_unicode_ci	latin1_swedish_ci
+ foofct("call 2")
+ call 2
+ Function	sql_mode	Create Function	character_set_client	collation_connection	Database Collation
+-foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nbegin\n  \n  \n  \n\n  \n\n  \n  return x;\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nbegin\n  \n  \n  \n\n  \n\n  \n  return x;\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Procedure	sql_mode	Create Procedure	character_set_client	collation_connection	Database Collation
+-empty		CREATE DEFINER=`root`@`localhost` PROCEDURE `empty`()\nbegin\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++empty		CREATE DEFINER=`root`@`localhost` PROCEDURE `empty`()\nbegin\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ id	data
+ foo	42
+ Procedure	sql_mode	Create Procedure	character_set_client	collation_connection	Database Collation
+-foosp		CREATE DEFINER=`root`@`localhost` PROCEDURE `foosp`()\ninsert into test.t1\n\n\n\n\n  \n\n  \n  values ("foo", 42)	latin1	latin1_swedish_ci	latin1_swedish_ci
++foosp		CREATE DEFINER=`root`@`localhost` PROCEDURE `foosp`()\ninsert into test.t1\n\n\n\n\n  \n\n  \n  values ("foo", 42)	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Procedure	sql_mode	Create Procedure	character_set_client	collation_connection	Database Collation
+-nicesp		CREATE DEFINER=`root`@`localhost` PROCEDURE `nicesp`(a int)\nbegin\n  \n  declare b int;\n  declare c float;\n\n  \n  \n\n  \nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++nicesp		CREATE DEFINER=`root`@`localhost` PROCEDURE `nicesp`(a int)\nbegin\n  \n  declare b int;\n  declare c float;\n\n  \n  \n\n  \nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Trigger	sql_mode	SQL Original Statement	character_set_client	collation_connection	Database Collation
+-t1_empty		CREATE DEFINER=`root`@`localhost` trigger t1_empty after delete on t1\nfor each row\nbegin\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++t1_empty		CREATE DEFINER=`root`@`localhost` trigger t1_empty after delete on t1\nfor each row\nbegin\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Trigger	sql_mode	SQL Original Statement	character_set_client	collation_connection	Database Collation
+-t1_bi		CREATE DEFINER=`root`@`localhost` trigger t1_bi before insert on t1\nfor each row\nbegin\n\n\n\n  \n  declare b int;\n  declare c float;\n\n  \n  \n\n  \n  set NEW.data := 12;\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++t1_bi		CREATE DEFINER=`root`@`localhost` trigger t1_bi before insert on t1\nfor each row\nbegin\n\n\n\n  \n  declare b int;\n  declare c float;\n\n  \n  \n\n  \n  set NEW.data := 12;\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ id	data
+ trig	12
+ "Pass 2 : --enable-comments"
+@@ -40,23 +40,23 @@ trig	12
+ foofct("call 1")
+ call 1
+ Function	sql_mode	Create Function	character_set_client	collation_connection	Database Collation
+-foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nreturn\n-- comment 1a\n# comment 1b\n/* comment 1c */\nx # after body, on same line	latin1	latin1_swedish_ci	latin1_swedish_ci
++foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nreturn\n-- comment 1a\n# comment 1b\n/* comment 1c */\nx # after body, on same line	utf8	utf8_unicode_ci	latin1_swedish_ci
+ foofct("call 2")
+ call 2
+ Function	sql_mode	Create Function	character_set_client	collation_connection	Database Collation
+-foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nbegin\n  -- comment 1a\n  # comment 1b\n  /*\n     comment 1c\n  */\n\n  -- empty line below\n\n  -- empty line above\n  return x;\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++foofct		CREATE DEFINER=`root`@`localhost` FUNCTION `foofct`(x char(20)) RETURNS char(20) CHARSET latin1\nbegin\n  -- comment 1a\n  # comment 1b\n  /*\n     comment 1c\n  */\n\n  -- empty line below\n\n  -- empty line above\n  return x;\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Procedure	sql_mode	Create Procedure	character_set_client	collation_connection	Database Collation
+-empty		CREATE DEFINER=`root`@`localhost` PROCEDURE `empty`()\nbegin\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++empty		CREATE DEFINER=`root`@`localhost` PROCEDURE `empty`()\nbegin\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ id	data
+ foo	42
+ Procedure	sql_mode	Create Procedure	character_set_client	collation_connection	Database Collation
+-foosp		CREATE DEFINER=`root`@`localhost` PROCEDURE `foosp`()\ninsert into test.t1\n## These comments are part of the procedure body, and should be kept.\n# Comment 2a\n-- Comment 2b\n/* Comment 2c */\n  -- empty line below\n\n  -- empty line above\n  values ("foo", 42) # comment 3, still part of the body	latin1	latin1_swedish_ci	latin1_swedish_ci
++foosp		CREATE DEFINER=`root`@`localhost` PROCEDURE `foosp`()\ninsert into test.t1\n## These comments are part of the procedure body, and should be kept.\n# Comment 2a\n-- Comment 2b\n/* Comment 2c */\n  -- empty line below\n\n  -- empty line above\n  values ("foo", 42) # comment 3, still part of the body	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Procedure	sql_mode	Create Procedure	character_set_client	collation_connection	Database Collation
+-nicesp		CREATE DEFINER=`root`@`localhost` PROCEDURE `nicesp`(a int)\nbegin\n  -- declare some variables here\n  declare b int;\n  declare c float;\n\n  -- do more stuff here\n  -- commented nicely and so on\n\n  -- famous last words ...\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++nicesp		CREATE DEFINER=`root`@`localhost` PROCEDURE `nicesp`(a int)\nbegin\n  -- declare some variables here\n  declare b int;\n  declare c float;\n\n  -- do more stuff here\n  -- commented nicely and so on\n\n  -- famous last words ...\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Trigger	sql_mode	SQL Original Statement	character_set_client	collation_connection	Database Collation
+-t1_empty		CREATE DEFINER=`root`@`localhost` trigger t1_empty after delete on t1\nfor each row\nbegin\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++t1_empty		CREATE DEFINER=`root`@`localhost` trigger t1_empty after delete on t1\nfor each row\nbegin\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ Trigger	sql_mode	SQL Original Statement	character_set_client	collation_connection	Database Collation
+-t1_bi		CREATE DEFINER=`root`@`localhost` trigger t1_bi before insert on t1\nfor each row\nbegin\n# comment 1a\n-- comment 1b\n/*\n   comment 1c\n*/\n  -- declare some variables here\n  declare b int;\n  declare c float;\n\n  -- do more stuff here\n  -- commented nicely and so on\n\n  -- famous last words ...\n  set NEW.data := 12;\nend	latin1	latin1_swedish_ci	latin1_swedish_ci
++t1_bi		CREATE DEFINER=`root`@`localhost` trigger t1_bi before insert on t1\nfor each row\nbegin\n# comment 1a\n-- comment 1b\n/*\n   comment 1c\n*/\n  -- declare some variables here\n  declare b int;\n  declare c float;\n\n  -- do more stuff here\n  -- commented nicely and so on\n\n  -- famous last words ...\n  set NEW.data := 12;\nend	utf8	utf8_unicode_ci	latin1_swedish_ci
+ id	data
+ trig	12
+ End of 5.0 tests

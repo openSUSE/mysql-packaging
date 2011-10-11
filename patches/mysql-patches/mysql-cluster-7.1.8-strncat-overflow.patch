@@ -1,0 +1,20 @@
+PATCH-P0-HACK-FIX: Fixing possible buffer overflow
+
+Not really sure whether this buffer overflow is possible, but I need to take
+care of that for obs to compile it.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: mysys/mf_loadpath.c
+===================================================================
+--- mysys/mf_loadpath.c.orig
++++ mysys/mf_loadpath.c
+@@ -45,7 +45,7 @@ char * my_load_path(char * to, const cha
+     if (is_cur)
+       is_cur=2;					/* Remove current dir */
+     if (! my_getwd(buff,(uint) (FN_REFLEN-strlen(path)+is_cur),MYF(0)))
+-      VOID(strncat(buff, path+is_cur, FN_REFLEN));
++      VOID(strncat(buff, path+is_cur, FN_REFLEN-strlen(buff)-1));
+     else
+       VOID(strnmov(buff, path, FN_REFLEN));     /* Return org file name */
+   }

@@ -1,0 +1,13 @@
+MySQL patches
+=============
+
+This repository contains set of patches for MySQL and it's different flavours.
+Main flavours supported are:
+
+ * MySQL Community Server
+   http://dev.mysql.com/doc/
+ * MySQL Cluster
+   http://dev.mysql.com/doc/index-cluster.html
+ * MariaDB
+   http://mariadb.org/
+

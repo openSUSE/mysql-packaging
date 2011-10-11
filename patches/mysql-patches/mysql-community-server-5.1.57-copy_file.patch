@@ -1,0 +1,215 @@
+PATCH-P1-HACK-UPSTREAM: copy_file doesn't work in tests
+
+As it doesn't work, let's replace it with --exec cp
+
+Maintainer: Michal Hrusecky <mhrusecky@suse.cz>
+
+Index: mysql-5.1.57/mysql-test/include/setup_fake_relay_log.inc
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/include/setup_fake_relay_log.inc
++++ mysql-5.1.57/mysql-test/include/setup_fake_relay_log.inc
+@@ -67,7 +67,7 @@ let $_fake_relay_index= $_fake_datadir/$
+ let $_fake_relay_log_purge= `SELECT @@global.relay_log_purge`;
+ 
+ # Create relay log file.
+-copy_file $fake_relay_log $_fake_relay_log;
++--exec cp $fake_relay_log $_fake_relay_log;
+ # Create relay log index.
+ --let $write_var= $_fake_filename-fake.000001\n
+ --let $write_to_file= $_fake_relay_index
+Index: mysql-5.1.57/mysql-test/suite/rpl/t/rpl_stm_until.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/suite/rpl/t/rpl_stm_until.test
++++ mysql-5.1.57/mysql-test/suite/rpl/t/rpl_stm_until.test
+@@ -198,7 +198,7 @@ connection master;
+ flush logs;
+ let $MYSQLD_DATADIR= `select @@datadir`;
+ --remove_file $MYSQLD_DATADIR/master-bin.000001
+---copy_file $MYSQL_TEST_DIR/std_data/bug47142_master-bin.000001 $MYSQLD_DATADIR/master-bin.000001
++--exec cp $MYSQL_TEST_DIR/std_data/bug47142_master-bin.000001 $MYSQLD_DATADIR/master-bin.000001
+ 
+ connection slave;
+ stop slave;
+Index: mysql-5.1.57/mysql-test/suite/rpl/t/rpl_trigger.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/suite/rpl/t/rpl_trigger.test
++++ mysql-5.1.57/mysql-test/suite/rpl/t/rpl_trigger.test
+@@ -317,7 +317,7 @@ FLUSH LOGS;
+ 
+ # Replace binlog
+ remove_file $MYSQLD_DATADIR/master-bin.000001;
+-copy_file $MYSQL_TEST_DIR/std_data/bug16266.000001 $MYSQLD_DATADIR/master-bin.000001;
++--exec cp $MYSQL_TEST_DIR/std_data/bug16266.000001 $MYSQLD_DATADIR/master-bin.000001;
+ 
+ --let $rpl_server_number= 1
+ --source include/rpl_start_server.inc
+Index: mysql-5.1.57/mysql-test/t/mysqldump.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/mysqldump.test
++++ mysql-5.1.57/mysql-test/t/mysqldump.test
+@@ -1982,7 +1982,7 @@ drop table if exists `load`;
+ --enable_warnings
+ create table `load` (a varchar(255));
+ 
+---copy_file std_data/words.dat $MYSQLTEST_VARDIR/tmp/load.txt
++--exec cp std_data/words.dat $MYSQLTEST_VARDIR/tmp/load.txt
+ --chmod 0644 $MYSQLTEST_VARDIR/tmp/load.txt
+ 
+ --exec $MYSQL_IMPORT --ignore test $MYSQLTEST_VARDIR/tmp/load.txt
+Index: mysql-5.1.57/mysql-test/t/partition_not_blackhole.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/partition_not_blackhole.test
++++ mysql-5.1.57/mysql-test/t/partition_not_blackhole.test
+@@ -13,8 +13,8 @@ let $MYSQLD_DATADIR= `SELECT @@datadir`;
+ --echo # Copy a .frm and .par file which was created with:
+ --echo # create table `t1` (`id` int primary key) engine=blackhole
+ --echo # partition by key () partitions 1;
+---copy_file std_data/parts/t1_blackhole.frm $MYSQLD_DATADIR/test/t1.frm
+---copy_file std_data/parts/t1_blackhole.par $MYSQLD_DATADIR/test/t1.par
++--exec cp std_data/parts/t1_blackhole.frm $MYSQLD_DATADIR/test/t1.frm
++--exec cp std_data/parts/t1_blackhole.par $MYSQLD_DATADIR/test/t1.par
+ SHOW TABLES;
+ --replace_result $MYSQLD_DATADIR ./
+ --error ER_NOT_FORM_FILE
+Index: mysql-5.1.57/mysql-test/t/merge.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/merge.test
++++ mysql-5.1.57/mysql-test/t/merge.test
+@@ -1669,7 +1669,7 @@ DROP DATABASE `test/1`;
+ # Test compatibility. Use '@' instead of '/' (was not allowed in 5.0)
+ 
+ CREATE TABLE `t@1`(a INT);
+-copy_file std_data/bug48265.frm $MYSQLD_DATADIR/test/m1.frm;
++--exec cp std_data/bug48265.frm $MYSQLD_DATADIR/test/m1.frm;
+ write_file $MYSQLD_DATADIR/test/m1.MRG;
+ t@1
+ EOF
+Index: mysql-5.1.57/mysql-test/t/repair.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/repair.test
++++ mysql-5.1.57/mysql-test/t/repair.test
+@@ -121,9 +121,9 @@ DROP TABLE t1;
+ 
+ --echo # Test with a saved table from 4.1
+ let $MYSQLD_DATADIR= `select @@datadir`;
+---copy_file std_data/bug36055.frm $MYSQLD_DATADIR/test/t1.frm
+---copy_file std_data/bug36055.MYD $MYSQLD_DATADIR/test/t1.MYD
+---copy_file std_data/bug36055.MYI $MYSQLD_DATADIR/test/t1.MYI
++--exec cp std_data/bug36055.frm $MYSQLD_DATADIR/test/t1.frm
++--exec cp std_data/bug36055.MYD $MYSQLD_DATADIR/test/t1.MYD
++--exec cp std_data/bug36055.MYI $MYSQLD_DATADIR/test/t1.MYI
+ 
+ --replace_column 12 # 13 #
+ SHOW TABLE STATUS LIKE 't1';
+Index: mysql-5.1.57/mysql-test/t/varbinary.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/varbinary.test
++++ mysql-5.1.57/mysql-test/t/varbinary.test
+@@ -48,11 +48,11 @@ drop table t1;
+ 
+ # Test with a saved table from 4.1
+ let $MYSQLD_DATADIR= `select @@datadir`;
+-copy_file std_data/bug19371.frm $MYSQLD_DATADIR/test/t1.frm;
++--exec cp std_data/bug19371.frm $MYSQLD_DATADIR/test/t1.frm;
+ chmod 0777 $MYSQLD_DATADIR/test/t1.frm;
+-copy_file std_data/bug19371.MYD $MYSQLD_DATADIR/test/t1.MYD;
++--exec cp std_data/bug19371.MYD $MYSQLD_DATADIR/test/t1.MYD;
+ chmod 0777 $MYSQLD_DATADIR/test/t1.MYD;
+-copy_file std_data/bug19371.MYI $MYSQLD_DATADIR/test/t1.MYI;
++--exec cp std_data/bug19371.MYI $MYSQLD_DATADIR/test/t1.MYI;
+ chmod 0777 $MYSQLD_DATADIR/test/t1.MYI;
+ 
+ # Everything _looks_ fine
+Index: mysql-5.1.57/mysql-test/t/view.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/view.test
++++ mysql-5.1.57/mysql-test/t/view.test
+@@ -3895,7 +3895,7 @@ delimiter ;//
+ CREATE VIEW v1 AS SELECT f1() FROM t1;
+ 
+ let $MYSQLD_DATADIR= `SELECT @@datadir`;
+-copy_file std_data/bug48449.frm $MYSQLD_DATADIR/test/v2.frm;
++--exec cp std_data/bug48449.frm $MYSQLD_DATADIR/test/v2.frm;
+ 
+ SHOW CREATE VIEW v1;
+ 
+Index: mysql-5.1.57/mysql-test/t/type_varchar.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/type_varchar.test
++++ mysql-5.1.57/mysql-test/t/type_varchar.test
+@@ -4,7 +4,7 @@ drop table if exists t1, t2;
+ 
+ create table t1 (v varchar(30), c char(3), e enum('abc','def','ghi'), t text);
+ let $MYSQLD_DATADIR= `select @@datadir`;
+-copy_file $MYSQL_TEST_DIR/std_data/vchar.frm $MYSQLD_DATADIR/test/vchar.frm;
++--exec cp $MYSQL_TEST_DIR/std_data/vchar.frm $MYSQLD_DATADIR/test/vchar.frm;
+ truncate table vchar;
+ show create table t1;
+ show create table vchar;
+@@ -164,7 +164,7 @@ create table t3 (
+   cz varchar(255) character set utf8
+ );
+ remove_file $MYSQLD_DATADIR/test/t3.frm;
+-copy_file $MYSQL_TEST_DIR/std_data/14897.frm $MYSQLD_DATADIR/test/t3.frm;
++--exec cp $MYSQL_TEST_DIR/std_data/14897.frm $MYSQLD_DATADIR/test/t3.frm;
+ truncate table t3;
+ insert into t3 (id, en, cz) values 
+ (1,'en string 1','cz string 1'),
+Index: mysql-5.1.57/mysql-test/t/upgrade.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/upgrade.test
++++ mysql-5.1.57/mysql-test/t/upgrade.test
+@@ -53,9 +53,9 @@ drop table `txu#p#p1`;
+ --echo #
+ --echo # copy table created using mysql4.0 into the data dir
+ let $MYSQLD_DATADIR= `SELECT @@datadir`;
+-copy_file std_data/bug37631.frm $MYSQLD_DATADIR/test/t1.frm;
+-copy_file std_data/bug37631.MYD $MYSQLD_DATADIR/test/t1.MYD;
+-copy_file std_data/bug37631.MYI $MYSQLD_DATADIR/test/t1.MYI;
++--exec cp std_data/bug37631.frm $MYSQLD_DATADIR/test/t1.frm;
++--exec cp std_data/bug37631.MYD $MYSQLD_DATADIR/test/t1.MYD;
++--exec cp std_data/bug37631.MYI $MYSQLD_DATADIR/test/t1.MYI;
+ --echo # check the table created using mysql 4.0
+ CHECK TABLE t1;
+ --echo # query the table created using mysql 4.0
+@@ -69,7 +69,7 @@ DROP TABLE t1;
+ let $MYSQLD_DATADIR= `select @@datadir`;
+ --error 0,1
+ --remove_file $MYSQLD_DATADIR/test/t1.frm
+---copy_file std_data/old_table-323.frm $MYSQLD_DATADIR/test/t1.frm
++--exec cp std_data/old_table-323.frm $MYSQLD_DATADIR/test/t1.frm
+ truncate t1;
+ drop table t1;
+ 
+@@ -88,10 +88,10 @@ FLUSH TABLES;
+ 
+ # Manually make a 5.0 database from the template
+ --mkdir $MYSQLD_DATADIR/a-b-c
+---copy_file $MYSQLD_DATADIR/tabc/db.opt $MYSQLD_DATADIR/a-b-c/db.opt
+---copy_file $MYSQLD_DATADIR/tabc/t1.frm $MYSQLD_DATADIR/a-b-c/t1.frm
+---copy_file $MYSQLD_DATADIR/tabc/t1.MYD $MYSQLD_DATADIR/a-b-c/t1.MYD
+---copy_file $MYSQLD_DATADIR/tabc/t1.MYI $MYSQLD_DATADIR/a-b-c/t1.MYI
++--exec cp $MYSQLD_DATADIR/tabc/db.opt $MYSQLD_DATADIR/a-b-c/db.opt
++--exec cp $MYSQLD_DATADIR/tabc/t1.frm $MYSQLD_DATADIR/a-b-c/t1.frm
++--exec cp $MYSQLD_DATADIR/tabc/t1.MYD $MYSQLD_DATADIR/a-b-c/t1.MYD
++--exec cp $MYSQLD_DATADIR/tabc/t1.MYI $MYSQLD_DATADIR/a-b-c/t1.MYI
+ 
+ show databases like '%a-b-c%';
+ ALTER DATABASE `#mysql50#a-b-c` UPGRADE DATA DIRECTORY NAME;
+Index: mysql-5.1.57/mysql-test/t/log_tables_upgrade.test
+===================================================================
+--- mysql-5.1.57.orig/mysql-test/t/log_tables_upgrade.test
++++ mysql-5.1.57/mysql-test/t/log_tables_upgrade.test
+@@ -14,9 +14,9 @@ select LENGTH("$MYSQL_UPGRADE")>0 as hav
+ USE test;
+ 
+ let $MYSQLD_DATADIR= `SELECT @@datadir`;
+-copy_file std_data/bug49823.frm $MYSQLD_DATADIR/test/bug49823.frm;
+-copy_file std_data/bug49823.CSM $MYSQLD_DATADIR/test/bug49823.CSM;
+-copy_file std_data/bug49823.CSV $MYSQLD_DATADIR/test/bug49823.CSV;
++--exec cp std_data/bug49823.frm $MYSQLD_DATADIR/test/bug49823.frm;
++--exec cp std_data/bug49823.CSM $MYSQLD_DATADIR/test/bug49823.CSM;
++--exec cp std_data/bug49823.CSV $MYSQLD_DATADIR/test/bug49823.CSV;
+ 
+ SET @saved_general_log = @@GLOBAL.general_log;
+ SET GLOBAL general_log = OFF;

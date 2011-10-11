@@ -1,0 +1,20 @@
+PATCH-P0-FIX-UPSTREAM: Fix possible buffer overflow
+
+strncat function is used with n not depending on current length of string we
+are appending to. Result might be buffer overflow.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: mysys/mf_loadpath.c
+===================================================================
+--- mysys/mf_loadpath.c.orig
++++ mysys/mf_loadpath.c
+@@ -42,7 +42,7 @@ char * my_load_path(char * to, const cha
+     if (is_cur)
+       is_cur=2;					/* Remove current dir */
+     if (! my_getwd(buff,(uint) (FN_REFLEN-strlen(path)+is_cur),MYF(0)))
+-      (void) strncat(buff, path+is_cur, FN_REFLEN-1);
++      (void) strncat(buff, path+is_cur, FN_REFLEN-strlen(buff)-1);
+     else
+       (void) strnmov(buff, path, FN_REFLEN);			/* Return org file name */
+   }
