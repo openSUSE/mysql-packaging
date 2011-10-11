@@ -1,0 +1,20 @@
+---
+pkg-name:         mariab_53
+display-name:     "MariaDB"
+prefered:         0
+use_cmake:        0
+cluster:          0
+builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
+pkg-version:      "5.3.1"
+srv-version:      "5.1.57"
+url:              "http://www.mariab.org"
+source:           "mariadb-%{version}-beta.tar.bz2"
+src-dir:          "mariadb-5.3.1-beta"
+lib-version:      16
+lib-name:         mariadb53client
+description:      'MariaDB is a backward compatible, drop-in replacement branch of the MySQL
+
+Database Server. It includes all major open source storage engines, including
+
+the Maria storage engine.'
+---
