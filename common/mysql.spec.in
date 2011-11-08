@@ -323,7 +323,7 @@ done
 
 %pre
 /usr/sbin/groupadd -r mysql >/dev/null 2>/dev/null || :
-/usr/sbin/useradd -r -o -g mysql -c "MySQL database admin" \
+/usr/sbin/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
 /usr/sbin/usermod -g mysql -s /bin/false mysql || :
 
@@ -332,22 +332,25 @@ done
 #######################################################################
 %preun
 [ $1 = 1 ] || /usr/sbin/rcmysql stop
-%pretrans
-if [ -x /usr/sbin/rcmysql ]; then
-	RESTART=""
-	/usr/sbin/rcmysql status > /dev/null && RESTART="yes"
-	/usr/sbin/rcmysql stop
-	[ "$RESTART" ] && mkdir -p /var/run/mysql/restart
-fi
-dbfile=var/mysql/mysql/db.ISM
-olddir=var/mysql
-newdir=var/lib/mysql
-# Do the database files still belong to root (very old installation)?
-# Change ownerships
-if [ -O $dbfile ]
-then
-chown -Rv mysql:mysql var/mysql/
-fi
+
+%pretrans -p <lua>
+if posix.access("/usr/sbin/rcmysql", "x") then
+  restart = os.execute("/usr/sbin/rcmysql status > /dev/null")
+  os.execute("/usr/sbin/rcmysql stop")
+
+  if restart == 0 then
+    os.execute("/bin/mkdir -p /var/run/mysql/restart")
+  end
+end
+
+dbfile="var/mysql/mysql/db.ISM"
+olddir="var/mysql"
+newdir="var/lib/mysql"
+-- Do the database files still belong to root (very old installation)?
+-- Change ownerships
+if posix.stat(dbfile, "uid") == 0 then
+  os.execute("/bin/chown -Rv mysql:mysql var/mysql/")
+end
 
 %posttrans
 %install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
