@@ -56,7 +56,7 @@ PreReq:         pwdutils
 PreReq:         %install_info_prereq %insserv_prereq
 %endif
 BuildRequires:  gcc-c++ ncurses-devel openssl-devel procps readline-devel
-BuildRequires:  cmake zlib-devel
+BuildRequires:  cmake zlib-devel libtool
 %if 0%{?suse_version}
 BuildRequires:  pwdutils tcpd-devel
 %endif
@@ -416,7 +416,7 @@ fi
 
 %files client -f mysql-client.files
 %defattr(-, root, root)
-%config /etc/mysqlaccess.conf
+%config(noreplace) %attr(0640, root, mysql) /etc/mysqlaccess.conf
 
 %if 0%{prefered} > 0
 %files -n libmysqlclient-devel -f libmysqlclient-devel.files
@@ -483,14 +483,12 @@ fi
 %if 0%{cluster} > 0
 %files ndb-storage -f mysql-ndb-storage.files
 
-
 %files ndb-management -f mysql-ndb-management.files
-
 
 %files ndb-tools -f mysql-ndb-tools.files
 
-
 %files ndb-extra -f mysql-ndb-extra.files
+
 %endif
 
 %changelog

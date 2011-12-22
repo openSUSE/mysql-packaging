@@ -13,6 +13,7 @@ rm -f %buildroot%_bindir/hsclient*
 rm -f %buildroot%_libdir/mysql/plugin/handlersocket.so
 # remove most static libs (FIXME: don't build them at all...)
 rm -f %buildroot%_libdir/libmysqlclient*a
+rm -f %buildroot%_libdir/libmysqlservices*a
 rm -f %buildroot%_libdir/mysql/*.a %buildroot%_libdir/mysql/*.la
 rm -f %buildroot%_libdir/mysql/plugin/*a
 # XXX: package these? The ndb tools are linked statically atm
@@ -54,7 +55,7 @@ filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysq
 filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 filelist ndb_mgmd >mysql-ndb-management.files
 filelist ndb_{config,desc,error_reporter,mgm,print_backup_file,print_schema_file,print_sys_file,restore,select_all,select_count,show_tables,size.pl,test_platform,waiter} >mysql-ndb-tools.files
-filelist ndb_{cpcd,delete_all,drop_index,drop_table} >mysql-ndb-extra.files
+filelist ndb_{cpcd,delete_all,drop_index,index_stat,print_file,redo_log_reader,drop_table,select_all} >mysql-ndb-extra.files
 ### files not installed by make install
 # Create directory structure
 DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/README.SuSE plugin/daemon_example/daemon_example.ini)
@@ -63,7 +64,7 @@ install -d -m 755 ${DOCDIR}
 install -d -m 755 %buildroot/etc/logrotate.d
 install -d -m 755 %buildroot/etc/init.d
 install -m 644 _build/support-files/mysql-log-rotate %buildroot/etc/logrotate.d/mysql
-%if 0%{?prefered} > 0
+%if 0%{?prefered} > 0%{?use_cmake}
 install -m 644 _buildlibmysqld/*.so* %buildroot%_libdir
 ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so.0
 ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so
@@ -117,10 +118,10 @@ done
 rm -rf '%buildroot'/%_libdir/libmysqld.*
 rm -rf '%buildroot'/%_libdir/*.la
 rm -rf '%buildroot'/%_libdir/*.so
-rm -rf '%buildroot'/%_libdir/*.a
 rm -rf '%buildroot'/%_includedir  
 rm -rf '%buildroot'/%_datadir/man/*/mysql_config*  
 rm -rf '%buildroot'/%_datadir/aclocal
+rm -rf '%buildroot'/%_libdir/*.a
 %endif
 sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/etc/init.d/mysql
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlrepair

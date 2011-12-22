@@ -1,0 +1,38 @@
+---
+pkg-name:         mysql-cluster_72
+display-name:     "MySQL Cluster"
+prefered:         0
+use_cmake:        1
+cluster:          1
+builtin_plugins:  partition,csv,heap,myisam,innobase
+pkg-version:      "7.2.1"
+srv-version:      "5.5.15"
+url:              "http://www.mysql.com"
+source:           "mysql-cluster-gpl-%{version}.tar.bz2"
+src-dir:          "mysql-cluster-gpl-%{version}"
+lib-version:      18
+lib-name:         mysql72cluster
+description:      'SQL is the most popular database language in the world. MySQL is a
+
+client/server implementation that consists of a server daemon (mysqld)
+
+and many different client programs and libraries.
+
+
+MySQL Cluster is the industry’s only true real-time database that combines the
+
+flexibility of a high availability relational database with the low Total Cost
+
+of Ownership (TCO) of open source. It features a “shared-nothing” distributed
+
+architecture with no single point of failure to assure 99.999% availability,
+
+allowing you to meet your most demanding mission-critical application
+
+requirements.
+
+
+The official way to pronounce MySQL is "My Ess Que Ell" (Not
+
+MY-SEQUEL).'
+---
