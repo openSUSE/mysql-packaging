@@ -5,11 +5,11 @@ prefered:         0
 use_cmake:        1
 cluster:          0
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.6.3"
-srv-version:      "5.6.3"
+pkg-version:      "5.6.4"
+srv-version:      "5.6.4"
 url:              "http://www.mysql.com"
-source:           "mysql-%{version}-m6.tar.bz2"
-src-dir:          "mysql-%{version}-m6"
+source:           "mysql-%{version}-m7.tar.bz2"
+src-dir:          "mysql-%{version}-m7"
 lib-version:      18
 lib-name:         mysql56client
 description:      'SQL is the most popular database language in the world. MySQL is a
