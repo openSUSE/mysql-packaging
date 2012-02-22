@@ -138,3 +138,16 @@ Index: plugin/fulltext/Makefile.am
 -mypluglib_la_LDFLAGS= -module -rpath $(pkgplugindir)
 +mypluglib_la_LDFLAGS= -module -avoid-version -rpath $(pkgplugindir)
  mypluglib_la_CFLAGS= -shared -DMYSQL_DYNAMIC_PLUGIN
+Index: plugin/auth_pam/Makefile.am
+===================================================================
+--- plugin/auth_pam/Makefile.am.orig
++++ plugin/auth_pam/Makefile.am
+@@ -4,7 +4,7 @@ pkgplugindir=$(pkglibdir)/plugin
+ AM_CPPFLAGS = -I$(top_srcdir)/include
+ 
+ pkgplugin_LTLIBRARIES  = @plugin_auth_pam_shared_target@
+-auth_pam_la_LDFLAGS    = -module -rpath $(pkgplugindir) -L$(top_builddir)/libservices -lmysqlservices -lpam
++auth_pam_la_LDFLAGS    = -module -avoid-version -rpath $(pkgplugindir) -L$(top_builddir)/libservices -lmysqlservices -lpam
+ auth_pam_la_CFLAGS     = -shared -DMYSQL_DYNAMIC_PLUGIN
+ auth_pam_la_SOURCES    = auth_pam.c
+ 

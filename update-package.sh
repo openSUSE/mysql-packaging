@@ -72,6 +72,8 @@ for i in ./*.in; do
    fi
 done
 
+sync
+
 echo "Packing configuration..."
 if ! tar -cjf configuration-tweaks.tar.bz2 *.cnf; then
    echo "Can't create configuration tarball!"

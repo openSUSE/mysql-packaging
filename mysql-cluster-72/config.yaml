@@ -3,10 +3,10 @@ pkg-name:         mysql-cluster_72
 display-name:     "MySQL Cluster"
 prefered:         0
 use_cmake:        1
-cluster:          1
+cluster:          2
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "7.2.1"
-srv-version:      "5.5.15"
+pkg-version:      "7.2.4"
+srv-version:      "5.5.19"
 url:              "http://www.mysql.com"
 source:           "mysql-cluster-gpl-%{version}.tar.bz2"
 src-dir:          "mysql-cluster-gpl-%{version}"

@@ -1,0 +1,20 @@
+PATCH-P0-FIX-UPSTREAM: Set correct library so version
+
+SOVERSION should be only major, not everything (at least that is common
+practice). Currently there is only one version, so it doesn't matter that much
+anyway...
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: storage/ndb/src/CMakeLists.txt
+===================================================================
+--- storage/ndb/src/CMakeLists.txt.orig
++++ storage/ndb/src/CMakeLists.txt
+@@ -80,6 +80,6 @@ ADD_LIBRARY(ndbclient_so SHARED ${EXTRA_
+ TARGET_LINK_LIBRARIES(ndbclient_so ${NDBCLIENT_SO_LIBS})
+ SET_TARGET_PROPERTIES(ndbclient_so PROPERTIES
+                       OUTPUT_NAME "ndbclient"
+-                      SOVERSION ${NDB_SHARED_LIB_VERSION})
++                      SOVERSION "${NDB_SHARED_LIB_VERSION_MAJOR}")
+ MYSQL_INSTALL_TARGETS(ndbclient_so DESTINATION "${INSTALL_LIBDIR}" COMPONENT Developement)
+ 

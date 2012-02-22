@@ -5,8 +5,8 @@ prefered:         1
 use_cmake:        1
 cluster:          0
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.5.18"
-srv-version:      "5.5.18"
+pkg-version:      "5.5.21"
+srv-version:      "5.5.21"
 url:              "http://www.mysql.com"
 source:           "mysql-%{version}.tar.bz2"
 src-dir:          "mysql-%{version}"

@@ -5,8 +5,8 @@ prefered:         0
 use_cmake:        0
 cluster:          0
 builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
-pkg-version:      "5.3.3"
-srv-version:      "5.1.59"
+pkg-version:      "5.3.4"
+srv-version:      "5.1.60"
 url:              "http://www.mariab.org"
 source:           "mariadb-%{version}-rc.tar.bz2"
 src-dir:          "mariadb-%{version}-rc"

@@ -3,7 +3,10 @@
 %else
 %define socketpath /var/run/mysql
 %endif
-export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DUNDEF_HAVE_INITGROUPS -DFORCE_INIT_OF_VARS -fno-strict-aliasing -Wno-unused-parameter -Wno-unused-but-set-variable"
+%if 0%{?suse_version} > 1140
+export WARN_DIS="$WARN_DIS -Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter "
+%endif
+export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DUNDEF_HAVE_INITGROUPS -DFORCE_INIT_OF_VARS $WARN_DIS "
 export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
 
 %if 0%{use_cmake} < 1
@@ -17,7 +20,7 @@ BuildMySQL() {
 	pushd _build$suffix
 	../configure \
 		--enable-assembler \
-		--without-readline \
+		--with-readline \
 		--infodir=%{_infodir} \
 		--libdir=%{_libdir} \
 		--libexecdir=/usr/sbin \
@@ -67,7 +70,11 @@ BuildMySQL() {
 	popd
 }
 # Build the client, extra tools, libraries
+%if 0%{?prefered} > 0
 BuildMySQL "" --with-embedded-server
+%else
+BuildMySQL "" --without-embedded-server
+%endif
 # build mysqld-debug
 BuildMySQL "-debug" --with-debug --without-embedded-server
 

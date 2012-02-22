@@ -1,5 +1,5 @@
 ---
-pkg-name:         mariab
+pkg-name:         mariadb
 display-name:     "MariaDB"
 prefered:         0
 use_cmake:        0

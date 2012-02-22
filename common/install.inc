@@ -55,7 +55,7 @@ filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysq
 filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 filelist ndb_mgmd >mysql-ndb-management.files
 filelist ndb_{config,desc,error_reporter,mgm,print_backup_file,print_schema_file,print_sys_file,restore,select_all,select_count,show_tables,size.pl,test_platform,waiter} >mysql-ndb-tools.files
-filelist ndb_{cpcd,delete_all,drop_index,index_stat,print_file,redo_log_reader,drop_table,select_all} >mysql-ndb-extra.files
+filelist ndb_{cpcd,delete_all,drop_index,index_stat,print_file,redo_log_reader,drop_table} ndbinfo_select_all memcached >mysql-ndb-extra.files
 ### files not installed by make install
 # Create directory structure
 DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/README.SuSE plugin/daemon_example/daemon_example.ini)
@@ -127,6 +127,10 @@ sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/etc/init.d/mys
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlrepair
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlanalyze
 ln -s mysqlcheck '%buildroot'%_bindir/mysqloptimize
+%if 0%{?cluster} > 1
+ln -s libndbclient.so.6.0.0 '%buildroot'%_libdir/libndbclient.so.6.0
+ln -s libndbclient.so.6.0.0 '%buildroot'%_libdir/libndbclient.so.6
+%endif
 if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
 fi
