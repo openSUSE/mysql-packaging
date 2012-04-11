@@ -22,6 +22,8 @@
 %define use_cmake  {{use_cmake}}
 %define cluster    {{cluster}}
 %define builtin_plugins {{builtin_plugins}}
+%define use_extra_provides {{use_extra_provides}}
+%define extra_provides {{extra_provides}}
 
 %if %{?rel:0}%{!?rel:1}
 %define rel 1
@@ -76,6 +78,10 @@ Requires:       logrotate
 Requires:       %{name}-client perl-base
 Provides:       mysql-Max = %{srv_vers}
 Provides:       mysql = %{srv_vers}
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides} = %{version}
+Obsoletes:      %{extra_provides} < %{version}
+%endif
 %if 0%{?prefered} > 0
 Obsoletes:      mysql < %{srv_vers}
 Obsoletes:      mysql-Max < %{srv_vers}
@@ -151,6 +157,10 @@ License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        Client for {{display-name}}
 Group:          Productivity/Databases/Clients
 Provides:       mysql-client = %{srv_vers}
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides}-client = %{version}
+Obsoletes:      %{extra_provides}-client < %{version}
+%endif
 %if 0%{?prefered} > 0
 Obsoletes:      mysql-client < %{srv_vers}
 %endif
@@ -161,10 +171,14 @@ This package contains the standard clients for {{display-name}}.
 
 %package bench
 Requires:       %{name}-client perl-DBD-mysql
-License:        LSUSE-GPL-2.0-with-FLOSS-exception
+License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        Benchmarks for {{display-name}}
 Group:          Productivity/Databases/Tools
 Provides:       mysql-bench = %{srv_vers}
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides}-bench = %{version}
+Obsoletes:      %{extra_provides}-bench < %{version}
+%endif
 %if 0%{?prefered} > 0
 Obsoletes:      mysql-bench < %{srv_vers}
 %endif
@@ -184,6 +198,10 @@ Group:          Productivity/Databases/Servers
 Requires:       %{name} = %{version}
 Provides:       mysql-debug = %{srv_vers}
 Provides:       %{name}-debug = %{srv_vers}
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides}-debug-verion = %{version}
+Obsoletes:      %{extra_provides}-debug-version < %{version}
+%endif
 %if 0%{?prefered} > 0
 Obsoletes:      mysql-debug < %{srv_vers}
 %endif
@@ -206,6 +224,10 @@ Requires:       perl-DBD-mysql
 Requires:       %{name}-tools = %{version}
 Requires:       %{name}-bench = %{version}
 Provides:       mysql-test = %{srv_vers}
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides}-test = %{version}
+Obsoletes:      %{extra_provides}-test < %{version}
+%endif
 %if 0%{?prefered} > 0
 Obsoletes:      mysql-test < %{srv_vers}
 %endif
@@ -224,6 +246,10 @@ Requires:       perl-DBD-mysql
 # make sure this package is installed when updating from 10.2 and older
 Provides:       mysql:/usr/bin/mysqlhotcopy mysql-client:/usr/bin/perror
 Provides:       mysql-tools = %{srv_vers}
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides}-tools = %{version}
+Obsoletes:      %{extra_provides}-tools < %{version}
+%endif
 %if 0%{?prefered} > 0
 Obsoletes:      mysql-tools < %{srv_vers}
 %endif

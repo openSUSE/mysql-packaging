@@ -1,0 +1,6 @@
+---
+prefered:           0
+use_cmake:          0
+cluster:            0
+use_extra_provides: 0
+extra_provides:     mysql

@@ -1,0 +1,47 @@
+PATCH-P0-FIX-HACK: Provide correct types
+
+Fixed compilation issue when compiler expects va_list but instead get's int,
+namely 0.
+
+Maintainer: Michal Hrusecky <mhrusecky@suse.cz>
+
+Index: sql-common/client_plugin.c
+===================================================================
+--- sql-common/client_plugin.c.orig
++++ sql-common/client_plugin.c
+@@ -227,6 +227,7 @@ static void load_env_plugins(MYSQL *mysq
+ int mysql_client_plugin_init()
+ {
+   MYSQL mysql;
++  va_list empty_va;
+   struct st_mysql_client_plugin **builtin;
+ 
+   if (initialized)
+@@ -244,7 +245,7 @@ int mysql_client_plugin_init()
+   pthread_mutex_lock(&LOCK_load_client_plugin);
+ 
+   for (builtin= mysql_client_builtins; *builtin; builtin++)
+-    add_plugin(&mysql, *builtin, 0, 0, 0);
++    add_plugin(&mysql, *builtin, 0, 0, empty_va);
+ 
+   pthread_mutex_unlock(&LOCK_load_client_plugin);
+ 
+@@ -288,6 +289,7 @@ struct st_mysql_client_plugin *
+ mysql_client_register_plugin(MYSQL *mysql,
+                              struct st_mysql_client_plugin *plugin)
+ {
++  va_list empty_va;
+   if (is_not_initialized(mysql, plugin->name))
+     return NULL;
+ 
+@@ -302,7 +304,9 @@ mysql_client_register_plugin(MYSQL *mysq
+     plugin= NULL;
+   }
+   else
+-    plugin= add_plugin(mysql, plugin, 0, 0, 0);
++  {
++    plugin= add_plugin(mysql, plugin, 0, 0, empty_va);
++  }
+ 
+   pthread_mutex_unlock(&LOCK_load_client_plugin);
+   return plugin;

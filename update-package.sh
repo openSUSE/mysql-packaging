@@ -63,10 +63,16 @@ if ! cp -v "$REPOROOT"/"$VARIANT"/* .; then
 fi
 
 echo "Creating files from templates..."
+if [ "`head -n 1 config.yaml | sed -n 's|---|yes|p'`" ]; then
+   echo -e '1d\nwq\n' | ed config.yaml  > /dev/null 2> /dev/null
+fi
+if [ "`tail -n 1 default.yaml | sed -n 's|---|yes|p'`" ]; then
+   echo -e '$d\nwq\n' | ed default.yaml > /dev/null 2> /dev/null
+fi
 for i in ./*.in; do
    REALNAME="`echo "$i" | sed -e 's|\.in$||' -e "s|mysql|$VARIANT|"`"
    echo "Creating \"$REALNAME\"..."
-   if ! mustache ./config.yaml "$i" > "$REALNAME"; then
+   if ! cat ./default.yaml ./config.yaml | mustache - "$i" > "$REALNAME"; then
       echo "Creating \"$REALNAME\" failed!"
       exit 4
    fi
@@ -87,4 +93,4 @@ if ! "$REPOROOT"/patches/tools/gettar.sh; then
 fi
 
 echo "Cleaning up..."
-rm -f ./*.in ./config.yaml ./*.cnf
+rm -f ./*.in ./default.yaml ./config.yaml ./*.cnf
