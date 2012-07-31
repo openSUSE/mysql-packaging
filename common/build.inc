@@ -102,6 +102,7 @@ BuildMySQL() {
 			-DWITH_LIBEDIT=0                                             \
 			-DINSTALL_LAYOUT=RPM                                         \
 			-DMYSQL_UNIX_ADDR=%{socketpath}/mysql.sock                   \
+			-DINSTALL_MYSQLSHAREDIR=share/%{name}                        \
 			-DWITH_COMMENT="openSUSE MySQL rpm"                          \
 			-DWITH_EXTRA_CHARSET=all                                     \
 			-DDEFAULT_CHARSET=utf8  -DDEFAULT_COLLATION=utf8_general_ci  \

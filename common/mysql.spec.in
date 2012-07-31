@@ -57,11 +57,20 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 PreReq:         pwdutils
 PreReq:         %install_info_prereq %insserv_prereq
 %endif
-BuildRequires:  gcc-c++ ncurses-devel openssl-devel procps readline-devel
-BuildRequires:  autoconf automake cmake libtool zlib-devel 
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  cmake
+BuildRequires:  gcc-c++
+BuildRequires:  libtool
+BuildRequires:  ncurses-devel
+BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
+BuildRequires:  procps
+BuildRequires:  readline-devel
+BuildRequires:  zlib-devel
 %if 0%{?suse_version}
-BuildRequires:  pwdutils tcpd-devel
+BuildRequires:  pwdutils
+BuildRequires:  tcpd-devel
 %endif
 %if 0%{?suse_version} > 1030 || 0%{?fedora_version} > 8
 BuildRequires:  fdupes
@@ -76,6 +85,7 @@ Requires:       logrotate
 %endif
 # required by rcmysql
 Requires:       %{name}-client perl-base
+Requires:       %{name}-errormessages = %version
 Provides:       mysql-Max = %{srv_vers}
 Provides:       mysql = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
@@ -160,6 +170,7 @@ Provides:       mysql-client = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
+Requires:       %{name}-errormessages = %version
 %endif
 %if 0%{?prefered} > 0
 Obsoletes:      mysql-client < %{srv_vers}
@@ -168,6 +179,14 @@ Conflicts:      otherproviders(mysql-client)
 
 %description client
 This package contains the standard clients for {{display-name}}.
+
+%package errormessages
+Summary:        MySQL Community Server development header files and libraries
+Group:          Development/Libraries/C and C++
+
+%description errormessages
+This package provides the translated error messages for the standalone
+server daemon as well as the embedded server
 
 %package bench
 Requires:       %{name}-client perl-DBD-mysql
@@ -335,7 +354,9 @@ mysql-patches/tools/apply-series.sh "%{S:12}"
 # remove unneeded manpages ('make install' basically installs everything under
 # man/*)
 rm -f man/mysqlman.1        # dummy fallback manpage
+[ \! -f man/CMakeLists.txt ] || sed -i 's|mysqlman.1||'     man/CMakeLists.txt
 rm -f man/mysql.server.1    # init script, not installed in our rpm
+[ \! -f man/CMakeLists.txt ] || sed -i 's|mysql.server.1||' man/CMakeLists.txt
 rm -f man/make_win_*.1      # windows build scripts
 rm -f man/comp_err.1        # built-time utility
 # 5.1 Carrier Grade Edition only / still under development as of 5.1.22
@@ -445,14 +466,22 @@ fi
 %doc %{_infodir}/mysql.info.*
 /etc/init.d/mysql
 /usr/sbin/rcmysql
-/usr/share/mysql/
+%dir /usr/share/%{name}
+%dir /usr/share/mysql
+/usr/share/%{name}/charsets/
+/usr/share/mysql/*.cnf
+/usr/share/mysql/*.ini
+/usr/share/%{name}/*.sql
 %ghost %dir %attr(755,mysql,mysql)/var/run/mysql
 %dir %{_libdir}/mysql
 %{_libdir}/mysql/mysqld.sym
 %config /etc/sysconfig/SuSEfirewall2.d/services/mysql
 %dir %_libdir/mysql/plugin
-%_libdir/mysql/plugin/*.so
+%_libdir/mysql/plugin/[!d]*.so
 
+%files errormessages -f errormessages.files
+%defattr(-, root, root)
+/usr/share/%{name}/*/errmsg.sys
 
 %files client -f mysql-client.files
 %defattr(-, root, root)
@@ -493,7 +522,6 @@ fi
 %files -n lib{{lib-name}}_r{{lib-version}}
 %defattr(-, root, root)
 %{_libdir}/lib{{lib-name}}_r.so.*
-
 
 %files bench -f mysql-bench.files
 %defattr(-, root, root)

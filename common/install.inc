@@ -20,6 +20,11 @@ rm -f %buildroot%_libdir/mysql/plugin/*a
 rm -f %buildroot%_libdir/mysql/libndbclient.*
 rm -f %{buildroot}/usr/share/mysql-test/mysql-test-run  
 rm -f %{buildroot}/usr/share/mysql-test/mtr
+rm -f %{buildroot}/usr/share/mysql/binary-configure
+rm -f %{buildroot}/usr/share/mysql/errmsg-utf8.txt
+rm -f %{buildroot}/usr/share/mysql/magic
+rm -f %{buildroot}/usr/share/mysql/mysql-log-rotate
+rm -f %{buildroot}/usr/share/mysql/mysql*.server
 rm -f %{buildroot}%{_libdir}/mysql/plugin/daemon_example.ini
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mtr  
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mysql-test-run 
@@ -56,6 +61,19 @@ filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 filelist ndb_mgmd >mysql-ndb-management.files
 filelist ndb_{config,desc,error_reporter,mgm,print_backup_file,print_schema_file,print_sys_file,restore,select_all,select_count,show_tables,size.pl,test_platform,waiter} >mysql-ndb-tools.files
 filelist ndb_{cpcd,delete_all,drop_index,index_stat,print_file,redo_log_reader,drop_table} ndbinfo_select_all memcached >mysql-ndb-extra.files
+errmsg_list()
+{
+	echo '%%defattr(-, root, root)'
+	pushd %buildroot >/dev/null
+	for f in usr/share/%{name}/*; do
+		if test -e $f/errmsg.sys; then
+			echo "%%dir /$f"
+		fi
+	done
+	echo /usr/share/%{name}/errmsg-utf8.txt
+	popd >/dev/null
+}
+errmsg_list > errormessages.files
 ### files not installed by make install
 # Create directory structure
 DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/README.SuSE plugin/daemon_example/daemon_example.ini)
@@ -136,3 +154,15 @@ if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 fi
 mkdir -p '%buildroot'/etc/mysql
 bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/mysql -xvf -
+if [ -z "`ls '%buildroot'/usr/share/info/mysql.info*`" ]; then
+	install -D -m 0644 Docs/mysql.info "%buildroot/usr/share/info/mysql.info"
+	gzip -9 "%buildroot/usr/share/info/mysql.info"
+fi
+if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so`" ]; then
+	echo '%%dir %%_libdir/mysql'               >> mysql-client.files
+	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
+	echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
+fi
+rm -rf '%buildroot'/etc/my.cnf.d
+rm -rf '%buildroot'/usr/share/doc/%{name}-%{version}
+rm -rf '%buildroot'/usr/share/mysql/SELinux

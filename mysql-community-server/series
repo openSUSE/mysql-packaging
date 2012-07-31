@@ -14,3 +14,4 @@ mysql-community-server-5.1.51-upgrade-exit-status.patch
 mysql-community-server-5.5.12-shared-libmysqld.patch
 mysql-community-server-5.5.21-va_list-handling.patch
 mysql-community-server-5.5.21-ppc64-libdir.patch
+mysql-community-server-5.5.23-fail_on_missing_errmsg_sys.patch

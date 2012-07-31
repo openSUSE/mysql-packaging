@@ -1,0 +1,77 @@
+PATCH-P1-FIX-UPSTREAM: error reporting for mysql_library_init
+BUGS: upstream#39693 bnc#712749
+
+Making verbose errors even from embedded library.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+--- mysql-5.5.22/sql/derror.cc_orig	2012-06-19 23:55:39.149443013 +0200
++++ mysql-5.5.22/sql/derror.cc	2012-06-20 00:44:14.340235965 +0200
+@@ -56,25 +56,40 @@
+ 
+ bool init_errmessage(void)
+ {
+-  const char **errmsgs, **ptr;
++  const char **errmsgs, **ptr, **old_errmsgs;
+   DBUG_ENTER("init_errmessage");
+ 
+   /*
+     Get a pointer to the old error messages pointer array.
+     read_texts() tries to free it.
+   */
+-  errmsgs= my_error_unregister(ER_ERROR_FIRST, ER_ERROR_LAST);
++  old_errmsgs= my_error_unregister(ER_ERROR_FIRST, ER_ERROR_LAST);
++  errmsgs = 0;
+ 
+   /* Read messages from file. */
+   if (read_texts(ERRMSG_FILE, my_default_lc_messages->errmsgs->language,
+-                 &errmsgs, ER_ERROR_LAST - ER_ERROR_FIRST + 1) &&
+-      !errmsgs)
++                 &errmsgs, ER_ERROR_LAST - ER_ERROR_FIRST + 1))
+   {
+-    if (!(errmsgs= (const char**) my_malloc((ER_ERROR_LAST-ER_ERROR_FIRST+1)*
+-                                            sizeof(char*), MYF(0))))
+-      DBUG_RETURN(TRUE);
+-    for (ptr= errmsgs; ptr < errmsgs + ER_ERROR_LAST - ER_ERROR_FIRST; ptr++)
+-	  *ptr= "";
++    my_free(errmsgs);
++
++    if (old_errmsgs)
++    {
++      errmsgs = old_errmsgs; // reuse old messages
++    }
++    else
++    {
++      // try to build an temporary array to avoid illegal accesses to the message array
++      if (!(errmsgs= (const char**) my_malloc((ER_ERROR_LAST-ER_ERROR_FIRST+1)*
++					      sizeof(char*), MYF(0))))
++	DBUG_RETURN(TRUE);
++
++      for (ptr= errmsgs; ptr < errmsgs + ER_ERROR_LAST - ER_ERROR_FIRST; ptr++)
++	    *ptr= "";
++    }
++  }
++  else
++  {
++    my_free(old_errmsgs);
+   }
+ 
+   /* Register messages for use with my_error(). */
+@@ -86,6 +100,8 @@
+ 
+   DEFAULT_ERRMSGS= errmsgs;             /* Init global variable */
+   init_myfunc_errs();			/* Init myfunc messages */
++  if (errmsgs[0][0] == '\0')
++    DBUG_RETURN(TRUE);
+   DBUG_RETURN(FALSE);
+ }
+ 
+@@ -155,8 +171,6 @@
+     DBUG_RETURN(1);
+   }
+ 
+-  /* Free old language */
+-  my_free(*point);
+   if (!(*point= (const char**)
+ 	my_malloc((size_t) (length+count*sizeof(char*)),MYF(0))))
+   {
