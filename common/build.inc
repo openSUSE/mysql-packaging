@@ -6,7 +6,7 @@
 %if 0%{?suse_version} > 1140
 export WARN_DIS="$WARN_DIS -Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter "
 %endif
-export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DUNDEF_HAVE_INITGROUPS -DFORCE_INIT_OF_VARS $WARN_DIS "
+export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DFORCE_INIT_OF_VARS $WARN_DIS "
 export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
 
 %if 0%{use_cmake} < 1
@@ -109,6 +109,7 @@ BuildMySQL() {
 			-DWITH_INNOBASE_STORAGE_ENGINE=1                             \
 			-DWITH_PERFSCHEMA_STORAGE_ENGINE=1                           \
 			-DWITH_EMBEDDED_SERVER=true                                  \
+			-DCOMPILATION_COMMENT="openSUSE package"                     \
 			-DDENABLE_DOWNLOADS=false                                    \
 			"$@" ..
 	make %{?jobs:-j%jobs}

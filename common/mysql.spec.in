@@ -1,7 +1,7 @@
 #
 # spec file for package {{pkg-name}}
 #
-# Copyright (c) 2012 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,7 +15,6 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-# norootforbuild
 
 # Few definitions which will alter build
 %define prefered   {{prefered}}
@@ -34,11 +33,11 @@
 
 Name:           {{pkg-name}}
 Summary:        Server part of {{display-name}}
-Version:        {{pkg-version}}
-Release:        1
-%define srv_vers {{srv-version}}
 License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Productivity/Databases/Servers
+Version:        {{pkg-version}}
+Release:        0
+%define srv_vers {{srv-version}}
 Url:            {{url}}
 Source:         {{source}}
 Source2:        baselibs.conf
@@ -84,10 +83,11 @@ Recommends:     logrotate
 Requires:       logrotate
 %endif
 # required by rcmysql
-Requires:       %{name}-client perl-base
+Requires:       %{name}-client
 Requires:       %{name}-errormessages = %version
-Provides:       mysql-Max = %{srv_vers}
+Requires:       perl-base
 Provides:       mysql = %{srv_vers}
+Provides:       mysql-Max = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
@@ -108,13 +108,12 @@ This package only contains the server-side programs.
 # mysql-devel was last used in openSUSE 10.2
 Provides:       mysql-devel = %srv_vers-%release
 Obsoletes:      mysql-devel < %srv_vers
-Requires:       libmysqlclient{{lib-version}} = %version
-Requires:       libmysqlclient_r{{lib-version}} = %version
 Requires:       glibc-devel
+Requires:       libmysqlclient_r{{lib-version}} = %version
+Requires:       libmysqlclient{{lib-version}} = %version
 Requires:       openssl-devel
 Requires:       zlib-devel
 Summary:        {{display-name}} development header files and libraries
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Development/Libraries/C and C++
 
 %description -n libmysqlclient-devel
@@ -122,22 +121,21 @@ This package contains the development header files and libraries
 necessary to develop client applications for {{display-name}}.
 
 %package -n libmysqld{{lib-version}}
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} embedded server development files
 Group:          Development/Libraries/C and C++
+Requires:       %{name}-errormessages = %version
 
 %description -n libmysqld{{lib-version}}
 This package contains the development header files and libraries
 for developing applications that embed the {{display-name}}.
 
 %package -n libmysqld-devel
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} embedded server development files
+Group:          Development/Libraries/C and C++
 # the headers files are the shared
 Requires:       libmysqlclient-devel = %version
-Requires:       tcpd-devel
 Requires:       libmysqld{{lib-version}} = %version
-Group:          Development/Libraries/C and C++
+Requires:       tcpd-devel
 
 %description -n libmysqld-devel
 This package contains the development header files and libraries
@@ -146,7 +144,6 @@ for developing applications that embed the {{display-name}}.
 
 %package -n lib{{lib-name}}{{lib-version}}
 Summary:        Shared Libraries for {{display-name}}
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Development/Libraries/Other
 
 %description -n lib{{lib-name}}{{lib-version}}
@@ -155,7 +152,6 @@ languages and applications need to dynamically load and use {{display-name}}.
 
 %package -n lib{{lib-name}}_r{{lib-version}}
 Summary:        Shared Libraries for {{display-name}}
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Development/Libraries/Other
 
 %description -n lib{{lib-name}}_r{{lib-version}}
@@ -163,7 +159,6 @@ This package contains the shared libraries (.so) which certain
 languages and applications need to dynamically load and use {{display-name}}.
 
 %package client
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        Client for {{display-name}}
 Group:          Productivity/Databases/Clients
 Provides:       mysql-client = %{srv_vers}
@@ -189,8 +184,8 @@ This package provides the translated error messages for the standalone
 server daemon as well as the embedded server
 
 %package bench
-Requires:       %{name}-client perl-DBD-mysql
-License:        SUSE-GPL-2.0-with-FLOSS-exception
+Requires:       %{name}-client
+Requires:       perl-DBD-mysql
 Summary:        Benchmarks for {{display-name}}
 Group:          Productivity/Databases/Tools
 Provides:       mysql-bench = %{srv_vers}
@@ -211,12 +206,11 @@ the directory /usr/share/sql-bench after starting {{display-name}}.
 
 
 %package debug-version
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} with debug options turned on
 Group:          Productivity/Databases/Servers
 Requires:       %{name} = %{version}
-Provides:       mysql-debug = %{srv_vers}
 Provides:       %{name}-debug = %{srv_vers}
+Provides:       mysql-debug = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-debug-verion = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
@@ -234,14 +228,13 @@ standard server. Read /usr/share/doc/packages/mysql/README.debug for
 information on how to use the debug server.
 
 %package test
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        Testsuite for {{display-name}}
 Group:          Productivity/Databases/Servers
 Requires:       %{name} = %{version}
-Requires:       %{name}-client = %{version}
-Requires:       perl-DBD-mysql
-Requires:       %{name}-tools = %{version}
 Requires:       %{name}-bench = %{version}
+Requires:       %{name}-client = %{version}
+Requires:       %{name}-tools = %{version}
+Requires:       perl-DBD-mysql
 Provides:       mysql-test = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-test = %{version}
@@ -258,13 +251,13 @@ This package contains the test scripts and data for {{display-name}}.
 To run the testsuite, run /usr/share/mysql-test/suse-test-run.
 
 %package tools
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} tools
 Group:          Productivity/Databases/Servers
 Requires:       perl-DBD-mysql
 # make sure this package is installed when updating from 10.2 and older
-Provides:       mysql:/usr/bin/mysqlhotcopy mysql-client:/usr/bin/perror
+Provides:       mysql-client:/usr/bin/perror
 Provides:       mysql-tools = %{srv_vers}
+Provides:       mysql:/usr/bin/mysqlhotcopy
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-tools = %{version}
 Obsoletes:      %{extra_provides}-tools < %{version}
@@ -283,7 +276,6 @@ applications with {{display-name}}.
 %if 0%{?cluster} > 1
 %package -n libndbclient6
 Summary:        Shared Libraries for cluster client
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Development/Libraries/Other
 
 %description -n libndbclient6
@@ -294,7 +286,6 @@ cluster.
 %endif
 
 %package ndb-storage
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} - ndbcluster storage engine
 Group:          Productivity/Databases/Servers
 Provides:       mysql-ndb-storage = %{srv_vers}
@@ -308,7 +299,6 @@ computers that should store ndbcluster table data.
 
 
 %package ndb-management
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} - ndbcluster storage engine management
 Group:          Productivity/Databases/Servers
 Provides:       mysql-ndb-management = %{srv_vers}
@@ -321,7 +311,6 @@ It is necessary to have this package installed on at least
 one computer in the cluster.
 
 %package ndb-tools
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} - ndbcluster storage engine basic tools
 Group:          Productivity/Databases/Servers
 Provides:       mysql-ndb-tools = %{srv_vers}
@@ -332,7 +321,6 @@ Conflicts:      otherproviders(mysql-ndb-tools)
 This package contains ndbcluster storage engine basic tools.
 
 %package ndb-extra
-License:        SUSE-GPL-2.0-with-FLOSS-exception
 Summary:        {{display-name}} - ndbcluster storage engine extra tools
 Group:          Productivity/Databases/Servers
 Provides:       mysql-ndb-extra = %{srv_vers}
@@ -369,6 +357,8 @@ for i in `grep -Rl mysqlclient .`; do
 	sed -i 's|mysqlclient|{{lib-name}}|g' $i
 done
 %endif
+# Broken test that needs sources
+rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
 
 %build
 %{expand:%(cat %_sourcedir/build.inc)}
@@ -496,18 +486,15 @@ fi
 %dir /usr/share/aclocal
 /usr/share/aclocal/mysql.m4
 
-
 %files -n libmysqld-devel
 %defattr(-,root,root)
 %_libdir/libmysqld.a
 %_libdir/libmysqld.so
 
-
 %files -n libmysqld18
 %defattr(-,root,root)
 %_libdir/libmysqld.so.*
 %endif
-
 
 %files -n lib{{lib-name}}{{lib-version}}
 %defattr(-, root, root)
@@ -541,7 +528,6 @@ fi
 %dir %attr(755, root, root)/usr/share/mysql-test
 /usr/share/mysql-test/[^v]*
 %dir %attr(755, mysql, mysql) /usr/share/mysql-test/var
-
 
 %files tools -f mysql-tools.files
 %defattr(-, root, root)
