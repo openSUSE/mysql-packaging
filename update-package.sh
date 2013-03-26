@@ -69,16 +69,21 @@ fi
 if [ "`tail -n 1 default.yaml | sed -n 's|---|yes|p'`" ]; then
    echo -e '$d\nwq\n' | ed default.yaml > /dev/null 2> /dev/null
 fi
+cat ./default.yaml ./config.yaml > ./whole-config.yaml
+sync
+
+PKGNAME="`echo '{{pkg-name}}' | mustache ./whole-config.yaml -`"
 for i in ./*.in; do
-   REALNAME="`echo "$i" | sed -e 's|\.in$||' -e "s|mysql|$VARIANT|"`"
+   REALNAME="`echo "$i" | sed -e 's|\.in$||' -e "s|mysql|$PKGNAME|"`"
    echo "Creating \"$REALNAME\"..."
-   if ! cat ./default.yaml ./config.yaml | mustache - "$i" > "$REALNAME"; then
+   if !  mustache ./whole-config.yaml "$i" > "$REALNAME"; then
       echo "Creating \"$REALNAME\" failed!"
       exit 4
    fi
 done
 
 sync
+sleep 1
 
 echo "Packing configuration..."
 if ! tar -cjf configuration-tweaks.tar.bz2 *.cnf; then
@@ -93,4 +98,4 @@ if ! "$REPOROOT"/patches/tools/gettar.sh; then
 fi
 
 echo "Cleaning up..."
-rm -f ./*.in ./default.yaml ./config.yaml ./*.cnf
+rm -f ./*.in ./default.yaml ./config.yaml ./whole-config.yaml ./*.cnf
