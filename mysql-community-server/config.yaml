@@ -1,19 +1,19 @@
 ---
 pkg-name:         mysql-community-server
 display-name:     "MySQL Community Server"
-prefered:         1
+prefered:         0
 use_cmake:        1
 cluster:          0
 use_extra_provides: 1
 extra_provides:   mysql-community-server_55
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.5.25"
-srv-version:      "5.5.25"
+pkg-version:      "5.5.31"
+srv-version:      "5.5.31"
 url:              "http://www.mysql.com"
 source:           "mysql-%{version}.tar.bz2"
 src-dir:          "mysql-%{version}"
 lib-version:      18
-lib-name:         mysqlclient
+lib-name:         mysql55client
 description:      'SQL is the most popular database language in the world. MySQL is a
 
 client/server implementation that consists of a server daemon (mysqld)

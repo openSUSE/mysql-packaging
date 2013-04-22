@@ -1,6 +1,6 @@
 mysql-community-server-5.1.31-shebang.patch
-mysql-community-server-5.5.6-utf8-test-results.patch
-mysql-community-server-5.1.36-hotcopy.patch
+mysql-community-server-5.5.29-utf8-test-results.patch
+mariadb-5.5.28-hotcopy.patch
 mysql-community-server-5.5.6-cnf.patch
 mysql-community-server-5.5.8-group.patch
 mysql-community-server-5.1.45-multi-configuration.patch
@@ -15,3 +15,6 @@ mysql-community-server-5.5.12-shared-libmysqld.patch
 mysql-community-server-5.5.21-va_list-handling.patch
 mysql-community-server-5.5.21-ppc64-libdir.patch
 mysql-community-server-5.5.23-fail_on_missing_errmsg_sys.patch
+mysql-community-server-5.5.29-test-wrong-path.patch
+mysql-community-server-5.5.29-CVE-2012-5611.patch
+mysql-community-server-5.5.21-aarch64-libdir.patch
