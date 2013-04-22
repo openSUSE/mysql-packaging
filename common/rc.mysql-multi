@@ -91,9 +91,14 @@ wait_for_socket()
 # See https://bugzilla.novell.com/show_bug.cgi?id=223209
 kill_mysql ()
 {
-	local pid exe
-	test -e "$pid_file" || return 7  # not running
-	pid=`cat "$pid_file"` || return 4  # insufficient privileges
+	local pid exe test_pid_file
+	if [ "$1" ]; then
+		test_pid_file="$1"
+	else
+		test_pid_file="$pid_file"
+	fi
+	test -e "$test_pid_file" || return 7  # not running
+	pid=`cat "$test_pid_file"` || return 4  # insufficient privileges
 	if ! test -e /proc/version; then
 		mount -n -t proc proc /proc
 		test -e /proc/version || return 100
@@ -106,10 +111,10 @@ kill_mysql ()
 	kill -CONT "$pid"
 	for i in `seq 3000`; do
 		# mysqld removes its pid file
-		test -e "$pid_file" || return 0
+		test -e "$test_pid_file" || return 0
 		LC_ALL=C sleep 0.1
 	done
-	test -e "$pid_file" || return 0
+	test -e "$test_pid_file" || return 0
 	return 1
 }
 
@@ -339,12 +344,14 @@ else
 		check_obsolete
 		# Run mysql_upgrade on every package install/upgrade. Not allways
 		# necessary, but doesn't do any harm.
-		if test -f "$datadir/.run-mysql_upgrade" ; then
-			echo >> "$log_upgrade"
+		if [ -f "/var/lib/mysql/.run-mysql_upgrade" ]; then
+			echo > "$log_upgrade"
 			echo "`LANG="" date` - upgrading MySQL..." >> "$log_upgrade"
 			echo >> "$log_upgrade"
 			echo "Will update MySQL now, if you encounter any problems, please read following file:" | tee -a "$log_upgrade"
 			echo "	/usr/share/doc/packages/mysql/README.SuSE" | tee -a "$log_upgrade"
+			sed -i -e 's|^\([^#]*skip-locking\)|#\1|' \
+			       -e 's|^\([^#]*skip-federated\)|#\1|' /etc/my.cnf
 			# Check logs for inconsistencies
 			SRCLOGS=""
 			ALL_SRCLOGS=""
@@ -364,10 +371,13 @@ else
 				fi
 			fi
 			check_obsolete >> "$log_upgrade"
+
 			# instead of running mysqld --bootstrap, which wouldn't allow
 			# us to run mysql_upgrade, we start a full-featured server with
 			# --skip-grant-tables and restict access to it by unix
 			# permissions of the named socket
+
+
 			protected="`cat /var/run/mysql/protecteddir 2> /dev/null`"
 			if [ -d "$protected" ]; then
 				pid="`cat "$protected/mysqld.pid" 2> /dev/null`"
@@ -375,6 +385,7 @@ else
 					[ "`readlink "/proc/$pid/exe" | grep "mysql"`" ]; then
 						echo "Can't update as another updating process is currently running" | tee -a "$log_upgrade"
 						echo "Please check process $pid and terminate it before restarting MySQL" | tee -a "$log_upgrade"
+						touch /var/lib/mysql/.run-mysql_upgrade
 						rc_failed; rc_status -v; rc_exit;
 				else
 					rm -rf "$protected"
@@ -382,9 +393,16 @@ else
 			fi
 			protected="`mktemp -d -p /var/tmp mysql-protected.XXXXXX | tee /var/run/mysql/protecteddir`"
 			export TMPDIR="$TEMPDIR"
+			
+			# Run upgrade, double check
+			# We need to restart mysql every time as programs
+			# reloads privileges tables, so we can get lock out
+			for cmd in "/usr/bin/mysql_upgrade"                  \
+			           "/usr/bin/mysql_upgrade"; do
 			[ -z "$protected" ] || chown "$mysql_daemon_user:$mysql_daemon_group" "$protected"
 			[ "`ls -ld "$protected" | grep "^drwx------[\\.\+]\?[[:blank:]]\+[0-9]\+[[:blank:]]\+$mysql_daemon_user[[:blank:]]\+$mysql_daemon_group[[:blank:]]\+.*"`" ] || {
 				echo "Can't create secure $protected" | tee -a "$log_upgrade"
+				touch /var/lib/mysql/.run-mysql_upgrade
 				rc_failed; rc_status -v; rc_exit;
 			}
 
@@ -403,21 +421,49 @@ else
 			wait_for_socket "$protected/mysql.sock" || {
 				echo "error: $protected/mysql.sock file didn't appeared... " | tee -a "$log_upgrade"
 				echo "       Try checking \"$log_upgrade_run\"... " | tee -a "$log_upgrade"
+				touch /var/lib/mysql/.run-mysql_upgrade
 				rc_failed; rc_status -v; rc_exit;
 			}
-			echo "Upgrading MySQL... " | tee -a "$log_upgrade"
-			/usr/bin/mysql_upgrade \
-				--socket="$protected/mysql.sock" | tee -a "$log_upgrade"
+			if [ "`grep "Upgrading MySQL..." "$log_upgrade"`" ]; then
+				echo "Rechecking whether everything is Ok... " | tee -a "$log_upgrade"
+				LANG=C $cmd --no-defaults --force \
+					--socket="$protected/mysql.sock" | \
+					sed -e 's|^|\ \ \ |'             | \
+					tee -a "$log_upgrade"
+			else
+				echo "Upgrading MySQL... " | tee -a "$log_upgrade"
+					LANG=C $cmd --no-defaults --force \
+						--socket="$protected/mysql.sock"               | \
+						sed -e 's|^|\ \ \ |'                             \
+						    -e 's|error|info|'                           \
+						    -e 's|\(Table\ upgrade\ required.\).*|\1|' | \
+						tee -a "$log_upgrade"
+			fi
 			[ "$PIPESTATUS" -ne 0 ] && {
 				rc_failed; rc_status -v;
-				kill -TERM "`cat $protected/mysqld.pid`"
+				kill_mysql "$protected/mysqld.pid"
 				rc_exit; }
-			kill -TERM "`cat $protected/mysqld.pid`"
+
+			kill_mysql "$protected/mysqld.pid" || {
+				echo "error: Can't stop protected MySQL... " | tee -a "$log_upgrade"
+				rc_failed; rc_status -v;
+				kill_mysql "$protected/mysqld.pid"
+				rc_exit; }
+
+			# Everything went fine
+			if [ -z "`grep REPAIR "$log_upgrade"`" ] && \
+			   [ -z "`grep "Table\ upgrade\ required" "$log_upgrade"`" ]; then
+			   	break
+			fi
+
+			done # end of upgrade
+
 			rm -rf "$protected"
 			# Fix ownerships and permissions for $datadir
 			chmod 750 "$datadir"
 			chown -R "$mysql_daemon_user:$mysql_daemon_group" "$datadir"
-			rm -f "$datadir/.run-mysql_upgrade" \
+			rm -f /var/lib/mysql/.run-mysql_upgrade \
+			rm -f /var/lib/mysql/.force_upgrade     \
 			"$datadir"/{update-stamp-*,mysql/stamp-4.1} # used in the past
 			chown "$mysql_daemon_user:$mysql_daemon_group" "$log_upgrade"
 			chmod 640 "$log_upgrade"
