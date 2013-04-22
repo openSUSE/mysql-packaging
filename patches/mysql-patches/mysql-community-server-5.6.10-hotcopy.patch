@@ -1,0 +1,39 @@
+PATCH-P0-FIX-UPSTREAM: Makes hotcopy to ignores log tables
+BUGS: upstream#43594, bnc#525325
+
+If you are running hotcopy, you probably want to ignore all
+log tables.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+=== modified file 'scripts/mysqlhotcopy.sh'
+Index: scripts/mysqlhotcopy.sh
+===================================================================
+--- scripts/mysqlhotcopy.sh.orig
++++ scripts/mysqlhotcopy.sh
+@@ -843,7 +843,24 @@ sub get_list_of_tables {
+         } || [];
+     warn "Unable to retrieve list of tables in $db: $@" if $@;
+ 
+-    return (map { $_->[0] } @$tables);
++    my @ignore_tables = ();
++
++    # Ignore tables for the mysql database
++    if ($db eq 'mysql') {
++        @ignore_tables = qw(general_log slow_log schema apply_status);
++    }
++
++    my @res = ();
++    if ($#ignore_tables > 1) {
++       my @tmp = (map { $_->[0] } @$tables);
++       for my $t (@tmp) {
++           push(@res, $t) if not exists { map { $_=>1 } @ignore_tables }->{$t};
++       }
++    } else {
++       @res = (map { $_->[0] } @$tables);
++    }
++
++    return @res;
+ }
+ 
+ sub get_list_of_views {
