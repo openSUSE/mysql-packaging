@@ -86,6 +86,11 @@ Requires:       logrotate
 Requires:       %{name}-client
 Requires:       %{name}-errormessages = %version
 Requires:       perl-base
+# systemd requirements for openSUSE >= 12.1
+%if 0%{?suse_version} >= 1210
+BuildRequires:  systemd
+%{?systemd_requires}
+%endif
 Provides:       mysql = %{srv_vers}
 Provides:       mysql-Max = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
@@ -371,6 +376,16 @@ rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
 /usr/sbin/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
 /usr/sbin/usermod -g mysql -s /bin/false mysql || :
+# systemd requirment
+%if 0%{?suse_version} >= 1210
+%service_add_pre mysql.service
+%endif
+
+%post
+# systemd requirment 
+%if 0%{?suse_version} >= 1210
+%service_add_post mysql.service
+%endif
 
 #######################################################################
 # preun and posttran takes care of restart                            #
@@ -387,7 +402,6 @@ if posix.access("/usr/sbin/rcmysql", "x") then
     os.execute("/bin/mkdir -p /var/run/mysql/restart")
   end
 end
-
 dbfile="var/mysql/mysql/db.ISM"
 olddir="var/mysql"
 newdir="var/lib/mysql"
@@ -440,6 +454,10 @@ fi
 if [ $1 = 0 ]; then
 	%install_info_delete --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 	%{insserv_cleanup}
+	rm -f "/var/lib/systemd/migrated/mysql.service"
+	if [ -x /usr/bin/systemctl ]; then
+		/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+	fi
 fi
 
 #######################################################################
