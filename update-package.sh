@@ -72,9 +72,11 @@ fi
 cat ./default.yaml ./config.yaml > ./whole-config.yaml
 sync
 
+SPEC="`ls -1 *.spec | head -n1`"
+
 PKGNAME="`echo '{{pkg-name}}' | mustache ./whole-config.yaml -`"
 for i in ./*.in; do
-   REALNAME="`echo "$i" | sed -e 's|\.in$||' -e "s|mysql|$PKGNAME|"`"
+   REALNAME="`echo "$i" | sed -e 's|\.in$||'`"
    echo "Creating \"$REALNAME\"..."
    if !  mustache ./whole-config.yaml "$i" > "$REALNAME"; then
       echo "Creating \"$REALNAME\" failed!"
@@ -83,7 +85,10 @@ for i in ./*.in; do
 done
 
 sync
+
 sleep 1
+
+[ "$SPEC" = "mysql.spec" ] || mv "mysql.spec" "$SPEC"
 
 echo "Packing configuration..."
 if ! tar -cjf configuration-tweaks.tar.bz2 *.cnf; then

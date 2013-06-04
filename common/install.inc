@@ -56,11 +56,14 @@ filelist mysqlslap >mysql-bench.files
 filelist mysql_client_test mysql_client_test_embedded mysql_waitpid mysqltest mysqltest_embedded >mysql-test.files
 # all binaries that don't need to be in a "default" install (mysql.rpm +
 # mysql-client.rpm)
-filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded mytop hsclient >mysql-tools.files
+filelist msql2mysql mysql_config_editor mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded mytop hsclient >mysql-tools.files
 filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 filelist ndb_mgmd >mysql-ndb-management.files
 filelist ndb_{config,desc,error_reporter,mgm,print_backup_file,print_schema_file,print_sys_file,restore,select_all,select_count,show_tables,size.pl,test_platform,waiter} >mysql-ndb-tools.files
 filelist ndb_{cpcd,delete_all,drop_index,index_stat,print_file,redo_log_reader,drop_table} ndbinfo_select_all memcached >mysql-ndb-extra.files
+[ -z "`ls -1 "%buildroot/usr/share/mysql/"*.ini`" ]   || echo '/usr/share/mysql/*.ini' >> mysql.files 
+[ -z "`ls -1 "%buildroot/usr/share/mysql/"*.cnf`" ]   || echo '/usr/share/mysql/*.cnf' >> mysql.files 
+[ \! -f "%buildroot/usr/share/%name"/dictionary.txt ] || echo "/usr/share/%name/dictionary.txt" >> mysql.files 
 errmsg_list()
 {
 	echo '%%defattr(-, root, root)'
@@ -87,7 +90,7 @@ install -m 644 _buildlibmysqld/*.so* %buildroot%_libdir
 ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so.0
 ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so
 %endif
-install -m 660 _build/support-files/my-medium.cnf %buildroot/etc/my.cnf
+install -m 660 %{S:14} %buildroot/etc/my.cnf
 install -m 640 scripts/mysqlaccess.conf %buildroot/etc/mysqlaccess.conf
 for i in "${DOCS[@]}"; do
 	install -m 644 "${i}" "${DOCDIR}" || true
@@ -129,15 +132,15 @@ cat mysql-ndb-storage.files mysql-ndb-management.files  \
 done
 %endif
 %if ! 0%{prefered} > 0
-cat libmysqlclient-devel.files | while read tmp; do
+cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
 	cd '%buildroot'
-	rm -f .$tmp
+	rm -f ."$tmp"
 done
 rm -rf '%buildroot'/%_libdir/libmysqld.*
 rm -rf '%buildroot'/%_libdir/*.la
 rm -rf '%buildroot'/%_libdir/*.so
+rm -rf '%buildroot'/%_datadir/man/*/mysql_config.1*
 rm -rf '%buildroot'/%_includedir  
-rm -rf '%buildroot'/%_datadir/man/*/mysql_config*  
 rm -rf '%buildroot'/%_datadir/aclocal
 rm -rf '%buildroot'/%_libdir/*.a
 %endif
@@ -163,6 +166,5 @@ if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so`" ]; then
 	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
 	echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
 fi
-rm -rf '%buildroot'/etc/my.cnf.d
 rm -rf '%buildroot'/usr/share/doc/%{name}-%{version}
-rm -rf '%buildroot'/usr/share/mysql/SELinux
+rm -rf '%buildroot'/usr/share/mysql/solaris
