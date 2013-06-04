@@ -63,6 +63,13 @@ if ! cp -v "$REPOROOT"/"$VARIANT"/* .; then
 fi
 
 echo "Creating files from templates..."
+PKGNAME="`echo '{{pkg-name}}' | mustache ./config.yaml -`"
+if [ "$PKGNAME" \!= "$VARIANT" ]; then
+   EXTRAPKGNAME="`echo '{{extra_provides}}' | mustache ./config.yaml -`"
+   sed -i "s|\(pkg-name:[[:blank:]]\+\)$PKGNAME|\1$EXTRAPKGNAME|" config.yaml
+   sed -i "s|\(use_extra_provides:[[:blank:]]\+\)1|\10|" config.yaml
+fi
+
 if [ "`head -n 1 config.yaml | sed -n 's|---|yes|p'`" ]; then
    echo -e '1d\nwq\n' | ed config.yaml  > /dev/null 2> /dev/null
 fi
