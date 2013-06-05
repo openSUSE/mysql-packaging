@@ -61,8 +61,8 @@ BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  libtool
 BuildRequires:  libedit-devel
+BuildRequires:  libtool
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
@@ -116,8 +116,8 @@ This package only contains the server-side programs.
 Provides:       mysql-devel = %srv_vers-%release
 Obsoletes:      mysql-devel < %srv_vers
 Requires:       glibc-devel
-Requires:       libmysqlclient_r{{lib-version}} = %version
 Requires:       libmysqlclient{{lib-version}} = %version
+Requires:       libmysqlclient_r{{lib-version}} = %version
 Requires:       openssl-devel
 Requires:       zlib-devel
 Summary:        {{display-name}} development header files and libraries

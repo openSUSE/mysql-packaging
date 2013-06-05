@@ -1,3 +1,4 @@
+---
 pkg-name:         mariadb_100
 display-name:     "MariaDB"
 use_cmake:        1
