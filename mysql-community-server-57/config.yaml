@@ -5,15 +5,15 @@ prefered:         0
 use_cmake:        1
 cluster:          0
 use_extra_provides: 1
-extra_provides:   mysql-community-server_55
+extra_provides:   mysql-community-server_57
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.5.32"
-srv-version:      "5.5.32"
+pkg-version:      "5.7.1"
+srv-version:      "5.7.1"
 url:              "http://www.mysql.com"
-source:           "mysql-%{version}.tar.bz2"
-src-dir:          "mysql-%{version}"
+source:           "mysql-%{version}-m11.tar.bz2"
+src-dir:          "mysql-%{version}-m11"
 lib-version:      18
-lib-name:         mysql55client
+lib-name:         mysql57client
 description:      'SQL is the most popular database language in the world. MySQL is a
 
 client/server implementation that consists of a server daemon (mysqld)
@@ -49,6 +49,5 @@ useful function set.
 
 The official way to pronounce MySQL is "My Ess Que Ell" (Not
 
-MY-SEQUEL).
-'
+MY-SEQUEL).'
 ---

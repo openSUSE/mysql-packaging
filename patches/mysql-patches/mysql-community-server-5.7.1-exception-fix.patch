@@ -1,0 +1,25 @@
+PATCH-P0-FIX-UPSTREAM: Drop try/catch block
+
+Upstream put in try/catch block to ignore allocation errors which
+is totally bogus. Dropping it.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: sql/mysqld.cc
+===================================================================
+--- sql/mysqld.cc.orig
++++ sql/mysqld.cc
+@@ -821,12 +821,7 @@ Thread_iterator global_thread_list_end()
+ void copy_global_thread_list(std::set<THD*> *new_copy)
+ {
+   mysql_mutex_assert_owner(&LOCK_thread_count);
+-  try {
+-    *new_copy= *global_thread_list;
+-  }
+-  catch (std::bad_alloc &ba)
+-  {
+-  } 
++  *new_copy= *global_thread_list;
+ }
+ 
+ void add_global_thread(THD *thd)
