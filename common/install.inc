@@ -155,8 +155,9 @@ ln -s libndbclient.so.6.0.0 '%buildroot'%_libdir/libndbclient.so.6
 if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
 fi
-mkdir -p '%buildroot'/etc/mysql
-bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/mysql -xvf -
+mkdir -p '%buildroot'/etc/my.cnf.d
+rm -rf '%buildroot'/etc/my.cnf.d/*
+bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/my.cnf.d -xvf -
 if [ -z "`ls '%buildroot'/usr/share/info/mysql.info*`" ]; then
 	install -D -m 0644 Docs/mysql.info "%buildroot/usr/share/info/mysql.info"
 	gzip -9 "%buildroot/usr/share/info/mysql.info"
@@ -166,5 +167,6 @@ if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so`" ]; then
 	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
 	echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
 fi
-rm -rf '%buildroot'/usr/share/doc/%{name}-%{version}
+rm -rf '%buildroot'/usr/share/doc/{mysql,mariadb}*
 rm -rf '%buildroot'/usr/share/mysql/solaris
+rm -rf '%buildroot'/usr/share/mysql/SELinux

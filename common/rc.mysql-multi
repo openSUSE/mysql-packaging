@@ -329,7 +329,7 @@ else
 			log_dir="`dirname "$i"`"
 			if [ \! -d "$log_dir" ]; then
 				mkdir -p "$log_dir"
-				chmod 660 "$log_dir"
+				chmod 770 "$log_dir"
 			fi
 		done
 
@@ -350,7 +350,7 @@ else
 			echo >> "$log_upgrade"
 			echo "Will update MySQL now, if you encounter any problems, please read following file:" | tee -a "$log_upgrade"
 			echo "	/usr/share/doc/packages/mysql/README.SuSE" | tee -a "$log_upgrade"
-			sed -i -e 's|^\([^#]*skip-locking\)|#\1|' \
+			sed -i -e 's|^\([^#]*skip-locking\)|#\1\nskip-external-locking|' \
 			       -e 's|^\([^#]*skip-federated\)|#\1|' /etc/my.cnf
 			# Check logs for inconsistencies
 			SRCLOGS=""

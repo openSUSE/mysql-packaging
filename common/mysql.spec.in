@@ -169,6 +169,9 @@ languages and applications need to dynamically load and use {{display-name}}.
 Summary:        Client for {{display-name}}
 Group:          Productivity/Databases/Clients
 Provides:       mysql-client = %{srv_vers}
+%if 0%{?suse_version}
+PreReq:         pwdutils
+%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
@@ -383,6 +386,12 @@ rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
 %service_add_pre mysql.service
 %endif
 
+%pre client
+/usr/sbin/groupadd -r mysql >/dev/null 2>/dev/null || :
+/usr/sbin/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
+                  -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
+/usr/sbin/usermod -g mysql -s /bin/false mysql || :
+
 %post
 # systemd requirment 
 %if 0%{?suse_version} >= 1210
@@ -469,8 +478,8 @@ fi
 %files -f mysql.files
 %defattr(-, root, root)
 %config(noreplace) %attr(0640, root, mysql) /etc/my.cnf
-%dir %attr(0750, root, mysql) /etc/mysql
-%config(noreplace) %attr(0640, root, mysql) /etc/mysql/*
+%dir %attr(0750, root, mysql) /etc/my.cnf.d
+%config(noreplace) %attr(0640, root, mysql) /etc/my.cnf.d/*
 %config /etc/logrotate.d/mysql
 %doc %{_defaultdocdir}/%{name}
 %doc %{_infodir}/mysql.info.*
