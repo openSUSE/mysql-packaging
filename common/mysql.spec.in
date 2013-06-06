@@ -61,6 +61,7 @@ BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
+BuildRequires:  libaio-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libtool
 BuildRequires:  ncurses-devel
