@@ -414,16 +414,9 @@ if posix.access("/usr/sbin/rcmysql", "x") then
     os.execute("/bin/mkdir -p /var/run/mysql/restart")
   end
 end
-dbfile="var/mysql/mysql/db.ISM"
-olddir="var/mysql"
-newdir="var/lib/mysql"
--- Do the database files still belong to root (very old installation)?
--- Change ownerships
-if posix.stat(dbfile, "uid") == 0 then
-  os.execute("/bin/chown -Rv mysql:mysql var/mysql/")
-end
 
 %posttrans
+[ -z "`ls %{_infodir}/mysql.info.* 2> /dev/null`" ] || \
 %install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 if [ -d /var/lib/mysql ]; then
 	touch /var/lib/mysql/.run-mysql_upgrade
