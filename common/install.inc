@@ -10,6 +10,8 @@ install -m 644 _build/sql/mysqld.sym %buildroot%_libdir/mysql/mysqld.sym
 # remove handler socket client
 rm -f %buildroot%_libdir/libhsclient*
 rm -f %buildroot%_bindir/hsclient*
+[ -z "`ls %buildroot%_bindir/mytop 2> /dev/null`" ] || \
+mv %buildroot%_bindir/mytop %buildroot%_bindir/%{name}_mytop
 rm -f %buildroot%_libdir/mysql/plugin/handlersocket.so
 # remove most static libs (FIXME: don't build them at all...)
 rm -f %buildroot%_libdir/libmysqlclient*a
@@ -56,7 +58,7 @@ filelist mysqlslap >mysql-bench.files
 filelist mysql_client_test mysql_client_test_embedded mysql_waitpid mysqltest mysqltest_embedded >mysql-test.files
 # all binaries that don't need to be in a "default" install (mysql.rpm +
 # mysql-client.rpm)
-filelist msql2mysql mysql_config_editor mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded mytop hsclient >mysql-tools.files
+filelist msql2mysql mysql_config_editor mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded %{name}_mytop hsclient >mysql-tools.files
 filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 filelist ndb_mgmd >mysql-ndb-management.files
 filelist ndb_{config,desc,error_reporter,mgm,print_backup_file,print_schema_file,print_sys_file,restore,select_all,select_count,show_tables,size.pl,test_platform,waiter} >mysql-ndb-tools.files
