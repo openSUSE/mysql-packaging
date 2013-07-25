@@ -1,4 +1,5 @@
 PATCH-P1-FIX-UPSTREAM: Adds shebangs
+BUGS: mysql#69820
 
 Shebangs were missing at various places, so we are adding them.
 
