@@ -10,8 +10,9 @@ install -m 644 _build/sql/mysqld.sym %buildroot%_libdir/mysql/mysqld.sym
 # remove handler socket client
 rm -f %buildroot%_libdir/libhsclient*
 rm -f %buildroot%_bindir/hsclient*
-[ -z "`ls %buildroot%_bindir/mytop 2> /dev/null`" ] || \
-mv %buildroot%_bindir/mytop %buildroot%_bindir/%{name}_mytop
+if [ -f "%{buildroot}%{_bindir}/mytop" ]; then
+	mv %{buildroot}%{_bindir}/mytop %{buildroot}%{_bindir}/%{name}_mytop
+fi
 rm -f %buildroot%_libdir/mysql/plugin/handlersocket.so
 # remove most static libs (FIXME: don't build them at all...)
 rm -f %buildroot%_libdir/libmysqlclient*a
