@@ -1,3 +1,0 @@
-[submodule "patches/tools"]
-	path = patches/tools
-	url = http://github.com/miska/patch-conventions.git
