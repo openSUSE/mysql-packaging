@@ -329,8 +329,9 @@ else
 			log_dir="`dirname "$i"`"
 			if [ \! -d "$log_dir" ]; then
 				mkdir -p "$log_dir"
-				chmod 770 "$log_dir"
 			fi
+			chmod 770 "$log_dir"
+			chown -R mysq;:mysql "$log_dir"
 		done
 
 		# We assume a fresh install if the directory $datadir/mysql
