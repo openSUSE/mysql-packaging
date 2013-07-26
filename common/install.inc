@@ -108,9 +108,6 @@ install -D -m 644 %_sourcedir/mysql.SuSEfirewall2 \
 # testsuite
 mkdir -p '%buildroot'/usr/share/mysql-test/
 install -m 755 suse-test-run '%buildroot'/usr/share/mysql-test/
-# XXX this should go under /var/..., but some tests get confused by a symlink
-# var -> ../../../var/...
-#ln -sf ../../../var/lib/mysql/mysql-test %buildroot/usr/share/mysql-test/var
 mkdir '%buildroot'/usr/share/mysql-test/var
 # Final fixes
 find '%buildroot'/usr/share/mysql-test -name '*.orig' -delete
