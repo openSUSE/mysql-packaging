@@ -111,6 +111,8 @@ BuildMySQL() {
 			-DWITH_EMBEDDED_SERVER=true                                  \
 			-DCOMPILATION_COMMENT="openSUSE package"                     \
 			-DDENABLE_DOWNLOADS=false                                    \
+			-DINSTALL_PLUGINDIR_RPM="%{_libdir}/mysql/plugin"            \
+			-DINSTALL_LIBDIR_RPM="%{_libdir}"                            \
 			"$@" ..
 	make %{?jobs:-j%jobs}
 	nm --numeric-sort sql/mysqld > sql/mysqld.sym
