@@ -53,6 +53,8 @@ if [ -z "`which mustache`" ]; then
    exit 2
 fi
 
+rm -f *.diff
+
 echo "Copying common files..."
 if ! cp -v "$REPOROOT"/common/* .; then
    echo "Can't copy files!"
@@ -64,6 +66,27 @@ if ! cp -v "$REPOROOT"/"$VARIANT"/* .; then
    echo "Can't copy files!"
    exit 4
 fi
+
+echo "Checking for additional patches to the project..."
+for diff in [0-9]_*.diff [0-9][0-9]_*.diff; do
+   if [ -f "$diff" ]; then
+      echo " * using $diff..."
+      if patch < "$diff"; then
+         rm "$diff"
+      else
+         exit 5
+      fi
+   fi
+done
+echo "Additional patching done."
+
+if [ -f to_delete ]; then
+   cat to_delete | while read f; do
+      echo "Deleting $f..."
+      rm -f "$f"
+   done
+fi
+rm -f to_delete
 
 echo "Creating files from templates..."
 PKGNAME="`echo '{{pkg-name}}' | mustache ./config.yaml -`"
@@ -90,7 +113,7 @@ for i in ./*.in; do
    echo "Creating \"$REALNAME\"..."
    if !  mustache ./whole-config.yaml "$i" > "$REALNAME"; then
       echo "Creating \"$REALNAME\" failed!"
-      exit 4
+      exit 6
    fi
 done
 
