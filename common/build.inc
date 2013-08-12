@@ -4,9 +4,12 @@
 %define socketpath /var/run/mysql
 %endif
 %if 0%{?suse_version} > 1140
-export WARN_DIS="$WARN_DIS -Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter "
+export EXTRA_FLAGS=" -Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter "
 %endif
-export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DFORCE_INIT_OF_VARS $WARN_DIS "
+%ifarch ppc64
+export EXTRA_FLAGS=" -mminimal-toc "
+%endif
+export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
 export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
 
 %if 0%{use_cmake} < 1
