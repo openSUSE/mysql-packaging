@@ -1,0 +1,77 @@
+PATCH-P0-HACK-SUSE: Support obsolete TYPE syntax
+
+New MySQL doesn't support TYPE syntax as the old MySQL did. So to make make
+migration smoother for SLE users, we reintroduced it.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: sql/sql_yacc.yy
+===================================================================
+--- sql/sql_yacc.yy.orig
++++ sql/sql_yacc.yy
+@@ -4145,6 +4145,18 @@ opt_ts_engine:
+             }
+             lex->alter_tablespace_info->storage_engine= $4;
+           }
++        | opt_storage TYPE_SYM opt_equal storage_engines
++          {
++            LEX *lex= Lex;
++            if (lex->alter_tablespace_info->storage_engine != NULL)
++            {
++              my_error(ER_FILEGROUP_OPTION_ONLY_ONCE,MYF(0),
++                       "STORAGE ENGINE");
++              MYSQL_YYABORT;
++            }
++            lex->alter_tablespace_info->storage_engine= $4;
++          }
++
+         ;
+ 
+ opt_ts_wait:
+@@ -4940,6 +4952,12 @@ opt_part_option:
+             part_info->curr_part_elem->engine_type= $4;
+             part_info->default_engine_type= $4;
+           }
++        | opt_storage TYPE_SYM opt_equal storage_engines
++          {
++            partition_info *part_info= Lex->part_info;
++            part_info->curr_part_elem->engine_type= $4;
++            part_info->default_engine_type= $4;
++          }
+         | NODEGROUP_SYM opt_equal real_ulong_num
+           { Lex->part_info->curr_part_elem->nodegroup_id= (uint16) $3; }
+         | MAX_ROWS opt_equal real_ulonglong_num
+@@ -5049,6 +5067,11 @@ create_table_option:
+             Lex->create_info.db_type= $3;
+             Lex->create_info.used_fields|= HA_CREATE_USED_ENGINE;
+           }
++        | TYPE_SYM opt_equal storage_engines
++          {
++            Lex->create_info.db_type= $3;
++            Lex->create_info.used_fields|= HA_CREATE_USED_ENGINE;
++          }
+         | MAX_ROWS opt_equal ulonglong_num
+           {
+             Lex->create_info.max_rows= $3;
+@@ -10963,6 +10986,10 @@ show_param:
+           { Lex->create_info.db_type= $2; }
+         | ENGINE_SYM ALL show_engine_param
+           { Lex->create_info.db_type= NULL; }
++        | TYPE_SYM known_storage_engines show_engine_param
++          { Lex->create_info.db_type= $2; }
++        | TYPE_SYM ALL show_engine_param
++          { Lex->create_info.db_type= NULL; }
+         | opt_full COLUMNS from_or_in table_ident opt_db wild_and_where
+           {
+             LEX *lex= Lex;
+@@ -11341,7 +11368,9 @@ flush_option:
+           ERROR_SYM LOGS_SYM
+           { Lex->type|= REFRESH_ERROR_LOG; }
+         | ENGINE_SYM LOGS_SYM
+-          { Lex->type|= REFRESH_ENGINE_LOG; } 
++          { Lex->type|= REFRESH_ENGINE_LOG; }
++        | TYPE_SYM LOGS_SYM
++          { Lex->type|= REFRESH_ENGINE_LOG; }
+         | GENERAL LOGS_SYM
+           { Lex->type|= REFRESH_GENERAL_LOG; }
+         | SLOW LOGS_SYM
