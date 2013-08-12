@@ -273,7 +273,7 @@ else
 
 	parse_arguments `$print_defaults $defaults mysqld mysql_server`
 	mkdir -m 755 -p /var/run/mysql
-	chown $mysql_daemon_user:$mysql_daemon_group /var/run/mysql
+	chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" /var/run/mysql
 	export TEMPDIR="`cat /var/run/mysql/tmpdir 2> /dev/null`"
 
 	# Safeguard (relative paths, core dumps..)
@@ -292,7 +292,7 @@ else
 			rm -rf "$TEMPDIR"
 		fi
 		TEMPDIR="`mktemp -d -p /var/tmp mysql.XXXXXX | tee /var/run/mysql/tmpdir`"
-		[ -z "$TEMPDIR" ] || chown "$mysql_daemon_user:$mysql_daemon_group" "$TEMPDIR"
+		[ -z "$TEMPDIR" ] || chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$TEMPDIR"
 		[ "`ls -ld "$TEMPDIR" | grep "^drwx------[\\.\+]\?[[:blank:]]\+[0-9]\+[[:blank:]]\+$mysql_daemon_user[[:blank:]]\+$mysql_daemon_group[[:blank:]]\+.*"`" ] || {
 			echo "Can't create secure $TEMPDIR"
 			rc_failed; rc_status -v; rc_exit;
@@ -331,7 +331,7 @@ else
 				mkdir -p "$log_dir"
 			fi
 			chmod 770 "$log_dir"
-			chown -R mysql:mysql "$log_dir"
+			chown -R --no-dereference mysql:mysql "$log_dir"
 		done
 
 		MYSQLVER="`mysqld --version | sed 's|.*Ver\ *\([^\ ]*\)\.[0-9]\+[\-\ ].*|\1|'`"
@@ -418,7 +418,7 @@ else
 			# reloads privileges tables, so we can get lock out
 			for cmd in "/usr/bin/mysql_upgrade"                  \
 			           "/usr/bin/mysql_upgrade"; do
-			[ -z "$protected" ] || chown "$mysql_daemon_user:$mysql_daemon_group" "$protected"
+			[ -z "$protected" ] || chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$protected"
 			[ "`ls -ld "$protected" | grep "^drwx------[\\.\+]\?[[:blank:]]\+[0-9]\+[[:blank:]]\+$mysql_daemon_user[[:blank:]]\+$mysql_daemon_group[[:blank:]]\+.*"`" ] || {
 				echo "Can't create secure $protected" | tee -a "$log_upgrade"
 				touch /var/lib/mysql/.run-mysql_upgrade
@@ -481,12 +481,12 @@ else
 			rm -rf "$protected"
 			# Fix ownerships and permissions for $datadir
 			chmod 750 "$datadir"
-			chown -R "$mysql_daemon_user:$mysql_daemon_group" "$datadir"
+			chown -R --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$datadir"
 			rm -f /var/adm/update-messages/mysql-*
 			rm -f /var/lib/mysql/.run-mysql_upgrade
 			rm -f /var/lib/mysql/.force_upgrade
 			rm -f "$datadir"/{update-stamp-*,mysql/stamp-4.1} # used in the past
-			chown "$mysql_daemon_user:$mysql_daemon_group" "$log_upgrade"
+			chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$log_upgrade"
 			chmod 640 "$log_upgrade"
 		fi 
 
