@@ -15,26 +15,20 @@ if [ -f "%{buildroot}%{_bindir}/mytop" ]; then
 fi
 rm -f %buildroot%_libdir/mysql/plugin/handlersocket.so
 # remove most static libs (FIXME: don't build them at all...)
-rm -f %buildroot%_libdir/libmysqlclient*a
-rm -f %buildroot%_libdir/libmysqlservices*a
-rm -f %buildroot%_libdir/mysql/*.a %buildroot%_libdir/mysql/*.la
-rm -f %buildroot%_libdir/mysql/plugin/*a
+[ \! -f "%buildroot%_libdir/"libmysqld.a ] || mv "%buildroot%_libdir/"libmysqld.a "%buildroot%_libdir/"libmysqld.static
+rm -f %buildroot%_libdir/*.a
+[ \! -f "%buildroot%_libdir/"libmysqld.static ] || mv "%buildroot%_libdir/"libmysqld.static "%buildroot%_libdir/"libmysqld.a
+rm -f %buildroot%_libdir/mysql/{,plugin}/*.{a,la}
 # XXX: package these? The ndb tools are linked statically atm
 rm -f %buildroot%_libdir/mysql/libndbclient.*
-rm -f %{buildroot}/usr/share/mysql-test/mysql-test-run  
-rm -f %{buildroot}/usr/share/mysql-test/mtr
-rm -f %{buildroot}/usr/share/mysql/binary-configure
-rm -f %{buildroot}/usr/share/mysql/errmsg-utf8.txt
-rm -f %{buildroot}/usr/share/mysql/magic
-rm -f %{buildroot}/usr/share/mysql/mysql-log-rotate
-rm -f %{buildroot}/usr/share/mysql/mysql*.server
+rm -f %{buildroot}/usr/share/mysql-test/{mysql-test-run,mtr}
+rm -f %{buildroot}/usr/share/mysql/{binary-configure,errmsg-utf8.txt,magic,mysql-log-rotate,mysql*.server}
 rm -f %{buildroot}%{_libdir}/mysql/plugin/daemon_example.ini
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mtr  
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mysql-test-run 
 mv %{buildroot}/usr/share/mysql-test/lib/My/SafeProcess/my_safe_process %{buildroot}%{_bindir}
 # generate filelist for binaries and their manpages (easier than enumerating
-# all the binaries and manapages manually, esp. when there are new manpages in
-# each release)
+# all the binaries and manapages manually
 filelist()
 {
 	echo '%%defattr(-, root, root)'
@@ -131,18 +125,33 @@ cat mysql-ndb-storage.files mysql-ndb-management.files  \
 	rm -f .$tmp
 done
 %endif
+pushd '%buildroot'/%_libdir
+for i in *.so.*.*.*; do
+	if [ -L "$i" ]; then
+		trg="`readlink "$i"`"
+		rm "$i"
+		mv "$trg" "$i"
+		ln -s "$i" "$trg"
+	fi
+done
+for i in *.so.*; do
+	if [ -L "$i" ] && [ -L "`readlink "$i"`" ]; then
+		trg="`readlink "$i"`"
+		rm "$i"
+		ln -s "`readlink "$trg"`" "$i"
+	fi
+done
+popd
 %if ! 0%{prefered} > 0
 cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
 	cd '%buildroot'
 	rm -f ."$tmp"
 done
 rm -rf '%buildroot'/%_libdir/libmysqld.*
-rm -rf '%buildroot'/%_libdir/*.la
-rm -rf '%buildroot'/%_libdir/*.so
+rm -rf '%buildroot'/%_libdir/{*.la,*.so,*.a}
 rm -rf '%buildroot'/%_datadir/man/*/mysql_config.1*
 rm -rf '%buildroot'/%_includedir  
 rm -rf '%buildroot'/%_datadir/aclocal
-rm -rf '%buildroot'/%_libdir/*.a
 %endif
 sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/etc/init.d/mysql
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlrepair
@@ -155,18 +164,14 @@ ln -s libndbclient.so.6.0.0 '%buildroot'%_libdir/libndbclient.so.6
 if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
 fi
+rm -rf '%buildroot'/etc/my.cnf.d
 mkdir -p '%buildroot'/etc/my.cnf.d
-rm -rf '%buildroot'/etc/my.cnf.d/*
 bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/my.cnf.d -xvf -
-if [ -z "`ls '%buildroot'/usr/share/info/mysql.info*`" ]; then
-	install -D -m 0644 Docs/mysql.info "%buildroot/usr/share/info/mysql.info"
-	gzip -9 "%buildroot/usr/share/info/mysql.info"
-fi
-if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so`" ]; then
+[ -z "`ls '%buildroot'/usr/share/info/mysql.info* 2> /dev/null`" ] || rm -f '%buildroot'/usr/share/info/mysql.info*
+if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
 	echo '%%dir %%_libdir/mysql'               >> mysql-client.files
 	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
 	echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
 fi
 rm -rf '%buildroot'/usr/share/doc/{mysql,mariadb}*
-rm -rf '%buildroot'/usr/share/mysql/solaris
-rm -rf '%buildroot'/usr/share/mysql/SELinux
+rm -rf '%buildroot'/usr/share/mysql/{solaris,SELinux}
