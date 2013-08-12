@@ -1,0 +1,21 @@
+--- ../common/mysql.spec.in	2013-08-02 12:30:13.044171272 +0200
++++ mysql.spec.in	2013-08-03 10:52:12.757673357 +0200
+@@ -50,7 +50,6 @@
+ Source11:       install.inc
+ Source12:       series
+ Source13:       configuration-tweaks.tar.bz2
+-Source14:       my.ini
+ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+ %if 0%{?suse_version}
+ PreReq:         pwdutils
+@@ -496,8 +495,8 @@
+ %files -f mysql.files
+ %defattr(-, root, root)
+ %config(noreplace) %attr(0640, root, mysql) /etc/my.cnf
+-%dir %attr(0750, root, mysql) /etc/my.cnf.d
+-%config(noreplace) %attr(0640, root, mysql) /etc/my.cnf.d/*
++%dir %attr(0750, root, mysql) /etc/mysql
++%config(noreplace) %attr(0640, root, mysql) /etc/mysql/*
+ %config /etc/logrotate.d/mysql
+ %doc %{_defaultdocdir}/%{name}
+ /etc/init.d/mysql

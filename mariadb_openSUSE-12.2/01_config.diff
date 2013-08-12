@@ -1,0 +1,20 @@
+--- config.yaml	2013-07-25 09:34:00.780349024 +0200
++++ config.yaml	2013-08-03 10:27:59.975648970 +0200
+@@ -2,7 +2,7 @@
+ pkg-name:         mariadb
+ display-name:     "MariaDB"
+ use_cmake:        1
+-prefered:         1
++prefered:         0
+ use_extra_provides: 1
+ extra_provides:   mariadb_55
+ builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
+@@ -12,7 +12,7 @@
+ source:           "mariadb-%{version}.tar.bz2"
+ src-dir:          "mariadb-%{version}"
+ lib-version:      18
+-lib-name:         mysqlclient
++lib-name:         mariadbclient
+ description:      'MariaDB is a backward compatible, drop-in replacement branch of the MySQL
+ 
+ Database Server. It includes all major open source storage engines, including
