@@ -15,7 +15,6 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-
 # Few definitions which will alter build
 %define prefered   {{prefered}}
 %define use_cmake  {{use_cmake}}
@@ -55,10 +54,10 @@ Source14:       my.ini
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version}
 PreReq:         pwdutils
-PreReq:         %install_info_prereq %insserv_prereq
 %endif
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  bison
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  libaio-devel
@@ -94,14 +93,18 @@ Requires:       perl-base
 BuildRequires:  systemd
 %{?systemd_requires}
 %endif
+%if "%{name}" != mysql
 Provides:       mysql = %{srv_vers}
+%endif
 Provides:       mysql-Max = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
 %endif
 %if 0%{?prefered} > 0
+%if "%{name}" != mysql
 Obsoletes:      mysql < %{srv_vers}
+%endif
 Obsoletes:      mysql-Max < %{srv_vers}
 %endif
 Conflicts:      otherproviders(mysql)
@@ -169,17 +172,21 @@ languages and applications need to dynamically load and use {{display-name}}.
 %package client
 Summary:        Client for {{display-name}}
 Group:          Productivity/Databases/Clients
+%if "%{name}" != mysql
 Provides:       mysql-client = %{srv_vers}
+%endif
 %if 0%{?suse_version}
 PreReq:         pwdutils
 %endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
-Requires:       %{name}-errormessages = %version
 %endif
+Requires:       %{name}-errormessages = %version
 %if 0%{?prefered} > 0
+%if "%{name}" != mysql
 Obsoletes:      mysql-client < %{srv_vers}
+%endif
 %endif
 Conflicts:      otherproviders(mysql-client)
 
@@ -199,13 +206,17 @@ Requires:       %{name}-client
 Requires:       perl-DBD-mysql
 Summary:        Benchmarks for {{display-name}}
 Group:          Productivity/Databases/Tools
+%if "%{name}" != mysql
 Provides:       mysql-bench = %{srv_vers}
+%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-bench = %{version}
 Obsoletes:      %{extra_provides}-bench < %{version}
 %endif
 %if 0%{?prefered} > 0
+%if "%{name}" != mysql
 Obsoletes:      mysql-bench < %{srv_vers}
+%endif
 %endif
 Conflicts:      otherproviders(mysql-bench)
 
@@ -246,13 +257,17 @@ Requires:       %{name}-bench = %{version}
 Requires:       %{name}-client = %{version}
 Requires:       %{name}-tools = %{version}
 Requires:       perl-DBD-mysql
+%if "%{name}" != mysql
 Provides:       mysql-test = %{srv_vers}
+%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-test = %{version}
 Obsoletes:      %{extra_provides}-test < %{version}
 %endif
 %if 0%{?prefered} > 0
+%if "%{name}" != mysql
 Obsoletes:      mysql-test < %{srv_vers}
+%endif
 %endif
 Conflicts:      otherproviders(mysql-test)
 
@@ -267,14 +282,18 @@ Group:          Productivity/Databases/Servers
 Requires:       perl-DBD-mysql
 # make sure this package is installed when updating from 10.2 and older
 Provides:       mysql-client:/usr/bin/perror
+%if "%{name}" != mysql
 Provides:       mysql-tools = %{srv_vers}
+%endif
 Provides:       mysql:/usr/bin/mysqlhotcopy
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-tools = %{version}
 Obsoletes:      %{extra_provides}-tools < %{version}
 %endif
 %if 0%{?prefered} > 0
+%if "%{name}" != mysql
 Obsoletes:      mysql-tools < %{srv_vers}
+%endif
 %endif
 Conflicts:      otherproviders(mysql-tools)
 
@@ -299,8 +318,10 @@ cluster.
 %package ndb-storage
 Summary:        {{display-name}} - ndbcluster storage engine
 Group:          Productivity/Databases/Servers
+%if "%{name}" != mysql
 Provides:       mysql-ndb-storage = %{srv_vers}
 Obsoletes:      mysql-ndb-storage < %{srv_vers}
+%endif
 Conflicts:      otherproviders(mysql-ndb-storage)
 
 %description ndb-storage
@@ -312,8 +333,10 @@ computers that should store ndbcluster table data.
 %package ndb-management
 Summary:        {{display-name}} - ndbcluster storage engine management
 Group:          Productivity/Databases/Servers
+%if "%{name}" != mysql
 Provides:       mysql-ndb-management = %{srv_vers}
 Obsoletes:      mysql-ndb-management < %{srv_vers}
+%endif
 Conflicts:      otherproviders(mysql-ndb-management)
 
 %description ndb-management
@@ -324,8 +347,10 @@ one computer in the cluster.
 %package ndb-tools
 Summary:        {{display-name}} - ndbcluster storage engine basic tools
 Group:          Productivity/Databases/Servers
+%if "%{name}" != mysql
 Provides:       mysql-ndb-tools = %{srv_vers}
 Obsoletes:      mysql-ndb-tools < %{srv_vers}
+%endif
 Conflicts:      otherproviders(mysql-ndb-tools)
 
 %description ndb-tools
@@ -334,8 +359,10 @@ This package contains ndbcluster storage engine basic tools.
 %package ndb-extra
 Summary:        {{display-name}} - ndbcluster storage engine extra tools
 Group:          Productivity/Databases/Servers
+%if "%{name}" != mysql
 Provides:       mysql-ndb-extra = %{srv_vers}
 Obsoletes:      mysql-ndb-extra < %{srv_vers}
+%endif
 Conflicts:      otherproviders(mysql-ndb-extra)
 
 %description ndb-extra
@@ -381,7 +408,7 @@ rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
 /usr/sbin/groupadd -r mysql >/dev/null 2>/dev/null || :
 /usr/sbin/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
-/usr/sbin/usermod -g mysql -s /bin/false mysql || :
+/usr/sbin/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
 # systemd requirment
 %if 0%{?suse_version} >= 1210
 %service_add_pre mysql.service
@@ -391,7 +418,7 @@ rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
 /usr/sbin/groupadd -r mysql >/dev/null 2>/dev/null || :
 /usr/sbin/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
-/usr/sbin/usermod -g mysql -s /bin/false mysql || :
+/usr/sbin/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
 
 %post
 # systemd requirment 
@@ -416,8 +443,6 @@ if posix.access("/usr/sbin/rcmysql", "x") then
 end
 
 %posttrans
-[ -z "`ls %{_infodir}/mysql.info.* 2> /dev/null`" ] || \
-%install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 if [ -d /var/lib/mysql ]; then
 	touch /var/lib/mysql/.run-mysql_upgrade
 	chown -R mysql:mysql /var/lib/mysql
@@ -457,7 +482,6 @@ fi
 
 %postun
 if [ $1 = 0 ]; then
-	%install_info_delete --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 	%{insserv_cleanup}
 	rm -f "/var/lib/systemd/migrated/mysql.service"
 	if [ -x /usr/bin/systemctl ]; then
@@ -476,7 +500,6 @@ fi
 %config(noreplace) %attr(0640, root, mysql) /etc/my.cnf.d/*
 %config /etc/logrotate.d/mysql
 %doc %{_defaultdocdir}/%{name}
-%doc %{_infodir}/mysql.info.*
 /etc/init.d/mysql
 /usr/sbin/rcmysql
 %dir /usr/share/%{name}
