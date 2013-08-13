@@ -56,13 +56,13 @@ fi
 rm -f *.diff
 
 echo "Copying common files..."
-if ! cp -v "$REPOROOT"/common/* .; then
+if ! cp -Lv "$REPOROOT"/common/* .; then
    echo "Can't copy files!"
    exit 3
 fi
 
 echo "Copying $VARIANT files..."
-if ! cp -v "$REPOROOT"/"$VARIANT"/* .; then
+if ! cp -Lv "$REPOROOT"/"$VARIANT"/* .; then
    echo "Can't copy files!"
    exit 4
 fi
