@@ -1,5 +1,4 @@
 # install the debug server first, so that we don't overwrite the standard
-# /usr/sbin/mysqld
 mkdir -p %buildroot%_libdir/mysql
 make -C _build-debug/sql install DESTDIR=%buildroot
 mv %buildroot/usr/sbin/mysqld %buildroot/usr/sbin/mysqld-debug
@@ -10,16 +9,13 @@ install -m 644 _build/sql/mysqld.sym %buildroot%_libdir/mysql/mysqld.sym
 # remove handler socket client
 rm -f %buildroot%_libdir/libhsclient*
 rm -f %buildroot%_bindir/hsclient*
-if [ -f "%{buildroot}%{_bindir}/mytop" ]; then
-	mv %{buildroot}%{_bindir}/mytop %{buildroot}%{_bindir}/%{name}_mytop
-fi
+[ \! -f "%{buildroot}%{_bindir}/mytop" ] || mv %{buildroot}%{_bindir}/mytop %{buildroot}%{_bindir}/%{name}_mytop
 rm -f %buildroot%_libdir/mysql/plugin/handlersocket.so
 # remove most static libs (FIXME: don't build them at all...)
 [ \! -f "%buildroot%_libdir/"libmysqld.a ] || mv "%buildroot%_libdir/"libmysqld.a "%buildroot%_libdir/"libmysqld.static
 rm -f %buildroot%_libdir/*.a
 [ \! -f "%buildroot%_libdir/"libmysqld.static ] || mv "%buildroot%_libdir/"libmysqld.static "%buildroot%_libdir/"libmysqld.a
 rm -f %buildroot%_libdir/mysql/{,plugin}/*.{a,la}
-# XXX: package these? The ndb tools are linked statically atm
 rm -f %buildroot%_libdir/mysql/libndbclient.*
 rm -f %{buildroot}/usr/share/mysql-test/{mysql-test-run,mtr}
 rm -f %{buildroot}/usr/share/mysql/{binary-configure,errmsg-utf8.txt,magic,mysql-log-rotate,mysql*.server}
@@ -27,8 +23,7 @@ rm -f %{buildroot}%{_libdir}/mysql/plugin/daemon_example.ini
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mtr  
 ln -sf mysql-test-run.pl %{buildroot}/usr/share/mysql-test/mysql-test-run 
 mv %{buildroot}/usr/share/mysql-test/lib/My/SafeProcess/my_safe_process %{buildroot}%{_bindir}
-# generate filelist for binaries and their manpages (easier than enumerating
-# all the binaries and manapages manually
+# generate filelist for binaries and their manpages
 filelist()
 {
 	echo '%%defattr(-, root, root)'
