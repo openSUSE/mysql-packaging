@@ -18,7 +18,7 @@ Index: support-files/my-huge.cnf.sh
 +log-error=/var/log/mysql/mysqld.log
 +socket		= @MYSQL_UNIX_ADDR@
 +
-+!include_dir /etc/mysql
++!includedir /etc/mysql
 +
  [mysqldump]
 +socket		= @MYSQL_UNIX_ADDR@
@@ -38,7 +38,7 @@ Index: support-files/my-large.cnf.sh
 +log-error=/var/log/mysql/mysqld.log
 +socket		= @MYSQL_UNIX_ADDR@
 +
-+!include_dir /etc/mysql
++!includedir /etc/mysql
 +
  [mysqldump]
 +socket		= @MYSQL_UNIX_ADDR@
@@ -67,7 +67,7 @@ Index: support-files/my-medium.cnf.sh
 +log-error	= /var/log/mysql/mysqld.log
 +socket		= @MYSQL_UNIX_ADDR@
 +
-+!include_dir /etc/mysql
++!includedir /etc/mysql
 +
  [mysqldump]
 +socket		= @MYSQL_UNIX_ADDR@
@@ -87,7 +87,7 @@ Index: support-files/my-small.cnf.sh
 +log-error	= /var/log/mysql/mysqld.log
 +socket		= @MYSQL_UNIX_ADDR@
 +
-+!include_dir /etc/mysql
++!includedir /etc/mysql
 +
  [mysqldump]
 +socket		= @MYSQL_UNIX_ADDR@
