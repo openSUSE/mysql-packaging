@@ -54,7 +54,7 @@ Index: support-files/my-medium.cnf.sh
  skip-external-locking
  key_buffer_size = 16M
  max_allowed_packet = 1M
-@@ -129,7 +131,13 @@ server-id	= 1
+@@ -129,7 +131,15 @@ server-id	= 1
  #innodb_flush_log_at_trx_commit = 1
  #innodb_lock_wait_timeout = 50
  
@@ -62,6 +62,8 @@ Index: support-files/my-medium.cnf.sh
 +[safe_mysqld]
 +log-error	= /var/log/mysql/mysqld.log
 +socket		= @MYSQL_UNIX_ADDR@
++
++!includedir /etc/mysql
 +
  [mysqldump]
 +socket		= @MYSQL_UNIX_ADDR@
