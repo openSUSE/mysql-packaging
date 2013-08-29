@@ -1,0 +1,30 @@
+PATCH-P0-FIX-UPSTREAM: Rename srv_buf_size variable
+BUGS: upstream#70047
+
+Variable was probably renamed sometime in the past but error was not triggered
+because ifdef was not satisfied.
+
+Maintainer: Michal Hrusecky <mhrusecky@suse.cz>
+
+Index: storage/innobase/row/row0log.cc
+===================================================================
+--- storage/innobase/row/row0log.cc.orig
++++ storage/innobase/row/row0log.cc
+@@ -2364,7 +2364,7 @@ all_done:
+ 		and be ignored when the operation is unsupported. */
+ 		fallocate(index->online_log->fd,
+ 			  FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
+-			  ofs, srv_buf_size);
++			  ofs, srv_sort_buf_size);
+ #endif /* FALLOC_FL_PUNCH_HOLE */
+ 
+ 		next_mrec = index->online_log->head.block;
+@@ -3152,7 +3152,7 @@ all_done:
+ 		and be ignored when the operation is unsupported. */
+ 		fallocate(index->online_log->fd,
+ 			  FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
+-			  ofs, srv_buf_size);
++			  ofs, srv_sort_buf_size);
+ #endif /* FALLOC_FL_PUNCH_HOLE */
+ 
+ 		next_mrec = index->online_log->head.block;

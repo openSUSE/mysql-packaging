@@ -1,6 +1,6 @@
---- ../common/install.inc	2013-08-03 17:40:19.305613657 +0200
-+++ install.inc	2013-08-04 12:15:19.919997627 +0200
-@@ -87,7 +87,7 @@
+--- install.inc	2013-08-23 12:07:44.533811062 +0200
++++ install.inc	2013-08-23 12:13:33.463173104 +0200
+@@ -82,7 +82,7 @@
  ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so.0
  ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so
  %endif
@@ -9,7 +9,7 @@
  install -m 640 scripts/mysqlaccess.conf %buildroot/etc/mysqlaccess.conf
  for i in "${DOCS[@]}"; do
  	install -m 644 "${i}" "${DOCDIR}" || true
-@@ -164,9 +164,11 @@
+@@ -142,9 +142,11 @@
  if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
  	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
  fi
@@ -21,6 +21,6 @@
 +sed -i 's|^log-bin=|#\ log-bin=|' %buildroot/etc/my.cnf
 +sed -i 's|^binlog_format=|#\ binlog_format=|' %buildroot/etc/my.cnf
 +bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/mysql -xvf -
+ %if %have_info < 1
  [ -z "`ls '%buildroot'/usr/share/info/mysql.info* 2> /dev/null`" ] || rm -f '%buildroot'/usr/share/info/mysql.info*
- if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
- 	echo '%%dir %%_libdir/mysql'               >> mysql-client.files
+ %endif
