@@ -120,23 +120,6 @@ cat mysql-ndb-storage.files mysql-ndb-management.files  \
 	rm -f .$tmp
 done
 %endif
-pushd '%buildroot'/%_libdir
-for i in *.so.*.*.*; do
-	if [ -L "$i" ]; then
-		trg="`readlink "$i"`"
-		rm "$i"
-		mv "$trg" "$i"
-		ln -s "$i" "$trg"
-	fi
-done
-for i in *.so.*; do
-	if [ -L "$i" ] && [ -L "`readlink "$i"`" ]; then
-		trg="`readlink "$i"`"
-		rm "$i"
-		ln -s "`readlink "$trg"`" "$i"
-	fi
-done
-popd
 %if ! 0%{prefered} > 0
 cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
 	cd '%buildroot'
@@ -162,7 +145,9 @@ fi
 rm -rf '%buildroot'/etc/my.cnf.d
 mkdir -p '%buildroot'/etc/my.cnf.d
 bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/my.cnf.d -xvf -
+%if %have_info < 1
 [ -z "`ls '%buildroot'/usr/share/info/mysql.info* 2> /dev/null`" ] || rm -f '%buildroot'/usr/share/info/mysql.info*
+%endif
 if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
 	echo '%%dir %%_libdir/mysql'               >> mysql-client.files
 	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files

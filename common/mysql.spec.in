@@ -16,9 +16,10 @@
 #
 
 # Few definitions which will alter build
-%define prefered   {{prefered}}
-%define use_cmake  {{use_cmake}}
-%define cluster    {{cluster}}
+%define prefered   0{{prefered}}
+%define use_cmake  0{{use_cmake}}
+%define cluster    0{{cluster}}
+%define have_info  0{{have_info}}
 %define builtin_plugins {{builtin_plugins}}
 %define use_extra_provides {{use_extra_provides}}
 %define extra_provides {{extra_provides}}
@@ -54,6 +55,9 @@ Source14:       my.ini
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version}
 PreReq:         pwdutils
+%if %have_info
+PreReq:         %install_info_prereq %insserv_prereq
+%endif
 %endif
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -443,9 +447,13 @@ if posix.access("/usr/sbin/rcmysql", "x") then
 end
 
 %posttrans
+%if %have_info
+[ -z "`ls %{_infodir}/mysql.info.* 2> /dev/null`" ] || \
+%install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
+%endif
 if [ -d /var/lib/mysql ]; then
 	touch /var/lib/mysql/.run-mysql_upgrade
-	chown -R mysql:mysql /var/lib/mysql
+	chown -R --no-dereference mysql:mysql /var/lib/mysql
 fi
 for i in /var/lib/mysql/{.protected,.tmp}; do
 	( [ -d "$i" ] && rmdir "$i" ) || :
@@ -482,6 +490,9 @@ fi
 
 %postun
 if [ $1 = 0 ]; then
+	%if %have_info
+	%install_info_delete --info-dir=%{_infodir} %{_infodir}/mysql.info.*
+	%endif
 	%{insserv_cleanup}
 	rm -f "/var/lib/systemd/migrated/mysql.service"
 	if [ -x /usr/bin/systemctl ]; then
@@ -500,6 +511,9 @@ fi
 %config(noreplace) %attr(0640, root, mysql) /etc/my.cnf.d/*
 %config /etc/logrotate.d/mysql
 %doc %{_defaultdocdir}/%{name}
+%if %have_info
+%doc %{_infodir}/mysql.info.*
+%endif
 /etc/init.d/mysql
 /usr/sbin/rcmysql
 %dir /usr/share/%{name}
