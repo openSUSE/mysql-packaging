@@ -334,7 +334,7 @@ else
 			chown -R --no-dereference mysql:mysql "$log_dir"
 		done
 
-		MYSQLVER="`mysqld --version | sed 's|.*Ver\ *\([^\ ]*\)\.[0-9]\+[\-\ ].*|\1|'`"
+		MYSQLVER="`mysqld --no-defaults --version | sed 's|.*Ver\ *\([^\ ]*\)\.[0-9]\+[\-\ ].*|\1|'`"
 
 		# We assume a fresh install if the directory $datadir/mysql
 		# does not exist and create the privilege database
@@ -351,6 +351,7 @@ else
 		# user confirmation.
 		if [ -f "/var/lib/mysql/.run-mysql_upgrade" ]; then
 			if [ \! -f "/var/lib/mysql/.force_upgrade" ] && \
+			   [ -f "$datadir/mysql_upgrade_info" ] && \
 			   [ -z "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ]; then
 			   echo
 			   echo "You are upgrading from different stable version of MySQL!"
