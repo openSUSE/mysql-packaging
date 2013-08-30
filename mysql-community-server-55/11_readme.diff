@@ -1,0 +1,20 @@
+Index: README.SuSE
+===================================================================
+--- README.SuSE (revision 8d42ba26328e4e165a6b7e2bd92d7333)
++++ README.SuSE (working copy)
+@@ -55,3 +55,14 @@
+ 
+        /var/log/mysql/mysqld-upgrade.log
+ 
++5) Migration from previous versions
++===================================
++
++If you are migrating from previous versions, you should take a look at official
++documentation regarding migration:
++
++ * 5.0 -> 5.1 series
++   https://dev.mysql.com/doc/refman/5.1/en/upgrading-from-previous-series.html
++ * 5.1 -> 5.5 series
++   https://dev.mysql.com/doc/refman/5.5/en/upgrading-from-previous-series.html
++
+
