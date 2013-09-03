@@ -18,4 +18,3 @@ mysql-community-server-5.5.29-test-wrong-path.patch
 mysql-community-server-5.5.29-CVE-2012-5611.patch
 mysql-community-server-5.6.12-deharcode-libdir.patch
 mysql-5.5.31-upgrade-datadir.patch
-mysql-5.5-dump.patch

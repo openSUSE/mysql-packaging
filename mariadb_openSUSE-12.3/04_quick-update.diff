@@ -1,10 +1,11 @@
 --- rc.mysql-multi	2013-08-02 12:51:29.684015559 +0200
 +++ rc.mysql-multi	2013-08-03 11:06:49.375189637 +0200
-@@ -350,20 +350,6 @@
+@@ -350,21 +350,6 @@
  		# necessary, but doesn't do any harm. On big upgrade, require 
  		# user confirmation.
  		if [ -f "/var/lib/mysql/.run-mysql_upgrade" ]; then
 -			if [ \! -f "/var/lib/mysql/.force_upgrade" ] && \
+-			   [ -f "$datadir/mysql_upgrade_info" ] && \
 -			   [ -z "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ]; then
 -			   echo
 -			   echo "You are upgrading from different stable version of MySQL!"
