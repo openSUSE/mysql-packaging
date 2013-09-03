@@ -334,7 +334,7 @@ else
 			chown -R --no-dereference mysql:mysql "$log_dir"
 		done
 
-		MYSQLVER="`mysqld --no-defaults --version | sed 's|.*Ver\ *\([^\ ]*\)\.[0-9]\+[\-\ ].*|\1|'`"
+		MYSQLVER="`echo @MYSQLVER@ | sed 's|\.[0-9]\+$||'`"
 
 		# We assume a fresh install if the directory $datadir/mysql
 		# does not exist and create the privilege database

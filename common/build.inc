@@ -9,7 +9,7 @@ export EXTRA_FLAGS=" -Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unus
 %ifarch ppc64
 export EXTRA_FLAGS=" -mminimal-toc "
 %endif
-export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
+export CFLAGS="$RPM_OPT_FLAGS -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
 export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
 
 %if 0%{use_cmake} < 1

@@ -88,6 +88,7 @@ for i in "${DOCS[@]}"; do
 	install -m 644 "${i}" "${DOCDIR}" || true
 done
 install -m 755 %_sourcedir/rc.mysql-multi %buildroot/etc/init.d/mysql
+sed -i 's|@MYSQLVER@|%{version}|' %buildroot/etc/init.d/mysql
 ln -sf ../../etc/init.d/mysql %buildroot/usr/sbin/rcmysql
 # this is used by the init script
 install -m 755 -d %buildroot/var/run/mysql
