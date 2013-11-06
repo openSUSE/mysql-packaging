@@ -326,12 +326,18 @@ else
 
 		# Creating parent directories for logs
 		for i in "$log_upgrade" "$log_query" "$log_error"; do
-			log_dir="`dirname "$i"`"
-			if [ \! -d "$log_dir" ]; then
-				mkdir -p "$log_dir"
+			if [ "${i:0:1}" == "/" ]; then
+				log_dir="`dirname "$i"`"
+				if [ \! -d "$log_dir" ]; then
+					mkdir -p "$log_dir"
+				fi
+				chmod 770 "$log_dir"
+				chown -R --no-dereference mysql:mysql "$log_dir"
+			else
+				echo "Relative path \"$i\" for log found, skipping handling."
+				echo "Trusting sysadmin that he prepared everything and knows what to do."
+				echo "You've been warned, you are on your own with logs!"
 			fi
-			chmod 770 "$log_dir"
-			chown -R --no-dereference mysql:mysql "$log_dir"
 		done
 
 		MYSQLVER="`echo @MYSQLVER@ | sed 's|\.[0-9]\+$||'`"
@@ -372,6 +378,8 @@ else
 			echo "	/usr/share/doc/packages/mysql/README.SuSE" | tee -a "$log_upgrade"
 			sed -i -e 's|^\([[:blank:]]*\)skip-locking|\1skip-external-locking|' \
 			       -e 's|^\([[:blank:]]*skip-federated\)|#\1|' /etc/my.cnf
+			[ -d /etc/mysql ] || \
+			sed -i 's|^\([[:blank:]]*!includedir\ /etc/mysql[[:blank:]]*\)$|#\1|' /etc/my.cnf
 			# Check logs for inconsistencies
 			SRCLOGS=""
 			ALL_SRCLOGS=""
@@ -484,6 +492,8 @@ else
 			chmod 750 "$datadir"
 			chown -R --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$datadir"
 			rm -f /var/adm/update-messages/mysql-*
+			[ "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ] || \
+			echo -n "@MYSQLVER@" > "$datadir/mysql_upgrade_info"
 			rm -f /var/lib/mysql/.run-mysql_upgrade
 			rm -f /var/lib/mysql/.force_upgrade
 			rm -f "$datadir"/{update-stamp-*,mysql/stamp-4.1} # used in the past

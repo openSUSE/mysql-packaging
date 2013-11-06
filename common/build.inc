@@ -101,6 +101,7 @@ BuildMySQL() {
 	shift
 	cmake -DWITH_SSL=system                                            \
 			-DWITH_ZLIB=system                                           \
+			-DWITH_JEMALLOC=no                                           \
 			-DWITH_READLINE=0                                            \
 			-DWITH_LIBEDIT=0                                             \
 			-DINSTALL_LAYOUT=RPM                                         \

@@ -401,6 +401,8 @@ done
 %endif
 # Broken test that needs sources
 rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
+# Present only in newer MariaDB, big change, needs fixing & testing
+rm -rf storage/tokudb
 
 %build
 %{expand:%(cat %_sourcedir/build.inc)}

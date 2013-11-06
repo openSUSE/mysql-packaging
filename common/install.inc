@@ -155,4 +155,5 @@ if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
 	echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
 fi
 rm -rf '%buildroot'/usr/share/doc/{mysql,mariadb}*
+rm -f  '%buildroot'/usr/share/doc/* 2> /dev/null || true
 rm -rf '%buildroot'/usr/share/mysql/{solaris,SELinux}

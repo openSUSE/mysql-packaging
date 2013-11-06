@@ -9,6 +9,5 @@ mariadb-5.5.32-upgrade-exit-status.patch
 mariadb-5.2.3-cnf.patch
 mysql-community-server-5.5.6-safe-process-in-bin.patch
 mariadb-5.5.28-group.patch
-mariadb-5.5.32-deharcode-libdir.patch
+mariadb-5.5.33-deharcode-libdir.patch
 mysql-5.5.31-upgrade-datadir.patch
-mysql-5.5-dump.patch
