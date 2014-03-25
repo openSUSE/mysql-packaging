@@ -1,0 +1,17 @@
+PATCH-P0-HACK-UPSTREAM: Correct perl interpreter
+
+Setting correct perl interpreter in ugly way. Somebody should find out why it
+is not set correctly by itself.
+
+Maintainer: Michal Hrusecky <mhrusecky@suse.cz>
+
+Index: sql-bench/test-table-elimination.sh
+===================================================================
+--- sql-bench/test-table-elimination.sh.orig
++++ sql-bench/test-table-elimination.sh
+@@ -1,4 +1,4 @@
+-#!@PERL@
++#!/usr/bin/perl
+ # Test of table elimination feature
+
+ use Cwd;
