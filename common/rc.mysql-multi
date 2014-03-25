@@ -45,7 +45,7 @@ rc_reset
 # 5 - program is not installed
 # 6 - program is not configured
 # 7 - program is not running
-# 
+#
 # Note that starting an already running service, stopping
 # or restarting a not-running service as well as the restart
 # with force-reload (in case signalling is not supported) are
@@ -160,7 +160,7 @@ check_obsolete() {
 if [[ "$MYSQLD_MULTI" == "yes" ]]; then
 
   [[ -x /usr/bin/mysqld_multi ]] || {
-    echo -n "MySQL: /usr/bin/mysqld_multi not found" 
+    echo -n "MySQL: /usr/bin/mysqld_multi not found"
     rc_failed 5; rc_status -v; rc_exit;
   }
 
@@ -178,6 +178,15 @@ if [[ "$MYSQLD_MULTI" == "yes" ]]; then
         # fi
   	echo -n "Starting service multi MySQL "
         mysqld_multi start
+	for((i=0; i<150; i++)); do
+		sleep 0.2
+		[ "`mysqld_multi report | grep 'is not running'`" ] || break
+	done
+	if [ "`mysqld_multi report | grep 'is not running'`" ]; then
+		echo "Failed to start all instances"
+		mysqld_multi report
+		rc_failed;  rc_status -v; rc_exit
+	fi
 
   	# Remember status and be verbose
   	rc_status -v
@@ -186,13 +195,21 @@ if [[ "$MYSQLD_MULTI" == "yes" ]]; then
       stop)
   	echo -n "Shutting down service multi MySQL "
         mysqld_multi stop
-
+	for((i=0; i<150; i++)); do
+		sleep 0.2
+		[ "`mysqld_multi report | grep 'is running'`" ] || break
+	done
+	if [ "`mysqld_multi report | grep 'is running'`" ]; then
+		echo "Failed to stop all instances"
+		mysqld_multi report
+		rc_failed;  rc_status -v; rc_exit
+	fi
   	# Remember status and be verbose
   	rc_status -v
   	;;
 
       try-restart)
-  	## Stop the service and if this succeeds (i.e. the 
+  	## Stop the service and if this succeeds (i.e. the
   	## service was running before), start it again.
   	## Note: try-restart is not (yet) part of LSB (as of 0.7.5)
   	"$MYSELF" status >/dev/null &&  "$MYSELF" restart
@@ -214,7 +231,7 @@ if [[ "$MYSQLD_MULTI" == "yes" ]]; then
 	mysqld_multi reload
   	rc_status -v
   	;;
-  	
+
       status)
 	STATUS=$(mysqld_multi report)
         echo -n "$STATUS"
@@ -353,7 +370,7 @@ else
 		fi
 		check_obsolete
 		# Run mysql_upgrade on every package install/upgrade. Not always
-		# necessary, but doesn't do any harm. On big upgrade, require 
+		# necessary, but doesn't do any harm. On big upgrade, require
 		# user confirmation.
 		if [ -f "/var/lib/mysql/.run-mysql_upgrade" ]; then
 			if [ \! -f "/var/lib/mysql/.force_upgrade" ] && \
@@ -421,7 +438,7 @@ else
 			fi
 			protected="`mktemp -d -p /var/tmp mysql-protected.XXXXXX | tee /var/run/mysql/protecteddir`"
 			export TMPDIR="$TEMPDIR"
-			
+
 			# Run upgrade, double check
 			# We need to restart mysql every time as programs
 			# reloads privileges tables, so we can get lock out
@@ -499,12 +516,12 @@ else
 			rm -f "$datadir"/{update-stamp-*,mysql/stamp-4.1} # used in the past
 			chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$log_upgrade"
 			chmod 640 "$log_upgrade"
-		fi 
+		fi
 
 		export TMPDIR="$TEMPDIR"
 
 		echo -n "Starting service MySQL "
-		
+
 		$SAFE_MYSQLD \
 			--mysqld=${MYSQLD#/usr/sbin/} \
 			$debug_flags \
@@ -535,7 +552,7 @@ else
 		;;
 
 	    try-restart)
-		## Stop the service and if this succeeds (i.e. the 
+		## Stop the service and if this succeeds (i.e. the
 		## service was running before), start it again.
 		## Note: try-restart is not (yet) part of LSB (as of 0.7.5)
 		"$MYSELF" status >/dev/null &&  "$MYSELF" restart
@@ -558,7 +575,7 @@ else
 		touch "$pid_file"
 		rc_status -v
 		;;
-		
+
 	    check|status)
 		echo -n "Checking for service MySQL: "
 		## Check status with checkproc(8), if process is running
