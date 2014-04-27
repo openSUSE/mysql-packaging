@@ -83,7 +83,7 @@ ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so.0
 ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so
 %endif
 install -m 660 %{S:14} %buildroot/etc/my.cnf
-install -m 640 scripts/mysqlaccess.conf %buildroot/etc/mysqlaccess.conf
+[ \! -f scripts/mysqlaccess.conf ] || install -m 640 scripts/mysqlaccess.conf %buildroot/etc/mysqlaccess.conf
 for i in "${DOCS[@]}"; do
 	install -m 644 "${i}" "${DOCDIR}" || true
 done
@@ -143,12 +143,14 @@ ln -s libndbclient.so.6.0.0 '%buildroot'%_libdir/libndbclient.so.6
 if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
 fi
+[ \! -f '%buildroot'/etc/mysqlaccess.conf ] || echo '%config(noreplace) %attr(0640, root, mysql) /etc/mysqlaccess.conf' >> mysql-client.files
 rm -rf '%buildroot'/etc/my.cnf.d
 mkdir -p '%buildroot'/etc/my.cnf.d
 bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/my.cnf.d -xvf -
 %if %have_info < 1
 [ -z "`ls '%buildroot'/usr/share/info/mysql.info* 2> /dev/null`" ] || rm -f '%buildroot'/usr/share/info/mysql.info*
 %endif
+chmod a-x '%buildroot'/usr/share/mysql-test/suite/innodb/t/*.zip
 if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
 	echo '%%dir %%_libdir/mysql'               >> mysql-client.files
 	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files

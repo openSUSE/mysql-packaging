@@ -397,6 +397,7 @@ sed -i 's|@localstatedir@|/var/log|' support-files/mysql-log-rotate.sh
 %if 0%{prefered} < 1
 for i in `grep -Rl mysqlclient .`; do
 	sed -i 's|mysqlclient|{{lib-name}}|g' $i
+	sed -i 's|mysql-5.7-lib{{lib-name}}-symbols.patch|mysql-5.7-libmysqlclient-symbols.patch|g' $i
 done
 %endif
 # Broken test that needs sources
@@ -535,7 +536,6 @@ fi
 
 %files client -f mysql-client.files
 %defattr(-, root, root)
-%config(noreplace) %attr(0640, root, mysql) /etc/mysqlaccess.conf
 
 %if 0%{prefered} > 0
 %files -n libmysqlclient-devel -f libmysqlclient-devel.files

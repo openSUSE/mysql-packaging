@@ -7,11 +7,11 @@ cluster:          0
 use_extra_provides: 1
 extra_provides:   mysql-community-server_57
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.7.1"
-srv-version:      "5.7.1"
+pkg-version:      "5.7.4"
+srv-version:      "5.7.4"
 url:              "http://www.mysql.com"
-source:           "mysql-%{version}-m11.tar.bz2"
-src-dir:          "mysql-%{version}-m11"
+source:           "mysql-%{version}-m14.tar.bz2"
+src-dir:          "mysql-%{version}-m14"
 lib-version:      18
 lib-name:         mysql57client
 description:      'SQL is the most popular database language in the world. MySQL is a
