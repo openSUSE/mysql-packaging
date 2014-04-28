@@ -150,7 +150,7 @@ bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/m
 %if %have_info < 1
 [ -z "`ls '%buildroot'/usr/share/info/mysql.info* 2> /dev/null`" ] || rm -f '%buildroot'/usr/share/info/mysql.info*
 %endif
-chmod a-x '%buildroot'/usr/share/mysql-test/suite/innodb/t/*.zip
+[ -z "`ls '%buildroot'/usr/share/mysql-test/suite/innodb/t/*.zip`" ] || chmod a-x '%buildroot'/usr/share/mysql-test/suite/innodb/t/*.zip
 if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
 	echo '%%dir %%_libdir/mysql'               >> mysql-client.files
 	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
