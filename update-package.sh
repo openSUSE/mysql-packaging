@@ -103,6 +103,7 @@ if [ "`tail -n 1 default.yaml | sed -n 's|---|yes|p'`" ]; then
    echo -e '$d\nwq\n' | ed default.yaml > /dev/null 2> /dev/null
 fi
 cat ./default.yaml ./config.yaml > ./whole-config.yaml
+[ -z "`grep "^prefered:[[:blank:]]*1$" ./whole-config.yaml`" ] || sed -i 's|^lib-name:.*|lib-name:\ mysqlclient|' ./whole-config.yaml
 sync
 
 SPEC="`ls -1 *.spec | head -n1`"
