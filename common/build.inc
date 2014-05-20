@@ -125,5 +125,6 @@ BuildMySQL() {
 }
 
 BuildMySQL "" -DCMAKE_BUILD_TYPE=Release -DINSTALL_SQLBENCHDIR=share
-BuildMySQL "-debug" -DCMAKE_BUILD_TYPE=Debug
+# TokuDB can't be compiled without optimisations turned on
+BuildMySQL "-debug" -DCMAKE_BUILD_TYPE=Debug -DWITHOUT_TOKUDB=1
 %endif
