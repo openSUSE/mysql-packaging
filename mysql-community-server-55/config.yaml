@@ -1,7 +1,7 @@
 ---
 pkg-name:         mysql-community-server
 display-name:     "MySQL Community Server"
-prefered:         0
+preferred:        0
 use_cmake:        1
 cluster:          0
 have_info:        0

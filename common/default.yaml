@@ -1,5 +1,5 @@
 ---
-prefered:           0
+preferred:          0
 use_cmake:          0
 cluster:            0
 use_extra_provides: 0

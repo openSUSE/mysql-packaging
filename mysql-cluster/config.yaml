@@ -1,7 +1,7 @@
 ---
 pkg-name:         mysql-cluster
 display-name:     "MySQL Cluster"
-prefered:         0
+preferred:        0
 use_cmake:        0
 cluster:          1
 builtin_plugins:  partition,csv,heap,myisam,innobase,ndbcluster

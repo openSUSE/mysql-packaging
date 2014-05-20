@@ -73,7 +73,7 @@ BuildMySQL() {
 	popd
 }
 # Build the client, extra tools, libraries
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 BuildMySQL "" --with-embedded-server
 %else
 BuildMySQL "" --without-embedded-server
@@ -81,7 +81,7 @@ BuildMySQL "" --without-embedded-server
 # build mysqld-debug
 BuildMySQL "-debug" --with-debug --without-embedded-server
 
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 mkdir -p _buildlibmysqld/tmp
 cd _buildlibmysqld/tmp
 ar -x ../../_build/libmysqld/libmysqld.a

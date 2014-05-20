@@ -16,7 +16,7 @@
 #
 
 # Few definitions which will alter build
-%define prefered     0{{prefered}}
+%define preferred    0{{prefered}}
 %define use_systemd  0{{systemd}}
 %define use_cmake    0{{use_cmake}}
 %define cluster      0{{cluster}}
@@ -109,7 +109,7 @@ Provides:       mysql-Max = %{srv_vers}
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
 %endif
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 %if "%{name}" != mysql
 Obsoletes:      mysql < %{srv_vers}
 %endif
@@ -122,7 +122,7 @@ Conflicts:      otherproviders(mysql)
 
 This package only contains the server-side programs.
 
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 %package -n libmysqlclient-devel
 # mysql-devel was last used in openSUSE 10.2
 Provides:       mysql-devel = %srv_vers-%release
@@ -191,7 +191,7 @@ Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
 %endif
 Requires:       %{name}-errormessages = %version
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 %if "%{name}" != mysql
 Obsoletes:      mysql-client < %{srv_vers}
 %endif
@@ -221,7 +221,7 @@ Provides:       mysql-bench = %{srv_vers}
 Provides:       %{extra_provides}-bench = %{version}
 Obsoletes:      %{extra_provides}-bench < %{version}
 %endif
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 %if "%{name}" != mysql
 Obsoletes:      mysql-bench < %{srv_vers}
 %endif
@@ -245,7 +245,7 @@ Provides:       mysql-debug = %{srv_vers}
 Provides:       %{extra_provides}-debug-verion = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
 %endif
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 Obsoletes:      mysql-debug < %{srv_vers}
 %endif
 Conflicts:      otherproviders(mysql-debug)
@@ -272,7 +272,7 @@ Provides:       mysql-test = %{srv_vers}
 Provides:       %{extra_provides}-test = %{version}
 Obsoletes:      %{extra_provides}-test < %{version}
 %endif
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 %if "%{name}" != mysql
 Obsoletes:      mysql-test < %{srv_vers}
 %endif
@@ -298,7 +298,7 @@ Provides:       mysql:/usr/bin/mysqlhotcopy
 Provides:       %{extra_provides}-tools = %{version}
 Obsoletes:      %{extra_provides}-tools < %{version}
 %endif
-%if 0%{?prefered} > 0
+%if 0%{?preferred} > 0
 %if "%{name}" != mysql
 Obsoletes:      mysql-tools < %{srv_vers}
 %endif
@@ -398,7 +398,7 @@ rm -f man/ndbd_redo_log_reader.1
 # breaks VPATH builds when in sourcedir, is generated in the builddirs
 rm -f sql/sql_builtin.cc
 sed -i 's|@localstatedir@|/var/log|' support-files/mysql-log-rotate.sh
-%if 0%{prefered} < 1
+%if 0%{preferred} < 1
 for i in `grep -Rl mysqlclient .`; do
 	sed -i 's|mysqlclient|{{lib-name}}|g' $i
 	sed -i 's|-lib{{lib-name}}-symbols.patch|-libmysqlclient-symbols.patch|g' $i
@@ -497,7 +497,7 @@ fi
 %postun -n libndbclient6 -p /sbin/ldconfig
 %endif
 
-%if 0%{prefered} > 0
+%if 0%{preferred} > 0
 %post -n libmysqld18 -p /sbin/ldconfig
 
 %postun -n libmysqld18 -p /sbin/ldconfig
@@ -555,7 +555,7 @@ fi
 %files client -f mysql-client.files
 %defattr(-, root, root)
 
-%if 0%{prefered} > 0
+%if 0%{preferred} > 0
 %files -n libmysqlclient-devel -f libmysqlclient-devel.files
 %defattr(-, root, root)
 /usr/include/mysql

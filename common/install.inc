@@ -76,7 +76,7 @@ DOCDIR=%buildroot%_defaultdocdir/%name
 install -d -m 755 ${DOCDIR}
 install -d -m 755 %buildroot/etc/logrotate.d
 install -m 644 _build/support-files/mysql-log-rotate %buildroot/etc/logrotate.d/mysql
-%if 0%{?prefered} > 0%{?use_cmake}
+%if 0%{?preferred} > 0%{?use_cmake}
 install -m 644 _buildlibmysqld/*.so* %buildroot%_libdir
 ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so.0
 ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so
@@ -131,7 +131,7 @@ cat mysql-ndb-storage.files mysql-ndb-management.files  \
 	rm -f .$tmp
 done
 %endif
-%if ! 0%{prefered} > 0
+%if ! 0%{preferred} > 0
 cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
 	cd '%buildroot'
 	rm -f ."$tmp"
