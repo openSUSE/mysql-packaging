@@ -75,7 +75,6 @@ DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/READ
 DOCDIR=%buildroot%_defaultdocdir/%name
 install -d -m 755 ${DOCDIR}
 install -d -m 755 %buildroot/etc/logrotate.d
-install -d -m 755 %buildroot/etc/init.d
 install -m 644 _build/support-files/mysql-log-rotate %buildroot/etc/logrotate.d/mysql
 %if 0%{?prefered} > 0%{?use_cmake}
 install -m 644 _buildlibmysqld/*.so* %buildroot%_libdir
@@ -87,9 +86,20 @@ install -m 660 %{S:14} %buildroot/etc/my.cnf
 for i in "${DOCS[@]}"; do
 	install -m 644 "${i}" "${DOCDIR}" || true
 done
-install -m 755 %_sourcedir/rc.mysql-multi %buildroot/etc/init.d/mysql
-sed -i 's|@MYSQLVER@|%{version}|' %buildroot/etc/init.d/mysql
-ln -sf ../../etc/init.d/mysql %buildroot/usr/sbin/rcmysql
+%if 0%{?suse_version} >= 1210 && 0%{?use_systemd} > 0
+install -D -m 755 %_sourcedir/rc.mysql.systemd '%buildroot'/usr/lib/mysql/rcmysql
+sed -i 's|@MYSQLVER@|%{version}|' '%buildroot'/usr/lib/mysql/rcmysql
+ln -sf service '%buildroot'/usr/sbin/rcmysql
+install -D -m 644 %_sourcedir/mysql.service '%buildroot'/usr/lib/systemd/system/mysql.service
+sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/usr/lib/mysql/rcmysql
+rm -rf '%buildroot'/etc/init.d
+%else
+install -d -m 755 '%buildroot'/etc/init.d
+install -m 755 '%_sourcedir'/rc.mysql.sysvinit '%buildroot'/etc/init.d/mysql
+sed -i 's|@MYSQLVER@|%{version}|' '%buildroot'/etc/init.d/mysql
+ln -sf ../../etc/init.d/mysql '%buildroot'/usr/sbin/rcmysql
+sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/etc/init.d/mysql
+%endif
 # this is used by the init script
 install -m 755 -d %buildroot/var/run/mysql
 # SuSEfirewall service description
@@ -132,7 +142,6 @@ rm -rf '%buildroot'/%_datadir/man/*/mysql_config.1*
 rm -rf '%buildroot'/%_includedir  
 rm -rf '%buildroot'/%_datadir/aclocal
 %endif
-sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/etc/init.d/mysql
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlrepair
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlanalyze
 ln -s mysqlcheck '%buildroot'%_bindir/mysqloptimize

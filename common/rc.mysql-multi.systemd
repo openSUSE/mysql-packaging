@@ -1,0 +1,65 @@
+# Shell functions sourced from /etc/rc.status:
+#      rc_check         check and set local and overall rc status
+#      rc_status        check and set local and overall rc status
+#      rc_status -v     ditto but be verbose in local rc status
+#      rc_status -v -r  ditto and clear the local rc status
+#      rc_failed        set local and overall rc status to failed
+#      rc_failed <num>  set local and overall rc status to <num>
+#      rc_reset         clear local rc status (overall remains)
+#      rc_exit          exit appropriate to overall rc status
+
+rc_check ()
+{
+    _rc_status_ret=$?
+	test "_rc_status_ret" || _rc_status_ret=0
+    test $_rc_status_ret -eq 0 || _rc_status=$_rc_status_ret
+    test $_rc_status     -eq 0 || _rc_status_all=$_rc_status
+    return 0$_rc_status_ret
+}
+
+rc_status ()
+{
+    rc_check
+    _rc_status_ret=$_rc_status
+    local i
+    for i ; do
+	case "$i" in
+	-v|-v[1-9]|-v[1-9][0-9])
+	    case "$_rc_status" in
+	    0)	echo "Everything is Ok"		;; # success
+	    *)	echo "Something went wrong"	;; # failed
+	    esac
+
+	    # reset _rc_status to 0 after verbose case
+	    _rc_status=0 ;;
+	-r) rc_reset ;;
+	*)  echo "rc_status: Usage: [-v[<num>] [-r]]" 1>&2 ; return 0 ;;
+	esac
+    done
+    return $_rc_status_ret
+}
+
+rc_failed ()
+{
+    rc_reset
+    case "$1" in
+    [0-7]) _rc_status=$1 ;;
+    "")    _rc_status=1
+    esac
+    rc_check
+    return $_rc_status
+}
+
+rc_exit ()
+{
+    exit $_rc_status_all
+}
+
+rc_reset ()
+{
+    _rc_status=0
+    _rc_status_all=0
+    rc_check
+    return 0
+}
+

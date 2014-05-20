@@ -16,10 +16,11 @@
 #
 
 # Few definitions which will alter build
-%define prefered   0{{prefered}}
-%define use_cmake  0{{use_cmake}}
-%define cluster    0{{cluster}}
-%define have_info  0{{have_info}}
+%define prefered     0{{prefered}}
+%define use_systemd  0{{systemd}}
+%define use_cmake    0{{use_cmake}}
+%define cluster      0{{cluster}}
+%define have_info    0{{have_info}}
 %define builtin_plugins {{builtin_plugins}}
 %define use_extra_provides {{use_extra_provides}}
 %define extra_provides {{extra_provides}}
@@ -44,7 +45,7 @@ Source2:        baselibs.conf
 Source3:        README.debug
 Source4:        suse-test-run
 Source5:        mysql.SuSEfirewall2
-Source7:        rc.mysql-multi
+Source7:        README.install
 Source8:        README.SuSE
 Source9:        mysql-patches.tar.bz2
 Source10:       build.inc
@@ -52,6 +53,9 @@ Source11:       install.inc
 Source12:       series
 Source13:       configuration-tweaks.tar.bz2
 Source14:       my.ini
+Source15:       rc.mysql.sysvinit
+Source16:       rc.mysql.systemd
+Source17:       mysql.service
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version}
 PreReq:         pwdutils
@@ -435,14 +439,13 @@ rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
 # preun and posttran takes care of restart                            #
 #######################################################################
 %preun
-[ $1 = 1 ] || /usr/sbin/rcmysql stop
+[ $1 = 1 ] || /usr/sbin/rcmysql stop || true
 
 %pretrans -p <lua>
 if posix.access("/usr/sbin/rcmysql", "x") then
   restart = os.execute("/usr/sbin/rcmysql status > /dev/null")
-  os.execute("/usr/sbin/rcmysql stop")
-
   if restart == 0 then
+    os.execute("/usr/sbin/rcmysql stop")
     os.execute("/bin/mkdir -p /var/run/mysql/restart")
   end
 end
@@ -463,6 +466,17 @@ done
 if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d /var/run/mysql/restart ]; then
 	[ -x /usr/sbin/rcmysql ] && /usr/sbin/rcmysql start
 	rmdir /var/run/mysql/restart || :
+fi
+# warn on first run
+datadir="/var/lib/mysql"
+if [ -x /usr/bin/my_print_defaults ]; then
+	datadir="`/usr/bin/my_print_defaults mysqld mysql_server | sed -n 's|--datadir=||p'`"
+	[ "$datadir" ] || datadir="/var/lib/mysql"
+fi
+if [ \! -d "$datadir/mysql" ]; then
+cat > /var/adm/update-messages/%{name}-%{version}-%{release} << EOF
+%(cat %_sourcedir/README.install)
+EOF
 fi
 
 #######################################################################
@@ -515,7 +529,13 @@ fi
 %if %have_info
 %doc %{_infodir}/mysql.info.*
 %endif
+%if 0%{?suse_version} >= 1210 && 0%{?use_systemd} > 0
+%dir /usr/lib/mysql
+/usr/lib/mysql/rcmysql
+/usr/lib/systemd/system/mysql.service
+%else
 /etc/init.d/mysql
+%endif
 /usr/sbin/rcmysql
 %dir /usr/share/%{name}
 %dir /usr/share/mysql
