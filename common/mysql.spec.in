@@ -467,7 +467,6 @@ end
 %endif
 if [ -d /var/lib/mysql ]; then
 	touch /var/lib/mysql/.run-mysql_upgrade
-	chown -R --no-dereference mysql:mysql /var/lib/mysql
 fi
 for i in /var/lib/mysql/{.protected,.tmp}; do
 	( [ -d "$i" ] && rmdir "$i" ) || :
