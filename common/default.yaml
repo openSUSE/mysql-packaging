@@ -1,7 +1,7 @@
 ---
 preferred:          0
-use_cmake:          0
+use_cmake:          1
 cluster:            0
 use_extra_provides: 0
-systemd:            0
+systemd:            1
 extra_provides:     mysql
