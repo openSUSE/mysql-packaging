@@ -16,7 +16,7 @@
 #
 
 # Few definitions which will alter build
-%define preferred    0{{prefered}}
+%define preferred    0{{preferred}}
 %define use_systemd  0{{systemd}}
 %define use_cmake    0{{use_cmake}}
 %define cluster      0{{cluster}}
@@ -176,6 +176,7 @@ languages and applications need to dynamically load and use {{display-name}}.
 %package -n lib{{lib-name}}_r{{lib-version}}
 Summary:        Shared Libraries for {{display-name}}
 Group:          Development/Libraries/Other
+Requires:       lib{{lib-name}}{{lib-version}}
 
 %description -n lib{{lib-name}}_r{{lib-version}}
 This package contains the shared libraries (.so) which certain
@@ -410,7 +411,7 @@ done
 %endif
 # Broken test that needs sources
 rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
-+# Specify perl path on shebangs
+# Specify perl path on shebangs
 for i in `grep -Rl '^#!@PERL@$' .`; do
 	sed -i 's|@PERL@|/usr/bin/perl|' $i
 done
@@ -549,7 +550,7 @@ fi
 %dir /usr/share/mysql
 /usr/share/%{name}/charsets/
 /usr/share/%{name}/*.sql
-%ghost %dir %attr(755,mysql,mysql)/var/run/mysql
+%ghost %dir %attr(755,mysql,mysql)%{_rundir}/mysql
 %dir %{_libdir}/mysql
 %{_libdir}/mysql/mysqld.sym
 %config /etc/sysconfig/SuSEfirewall2.d/services/mysql

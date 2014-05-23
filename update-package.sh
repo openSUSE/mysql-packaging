@@ -103,8 +103,14 @@ if [ "`tail -n 1 default.yaml | sed -n 's|---|yes|p'`" ]; then
    echo -e '$d\nwq\n' | ed default.yaml > /dev/null 2> /dev/null
 fi
 cat ./default.yaml ./config.yaml > ./whole-config.yaml
-[ -z "`grep "^prefered:[[:blank:]]*1$" ./whole-config.yaml`" ] || sed -i 's|^lib-name:.*|lib-name:\ mysqlclient|' ./whole-config.yaml
 sync
+
+# If it is preferred variant set correct library name
+[ "`echo '{{preferred}}' | mustache ./whole-config.yaml -`" -le 0 ] || sed -i 's|^lib-name:.*|lib-name:\ mysqlclient|' ./whole-config.yaml
+
+cat rc.mysql-multi.head rc.mysql-multi.sysvinit rc.mysql-multi.body > rc.mysql.sysvinit
+cat rc.mysql-multi.head rc.mysql-multi.systemd  rc.mysql-multi.body > rc.mysql.systemd
+rm rc.mysql-multi.*
 
 SPEC="`ls -1 *.spec | head -n1`"
 
