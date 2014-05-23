@@ -25,6 +25,10 @@
 %define use_extra_provides {{use_extra_provides}}
 %define extra_provides {{extra_provides}}
 
+%if ! %{defined _rundir}
+%define _rundir %{_localstatedir}/run
+%endif
+
 %if %{?rel:0}%{!?rel:1}
 %define rel 1
 %endif
@@ -406,6 +410,10 @@ done
 %endif
 # Broken test that needs sources
 rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
++# Specify perl path on shebangs
+for i in `grep -Rl '^#!@PERL@$' .`; do
+	sed -i 's|@PERL@|/usr/bin/perl|' $i
+done
 
 %build
 %{expand:%(cat %_sourcedir/build.inc)}
@@ -446,7 +454,7 @@ if posix.access("/usr/sbin/rcmysql", "x") then
   restart = os.execute("/usr/sbin/rcmysql status > /dev/null")
   if restart == 0 then
     os.execute("/usr/sbin/rcmysql stop")
-    os.execute("/bin/mkdir -p /var/run/mysql/restart")
+    os.execute("/bin/mkdir -p %{_rundir}/mysql/restart")
   end
 end
 
@@ -463,9 +471,9 @@ for i in /var/lib/mysql/{.protected,.tmp}; do
 	( [ -d "$i" ] && rmdir "$i" ) || :
 done
 # start mysql again if it should run
-if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d /var/run/mysql/restart ]; then
+if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d %{_rundir}/mysql/restart ]; then
 	[ -x /usr/sbin/rcmysql ] && /usr/sbin/rcmysql start
-	rmdir /var/run/mysql/restart || :
+	rmdir %{_rundir}/mysql/restart || :
 fi
 # warn on first run
 datadir="/var/lib/mysql"
