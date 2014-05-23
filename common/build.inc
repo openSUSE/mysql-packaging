@@ -118,7 +118,7 @@ BuildMySQL() {
 			-DDENABLE_DOWNLOADS=false                                    \
 			-DINSTALL_PLUGINDIR_RPM="%{_lib}/mysql/plugin"               \
 			-DINSTALL_LIBDIR_RPM="%{_lib}"                               \
-			"$@" ..
+			-Wno-dev "$@" ..
 	make %{?jobs:-j%jobs}
 	nm --numeric-sort sql/mysqld > sql/mysqld.sym
 	popd
