@@ -476,6 +476,7 @@ done
 if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d %{_rundir}/mysql/restart ]; then
 	[ -x /usr/sbin/rcmysql ] && /usr/sbin/rcmysql start
 	rmdir %{_rundir}/mysql/restart || :
+	rmdir %{_rundir}/mysql         || :
 fi
 # warn on first run
 datadir="/var/lib/mysql"
@@ -551,7 +552,6 @@ fi
 %dir /usr/share/mysql
 /usr/share/%{name}/charsets/
 /usr/share/%{name}/*.sql
-%ghost %dir %attr(755,mysql,mysql)%{_rundir}/mysql
 %dir %{_libdir}/mysql
 %{_libdir}/mysql/mysqld.sym
 %config /etc/sysconfig/SuSEfirewall2.d/services/mysql

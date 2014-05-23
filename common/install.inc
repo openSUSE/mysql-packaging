@@ -100,8 +100,6 @@ sed -i 's|@MYSQLVER@|%{version}|' '%buildroot'/etc/init.d/mysql
 ln -sf ../../etc/init.d/mysql '%buildroot'/usr/sbin/rcmysql
 sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/etc/init.d/mysql
 %endif
-# this is used by the init script
-install -m 755 -d %buildroot/var/run/mysql
 # SuSEfirewall service description
 install -D -m 644 %_sourcedir/mysql.SuSEfirewall2 \
 	%buildroot/etc/sysconfig/SuSEfirewall2.d/services/mysql
