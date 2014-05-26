@@ -1,0 +1,51 @@
+Index: build.inc
+===================================================================
+--- build.inc	(revision e545a3b81ad4576d218d81b71f869478)
++++ build.inc	(working copy)
+@@ -5,7 +5,7 @@
+ %ifarch ppc64
+ export EXTRA_FLAGS=" -mminimal-toc "
+ %endif
+-export CFLAGS="$RPM_OPT_FLAGS -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
+-export CXXFLAGS="$CFLAGS"
++export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
++export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
+ 
+ %if 0%{use_cmake} < 1
+@@ -101,7 +101,6 @@
+ 	shift
+ 	cmake -DWITH_SSL=system                                            \
+ 			-DWITH_ZLIB=system                                           \
+-			-DWITH_LIBEVENT=system                                       \
+ 			-DWITH_JEMALLOC=no                                           \
+ 			-DWITH_READLINE=0                                            \
+ 			-DWITH_LIBEDIT=0                                             \
+@@ -118,13 +117,12 @@
+ 			-DDENABLE_DOWNLOADS=false                                    \
+ 			-DINSTALL_PLUGINDIR_RPM="%{_lib}/mysql/plugin"               \
+ 			-DINSTALL_LIBDIR_RPM="%{_lib}"                               \
++			"$@" ..
+-			-Wno-dev "$@" ..
+ 	make %{?jobs:-j%jobs}
+ 	nm --numeric-sort sql/mysqld > sql/mysqld.sym
+ 	popd
+ }
+ 
+ BuildMySQL "" -DCMAKE_BUILD_TYPE=Release -DINSTALL_SQLBENCHDIR=share
++BuildMySQL "-debug" -DCMAKE_BUILD_TYPE=Debug
+-# TokuDB can't be compiled without optimisations turned on
+-BuildMySQL "-debug" -DCMAKE_BUILD_TYPE=Debug -DWITHOUT_TOKUDB=1
+ %endif
+
+Index: mysql.spec.in
+===================================================================
+--- mysql.spec.in	(revision 7ab8d4309361022ac72d2ac999f56760)
++++ mysql.spec.in	(working copy)
+@@ -66,7 +70,6 @@
+ BuildRequires:  gcc-c++
+ BuildRequires:  libaio-devel
+ BuildRequires:  libedit-devel
+-BuildRequires:  libevent-devel
+ BuildRequires:  libtool
+ BuildRequires:  ncurses-devel
+ BuildRequires:  openssl-devel
