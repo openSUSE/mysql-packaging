@@ -80,6 +80,10 @@ for diff in [0-9]_*.diff [0-9][0-9]_*.diff; do
 done
 echo "Additional patching done."
 
+cat rc.mysql-multi.head rc.mysql-multi.sysvinit rc.mysql-multi.body > rc.mysql.sysvinit
+cat rc.mysql-multi.head rc.mysql-multi.systemd  rc.mysql-multi.body > rc.mysql.systemd
+rm rc.mysql-multi.*
+
 if [ -f to_delete ]; then
    cat to_delete | while read f; do
       echo "Deleting $f..."
@@ -107,10 +111,6 @@ sync
 
 # If it is preferred variant set correct library name
 [ "`echo '{{preferred}}' | mustache ./whole-config.yaml -`" -le 0 ] || sed -i 's|^lib-name:.*|lib-name:\ mysqlclient|' ./whole-config.yaml
-
-cat rc.mysql-multi.head rc.mysql-multi.sysvinit rc.mysql-multi.body > rc.mysql.sysvinit
-cat rc.mysql-multi.head rc.mysql-multi.systemd  rc.mysql-multi.body > rc.mysql.systemd
-rm rc.mysql-multi.*
 
 SPEC="`ls -1 *.spec | head -n1`"
 
@@ -144,3 +144,6 @@ fi
 
 echo "Cleaning up..."
 rm -f ./*.in ./default.yaml ./config.yaml ./whole-config.yaml ./*.cnf
+if [ -x ./last_run.sh ]; then
+   ./last_run.sh && rm ./last_run.sh
+fi
