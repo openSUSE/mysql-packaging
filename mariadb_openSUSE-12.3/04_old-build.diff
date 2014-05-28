@@ -2,7 +2,7 @@ Index: build.inc
 ===================================================================
 --- build.inc	(revision e545a3b81ad4576d218d81b71f869478)
 +++ build.inc	(working copy)
-@@ -5,7 +5,7 @@
+@@ -5,7 +5,9 @@
  %ifarch ppc64
  export EXTRA_FLAGS=" -mminimal-toc "
  %endif
@@ -10,9 +10,11 @@ Index: build.inc
 -export CXXFLAGS="$CFLAGS"
 +export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
 +export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
++# Not tested enough yet
++rm -rf storage/tokudb
  
  %if 0%{use_cmake} < 1
-@@ -101,7 +101,6 @@
+@@ -101,7 +103,6 @@
  	shift
  	cmake -DWITH_SSL=system                                            \
  			-DWITH_ZLIB=system                                           \
@@ -20,7 +22,7 @@ Index: build.inc
  			-DWITH_JEMALLOC=no                                           \
  			-DWITH_READLINE=0                                            \
  			-DWITH_LIBEDIT=0                                             \
-@@ -118,13 +117,12 @@
+@@ -118,13 +119,12 @@
  			-DDENABLE_DOWNLOADS=false                                    \
  			-DINSTALL_PLUGINDIR_RPM="%{_lib}/mysql/plugin"               \
  			-DINSTALL_LIBDIR_RPM="%{_lib}"                               \
