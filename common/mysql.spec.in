@@ -103,7 +103,7 @@ Requires:       %{name}-errormessages = %version
 Requires:       perl-base
 # systemd requirements for openSUSE >= 12.1
 %if 0%{?suse_version} >= 1210
-BuildRequires:  systemd
+BuildRequires:  pkgconfig(systemd)
 %{?systemd_requires}
 %endif
 %if "%{name}" != mysql
