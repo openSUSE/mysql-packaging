@@ -7,7 +7,7 @@ preferred:        0
 use_extra_provides: 0
 extra_provides:   mariadb_100
 builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
-pkg-version:      "10.0.12"
+pkg-version:      "10.0.13"
 srv-version:      "5.6.17"
 url:              "http://www.mariab.org"
 source:           "mariadb-%{version}.tar.bz2"
