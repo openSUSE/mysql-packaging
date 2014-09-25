@@ -78,6 +78,7 @@ for diff in [0-9]_*.diff [0-9][0-9]_*.diff; do
       fi
    fi
 done
+rm *.orig
 echo "Additional patching done."
 
 cat rc.mysql-multi.head rc.mysql-multi.sysvinit rc.mysql-multi.body > rc.mysql.sysvinit
@@ -110,7 +111,7 @@ cat ./default.yaml ./config.yaml > ./whole-config.yaml
 sync
 
 # If it is preferred variant set correct library name
-[ "`echo '{{preferred}}' | mustache ./whole-config.yaml -`" -le 0 ] || sed -i 's|^lib-name:.*|lib-name:\ mysqlclient|' ./whole-config.yaml
+[ "`echo '0{{preferred}}' | mustache ./whole-config.yaml -`" -le 0 ] || sed -i 's|^lib-name:.*|lib-name:\ mysqlclient|' ./whole-config.yaml
 
 SPEC="`ls -1 *.spec | head -n1`"
 
