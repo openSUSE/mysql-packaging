@@ -11,9 +11,9 @@
 rc_check ()
 {
     _rc_status_ret=$?
-	test "_rc_status_ret" || _rc_status_ret=0
-    test $_rc_status_ret -eq 0 || _rc_status=$_rc_status_ret
-    test $_rc_status     -eq 0 || _rc_status_all=$_rc_status
+    test "$_rc_status_ret"       || _rc_status_ret=0
+    test 0$_rc_status_ret  -eq 0 || _rc_status=$_rc_status_ret
+    test 0$_rc_status      -eq 0 || _rc_status_all=$_rc_status
     return 0$_rc_status_ret
 }
 
@@ -21,21 +21,20 @@ rc_status ()
 {
     rc_check
     _rc_status_ret=$_rc_status
-    local i
-    for i ; do
-	case "$i" in
-	-v|-v[1-9]|-v[1-9][0-9])
-	    case "$_rc_status" in
-	    0)	echo "Everything is Ok"		;; # success
-	    *)	echo "Something went wrong"	;; # failed
-	    esac
+    if [ "$1" ]; then
+    case "$1" in
+    -v|-v[1-9]|-v[1-9][0-9])
+        case "$_rc_status" in
+        0) echo "Everything is Ok"        ;; # success
+        *) echo "Something went wrong"    ;; # failed
+        esac
 
-	    # reset _rc_status to 0 after verbose case
-	    _rc_status=0 ;;
-	-r) rc_reset ;;
-	*)  echo "rc_status: Usage: [-v[<num>] [-r]]" 1>&2 ; return 0 ;;
-	esac
-    done
+        # reset _rc_status to 0 after verbose case
+        _rc_status=0 ;;
+    -r) rc_reset ;;
+    *)  echo "rc_status: Usage: [-v[<num>] [-r]]" 1>&2 ; return 0 ;;
+    esac
+    fi
     return $_rc_status_ret
 }
 
