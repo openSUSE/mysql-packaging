@@ -86,7 +86,7 @@ install -m 660 %{S:14} %buildroot/etc/my.cnf
 for i in "${DOCS[@]}"; do
 	install -m 644 "${i}" "${DOCDIR}" || true
 done
-%if 0%{?suse_version} >= 1210 && 0%{?use_systemd} > 0
+%if 0%{?use_systemd} > 0
 install -D -m 755 %_sourcedir/rc.mysql.systemd '%buildroot'/usr/lib/mysql/rcmysql
 sed -i 's|@MYSQLVER@|%{version}|' '%buildroot'/usr/lib/mysql/rcmysql
 ln -sf service '%buildroot'/usr/sbin/rcmysql
@@ -163,6 +163,14 @@ if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
 	echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
 	echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
 fi
+if [ %{_defaultdocdir} \!= /usr/share/doc ]; then
 rm -rf '%buildroot'/usr/share/doc/{mysql,mariadb}*
+fi
+if [ %{name} \!= mysql ]; then
+rm -rf '%buildroot'/usr/share/doc/mysql
+fi
+if [ %{name} \!= mariadb ]; then
+rm -rf '%buildroot'/usr/share/doc/mariadb
+fi
 rm -f  '%buildroot'/usr/share/doc/* 2> /dev/null || true
 rm -rf '%buildroot'/usr/share/mysql/{solaris,SELinux}

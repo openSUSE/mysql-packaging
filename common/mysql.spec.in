@@ -50,7 +50,7 @@ Source3:        README.debug
 Source4:        suse-test-run
 Source5:        mysql.SuSEfirewall2
 Source7:        README.install
-Source8:        README.SuSE
+Source8:        README.SUSE
 Source9:        mysql-patches.tar.bz2
 Source10:       build.inc
 Source11:       install.inc
@@ -100,7 +100,11 @@ Requires:       logrotate
 # required by rcmysql
 Requires:       %{name}-client
 Requires:       %{name}-errormessages = %version
+%if 0%{?suse_version}
 Requires:       perl-base
+%else
+Requires:       perl
+%endif
 # systemd requirements for openSUSE >= 12.1
 %if 0%{?suse_version} >= 1210
 BuildRequires:  pkgconfig(systemd)
@@ -121,6 +125,11 @@ Obsoletes:      mysql < %{srv_vers}
 Obsoletes:      mysql-Max < %{srv_vers}
 %endif
 Conflicts:      otherproviders(mysql)
+# Compatibility with Fedora/CentOS
+Provides:       mysql-server = %{srv_vers}
+Provides:       mariadb-server = %{srv_vers}
+Conflicts:      otherproviders(mysql-server)
+Conflicts:      otherproviders(mariadb-server)
 
 %description
 {{description}}
@@ -386,7 +395,7 @@ advanced user.  They should be used with caution.
 
 %prep
 %setup -q -n {{src-dir}} -D -a 9
-cp %_sourcedir/README.SuSE .
+cp %_sourcedir/README.SUSE .
 cp %_sourcedir/suse-test-run .
 # apply patches from series
 mysql-patches/tools/quilt-setup.sh  "%{S:12}"
@@ -474,8 +483,8 @@ done
 # start mysql again if it should run
 if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d %{_rundir}/mysql/restart ]; then
 	[ -x /usr/sbin/rcmysql ] && /usr/sbin/rcmysql start
-	rmdir %{_rundir}/mysql/restart || :
-	rmdir %{_rundir}/mysql         || :
+	# Might not be there, so ignoring errors
+	rmdir %{_rundir}/mysql/restart 2> /dev/null || :
 fi
 # warn on first run
 datadir="/var/lib/mysql"
@@ -539,7 +548,7 @@ fi
 %if %have_info
 %doc %{_infodir}/mysql.info.*
 %endif
-%if 0%{?suse_version} >= 1210 && 0%{?use_systemd} > 0
+%if 0%{?use_systemd} > 0
 %dir /usr/lib/mysql
 /usr/lib/mysql/rcmysql
 /usr/lib/systemd/system/mysql.service
