@@ -1,10 +1,10 @@
-Index: README.SuSE
+Index: README.SUSE
 ===================================================================
---- README.SuSE (revision 8d42ba26328e4e165a6b7e2bd92d7333)
-+++ README.SuSE (working copy)
+--- README.SUSE (revision 8d42ba26328e4e165a6b7e2bd92d7333)
++++ README.SUSE (working copy)
 @@ -55,3 +55,14 @@
  
-        /var/log/mysql/mysqld-upgrade.log
+	/var/log/mysql/mysqld-upgrade.log
  
 +5) Migration from previous versions
 +===================================

@@ -28,7 +28,7 @@
  for i in "${DOCS[@]}"; do
  	install -m 644 "${i}" "${DOCDIR}" || true
  done
--%if 0%{?suse_version} >= 1210 && 0%{?use_systemd} > 0
+-if 0%{?use_systemd} > 0
 -install -D -m 755 %_sourcedir/rc.mysql.systemd '%buildroot'/usr/lib/mysql/rcmysql
 -sed -i 's|@MYSQLVER@|%{version}|' '%buildroot'/usr/lib/mysql/rcmysql
 -ln -sf service '%buildroot'/usr/sbin/rcmysql
