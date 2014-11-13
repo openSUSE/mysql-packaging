@@ -9,8 +9,8 @@ have_info:        1
 use_extra_provides: 1
 extra_provides:   mysql-community-server_56
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.6.17"
-srv-version:      "5.6.17"
+pkg-version:      "5.6.21"
+srv-version:      "5.6.21"
 url:              "http://www.mysql.com"
 source:           "mysql-%{version}.tar.bz2"
 src-dir:          "mysql-%{version}"
