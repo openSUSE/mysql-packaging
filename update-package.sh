@@ -1,53 +1,19 @@
-#!/bin/sh
-
- ##############################################################################
- #                                                                            #
- # Copyright (C) 2011 by Michal Hrusecky <Michal@Hrusecky.net>                #
- # All rights reserved.                                                       #
- #                                                                            #
- # Redistribution  and  use  in  source  and  binary  forms,  with or without #
- # modification, are permitted  provided  that  the following  conditions are #
- # met:                                                                       #
- #                                                                            #
- # 1. Redistributions  of source code must retain the above copyright notice, #
- #    this list of conditions and the following disclaimer.                   #
- #                                                                            #
- # 2. Redistributions  in binary  form  must  reproduce the  above  copyright #
- #    notice, this  list of conditions  and the  following  disclaimer in the #
- #    documentation and/or other materials provided with the distribution.    #
- #                                                                            #
- # 3. The name of the author may not be used to endorse  or  promote products #
- #    derived from this software without specific prior written permission.   #
- #                                                                            #
- # THIS  SOFTWARE IS  PROVIDED  BY THE AUTHOR  ``AS IS''  AND ANY  EXPRESS OR #
- # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED  WARRANTIES #
- # OF  MERCHANTABILITY AND FITNESS  FOR A PARTICULAR  PURPOSE ARE DISCLAIMED. #
- # IN  NO  EVENT  SHALL THE  AUTHOR  BE  LIABLE  FOR  ANY  DIRECT,  INDIRECT, #
- # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL  DAMAGES (INCLUDING,  BUT #
- # NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, #
- # DATA, OR  PROFITS; OR  BUSINESS  INTERRUPTION) HOWEVER  CAUSED  AND ON ANY #
- # THEORY  OF  LIABILITY,  WHETHER  IN CONTRACT,  STRICT  LIABILITY,  OR TORT #
- # (INCLUDING  NEGLIGENCE OR OTHERWISE)  ARISING IN ANY WAY OUT OF THE USE OF #
- # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.          #
- #                                                                            #
- ##############################################################################
+#!/usr/bin/env bash
 
 OLDROOT="`pwd`"
 [ -z "$1" ]             || VARIANT="$1"
 [ "$REPOROOT" ]         || REPOROOT="`dirname "$0"`"
 [ "$VARIANT"  ]         || VARIANT="`basename "$OLDROOT"`"
 
-if ! [ -d "$REPOROOT"/"$VARIANT" ]; then
+if [[ ! -d "$REPOROOT"/"$VARIANT" ]]; then
    echo "No configuration for this variant found!"
    exit 1
 fi
 
-if [ -z "`which mustache`" ]; then
+if [[ -z "`which mustache`" ]]; then
    echo "'mustache' not found!"
    echo
    echo "Mustache is templating software that is needed to create .spec file"
-   echo "You can install it by"
-   echo "   gem install mustache"
    exit 2
 fi
 
@@ -55,13 +21,13 @@ rm -f *.diff
 
 echo "Copying common files..."
 if ! cp -Lv "$REPOROOT"/common/* .; then
-   echo "Can't copy files!"
+   echo "Unable to copy files!"
    exit 3
 fi
 
 echo "Copying $VARIANT files..."
 if ! cp -Lv "$REPOROOT"/"$VARIANT"/* .; then
-   echo "Can't copy files!"
+   echo "Unable to copy files!"
    exit 4
 fi
 
@@ -83,7 +49,7 @@ cat rc.mysql-multi.head rc.mysql-multi.sysvinit rc.mysql-multi.body > rc.mysql.s
 cat rc.mysql-multi.head rc.mysql-multi.systemd  rc.mysql-multi.body > rc.mysql.systemd
 rm rc.mysql-multi.*
 
-if [ -f to_delete ]; then
+if [[ -f to_delete ]]; then
    cat to_delete | while read f; do
       echo "Deleting $f..."
       rm -f "$f"
@@ -131,7 +97,7 @@ sleep 1
 
 echo "Packing configuration..."
 if ! tar -cjf configuration-tweaks.tar.bz2 *.cnf; then
-   echo "Can't create configuration tarball!"
+   echo "Unable to create configuration tarball!"
    exit 4
 fi
 
@@ -143,6 +109,6 @@ fi
 
 echo "Cleaning up..."
 rm -f ./*.in ./default.yaml ./config.yaml ./whole-config.yaml ./*.cnf
-if [ -x ./last_run.sh ]; then
+if [[ -x ./last_run.sh ]]; then
    ./last_run.sh && rm ./last_run.sh
 fi
