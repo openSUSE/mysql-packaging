@@ -18,7 +18,6 @@
 # Few definitions which will alter build
 %define preferred    0{{preferred}}
 %define use_systemd  0{{systemd}}
-%define use_cmake    0{{use_cmake}}
 %define cluster      0{{cluster}}
 %define have_info    0{{have_info}}
 %define builtin_plugins {{builtin_plugins}}
@@ -67,8 +66,6 @@ PreReq:         pwdutils
 PreReq:         %install_info_prereq %insserv_prereq
 %endif
 %endif
-BuildRequires:  autoconf
-BuildRequires:  automake
 BuildRequires:  bison
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -477,8 +474,8 @@ end
 if [ -d /var/lib/mysql ]; then
 	touch /var/lib/mysql/.run-mysql_upgrade
 fi
-for i in /var/lib/mysql/{.protected,.tmp}; do
-	( [ -d "$i" ] && rmdir "$i" ) || :
+for in in protected tmp; do
+	rmdir /var/lib/mysql/.$i 2>/dev/null || :
 done
 # start mysql again if it should run
 if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d %{_rundir}/mysql/restart ]; then
