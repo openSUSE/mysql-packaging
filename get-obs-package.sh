@@ -6,6 +6,10 @@ help() {
     echo "Automatic downloader for all supported mariadb/mysql packages from buildservice."
     echo
     echo "Using this expects you to have properly configured osc command."
+    echo
+    echo "Parameters:"
+    echo " --refresh		force refresh of the repositories from scratch"
+    echo "			otherwise presumed they are already in correct state"
     exit 0
 }
 
@@ -93,9 +97,12 @@ fi
 
 # first some sanity checks
 if [[ -e "${WORKDIR}" ]]; then
-    echo "Please ensure the workdir is cleaned up for new run. Simple removing should do:"
-    echo "  rm -rf \"${WORKDIR}\""
-    exit 1
+    if [[ $1 == "--refresh" ]]; then
+        rm -rf "${WORKDIR}"
+    else
+        echo "There already is present working directory and refresh was not given, skipping."
+    fi
+    exit 0
 else
     mkdir -p "${WORKDIR}"
 fi
