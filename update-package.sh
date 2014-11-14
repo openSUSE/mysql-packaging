@@ -42,7 +42,7 @@ for diff in [0-9]_*.diff [0-9][0-9]_*.diff; do
       fi
    fi
 done
-rm *.orig
+rm *.orig &> /dev/null
 echo "Additional patching done."
 
 cat rc.mysql-multi.head rc.mysql-multi.sysvinit rc.mysql-multi.body > rc.mysql.sysvinit
