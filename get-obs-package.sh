@@ -8,7 +8,7 @@ help() {
     echo "Using this expects you to have properly configured osc command."
     echo
     echo "Parameters:"
-    echo " --refresh		force refresh of the repositories from scratch"
+    echo "	--refresh	force refresh of the repositories from scratch"
     echo "			otherwise presumed they are already in correct state"
     exit 0
 }
