@@ -1,7 +1,7 @@
 All: obspack update check
 
 # fetch all the supported platforms from obs for the update
-obspack:
+obspack: get-obs-package.sh
 	bash ./get-obs-package.sh
 
 # generate the refreshed package using the latest git
