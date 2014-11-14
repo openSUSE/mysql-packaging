@@ -5,8 +5,8 @@ obspack: get-obs-package.sh
 	bash ./get-obs-package.sh
 
 # generate the refreshed package using the latest git
-update:
-	true
+update: obspack
+	bash ./repack-obs-package.sh
 
 # try to build the packages and ensure they all passed
 check:
