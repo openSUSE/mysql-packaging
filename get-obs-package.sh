@@ -19,9 +19,10 @@ SUPPORTED_UPDATES=(
 SUPPORTED_MARIA=(
     "SUSE:SLE-12:GA"
 )
-SUPPORTED_MYSQL=(
-    "SUSE:SLE-11:SP3"
-)
+# Not available in OBS so ignore for now
+#SUPPORTED_MYSQL=(
+#    "SUSE:SLE-11:SP3"
+#)
 DEVELPROJECT="server:database"
 DEVELPKGS=(
     "mariadb"
@@ -77,9 +78,9 @@ checkout_packages() {
         checkout_package $i mariadb
     done
     # mysql only
-    for i in ${SUPPORTED_MYSQL[@]}; do
-        checkout_package $i mysql
-    done
+    #for i in ${SUPPORTED_MYSQL[@]}; do
+    #    checkout_package $i mysql
+    #done
     # develprj
     for i in ${DEVELPKGS[@]}; do
         checkout_package ${DEVELPROJECT} $i
