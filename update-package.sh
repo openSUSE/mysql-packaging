@@ -34,10 +34,8 @@
 
 OLDROOT="`pwd`"
 [ -z "$1" ]             || VARIANT="$1"
-[ -z "$2" ]             || DESIRED_VARIANT="$2"
 [ "$REPOROOT" ]         || REPOROOT="`dirname "$0"`"
 [ "$VARIANT"  ]         || VARIANT="`basename "$OLDROOT"`"
-[ "$DESIRED_VARIANT"  ] || DESIRED_VARIANT="$VARIANT"
 
 if ! [ -d "$REPOROOT"/"$VARIANT" ]; then
    echo "No configuration for this variant found!"
@@ -95,7 +93,7 @@ rm -f to_delete
 
 echo "Creating files from templates..."
 PKGNAME="`echo '{{pkg-name}}' | mustache ./config.yaml -`"
-if [ "$PKGNAME" \!= "$DESIRED_VARIANT" ]; then
+if [ "$PKGNAME" \!= "$VARIANT" ]; then
    EXTRAPKGNAME="`echo '{{extra_provides}}' | mustache ./config.yaml -`"
    sed -i "s|\(pkg-name:[[:blank:]]\+\)$PKGNAME|\1$EXTRAPKGNAME|" config.yaml
    sed -i "s|\(use_extra_provides:[[:blank:]]\+\)1|\10|" config.yaml
