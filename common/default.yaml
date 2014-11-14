@@ -1,6 +1,5 @@
 ---
 preferred:          0
-use_cmake:          1
 cluster:            0
 use_extra_provides: 0
 systemd:            1
