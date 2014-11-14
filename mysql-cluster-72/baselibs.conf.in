@@ -1,3 +1,0 @@
-lib{{lib-name}}{{lib-version}}
-lib{{lib-name}}_r{{lib-version}}
-libndbclient6
