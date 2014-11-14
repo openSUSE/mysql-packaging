@@ -15,18 +15,7 @@ help() {
 
 WORKDIR="$(pwd)/obsclone"
 
-SUPPORTED_UPDATES=(
-    "openSUSE:12.3:Update"
-    "openSUSE:13.1:Update"
-    "openSUSE:13.2:Update"
 )
-SUPPORTED_MARIA=(
-    "SUSE:SLE-12:GA"
-)
-# Not available in OBS so ignore for now
-#SUPPORTED_MYSQL=(
-#    "SUSE:SLE-11:SP3"
-#)
 DEVELPROJECT="server:database"
 DEVELPKGS=(
     "mariadb"
@@ -71,21 +60,6 @@ checkout_package() {
 
 # Prepare list of all packages we need to checkout
 checkout_packages() {
-    # common branches
-    for i in ${SUPPORTED_UPDATES[@]}; do
-        for j in "mariadb" "mysql-community-server"; do
-            checkout_package $i $j
-        done
-    done
-    # maria only
-    for i in ${SUPPORTED_MARIA[@]}; do
-        checkout_package $i mariadb
-    done
-    # mysql only
-    #for i in ${SUPPORTED_MYSQL[@]}; do
-    #    checkout_package $i mysql
-    #done
-    # develprj
     for i in ${DEVELPKGS[@]}; do
         checkout_package ${DEVELPROJECT} $i
     done
