@@ -24,11 +24,11 @@ DEVELPKGS=(
 # Run the update script in each of the pkg dirs
 # param2: package name
 update_package() {
-    echo "Working on package \"${i}\""
-    pushd "${WORKDIR}/"*"/${i}" > /dev/null
-    bash ../../../update-package.sh ${i} || exit 1
+    echo "Working on package \"${1}\""
+    pushd "${WORKDIR}/"*"/${1}" > /dev/null
+    bash ../../../update-package.sh ${1} || exit 1
     popd > /dev/null
-    echo "Updated package \"${i}\""
+    echo "Updated package \"${1}\""
 }
 
 # Run update for all of the DEVELPKGS
