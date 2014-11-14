@@ -22,7 +22,7 @@ DEVELPKGS=(
 )
 
 # Run the update script in each of the pkg dirs
-# param2: package name
+# param1: package name
 update_package() {
     echo "Working on package \"${1}\""
     pushd "${WORKDIR}/"*"/${1}" > /dev/null
