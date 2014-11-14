@@ -14,8 +14,6 @@ help() {
 }
 
 WORKDIR="$(pwd)/obsclone"
-
-)
 DEVELPROJECT="server:database"
 DEVELPKGS=(
     "mariadb"
