@@ -18,7 +18,6 @@
 # Few definitions which will alter build
 %define preferred    0{{preferred}}
 %define use_systemd  0{{systemd}}
-%define cluster      0{{cluster}}
 %define have_info    0{{have_info}}
 %define builtin_plugins {{builtin_plugins}}
 %define use_extra_provides {{use_extra_provides}}
@@ -321,75 +320,6 @@ Conflicts:      otherproviders(mysql-tools)
 A set of scripts for administering a {{display-name}} or developing
 applications with {{display-name}}.
 
-%if 0%{?cluster} > 0
-
-%if 0%{?cluster} > 1
-%package -n libndbclient6
-Summary:        Shared Libraries for cluster client
-Group:          Development/Libraries/Other
-
-%description -n libndbclient6
-This package contains the shared libraries (.so) which certain
-languages and applications need to dynamically load and use {{display-name}}
-cluster.
-
-%endif
-
-%package ndb-storage
-Summary:        {{display-name}} - ndbcluster storage engine
-Group:          Productivity/Databases/Servers
-%if "%{name}" != mysql
-Provides:       mysql-ndb-storage = %{srv_vers}
-Obsoletes:      mysql-ndb-storage < %{srv_vers}
-%endif
-Conflicts:      otherproviders(mysql-ndb-storage)
-
-%description ndb-storage
-This package contains the ndbcluster storage engine. 
-It is necessary to have this package installed on all 
-computers that should store ndbcluster table data.
-
-
-%package ndb-management
-Summary:        {{display-name}} - ndbcluster storage engine management
-Group:          Productivity/Databases/Servers
-%if "%{name}" != mysql
-Provides:       mysql-ndb-management = %{srv_vers}
-Obsoletes:      mysql-ndb-management < %{srv_vers}
-%endif
-Conflicts:      otherproviders(mysql-ndb-management)
-
-%description ndb-management
-This package contains ndbcluster storage engine management.
-It is necessary to have this package installed on at least 
-one computer in the cluster.
-
-%package ndb-tools
-Summary:        {{display-name}} - ndbcluster storage engine basic tools
-Group:          Productivity/Databases/Servers
-%if "%{name}" != mysql
-Provides:       mysql-ndb-tools = %{srv_vers}
-Obsoletes:      mysql-ndb-tools < %{srv_vers}
-%endif
-Conflicts:      otherproviders(mysql-ndb-tools)
-
-%description ndb-tools
-This package contains ndbcluster storage engine basic tools.
-
-%package ndb-extra
-Summary:        {{display-name}} - ndbcluster storage engine extra tools
-Group:          Productivity/Databases/Servers
-%if "%{name}" != mysql
-Provides:       mysql-ndb-extra = %{srv_vers}
-Obsoletes:      mysql-ndb-extra < %{srv_vers}
-%endif
-Conflicts:      otherproviders(mysql-ndb-extra)
-
-%description ndb-extra
-This package contains some extra ndbcluster storage engine tools for the
-advanced user.  They should be used with caution.
-%endif
-
 %prep
 %setup -q -n {{src-dir}} -D -a 9
 cp %_sourcedir/README.SUSE .
@@ -507,12 +437,6 @@ fi
 
 %postun -n lib{{lib-name}}_r{{lib-version}} -p /sbin/ldconfig
 
-%if 0%{cluster} > 1
-%post -n libndbclient6 -p /sbin/ldconfig
-
-%postun -n libndbclient6 -p /sbin/ldconfig
-%endif
-
 %if 0%{preferred} > 0
 %post -n libmysqld18 -p /sbin/ldconfig
 
@@ -592,12 +516,6 @@ fi
 %files -n lib{{lib-name}}{{lib-version}}
 %defattr(-, root, root)
 %{_libdir}/lib{{lib-name}}.so.*
-
-%if 0%{cluster} > 1
-%files -n libndbclient6
-%defattr(-, root, root)
-%{_libdir}/libndbclient.so.*
-%endif
 
 %files -n lib{{lib-name}}_r{{lib-version}}
 %defattr(-, root, root)

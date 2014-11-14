@@ -104,26 +104,14 @@ install -m 755 suse-test-run '%buildroot'/usr/share/mysql-test/
 mkdir '%buildroot'/usr/share/mysql-test/var
 # Final fixes
 find '%buildroot'/usr/share/mysql-test -name '*.orig' -delete
-%if 0%{?suse_version} > 1030
 %fdupes -s '%buildroot'/usr/share/mysql-test
-%endif
-%if 0%{?fedora_version} > 8
 fdupes -q -n -r '%buildroot'/usr/share/mysql-test
-%endif
 dos2unixConversion() {
 	%{__sed} -i 's/\r//g' "$1"
 }
 for i in `grep -Rl '\r' '%buildroot'/usr/share/sql-bench`; do
 	dos2unixConversion "$i"
 done
-%if ! 0%{cluster} > 0
-cat mysql-ndb-storage.files mysql-ndb-management.files  \
-	mysql-ndb-tools.files mysql-ndb-extra.files |   \
-	sed 's|^%%doc\ ||' | while read tmp; do
-	cd '%buildroot'
-	rm -f .$tmp
-done
-%endif
 %if ! 0%{preferred} > 0
 cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
 	cd '%buildroot'
@@ -138,9 +126,6 @@ rm -rf '%buildroot'/%_datadir/aclocal
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlrepair
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlanalyze
 ln -s mysqlcheck '%buildroot'%_bindir/mysqloptimize
-%if 0%{?cluster} > 1
-ln -s libndbclient.so.6.0.0 '%buildroot'%_libdir/libndbclient.so.6.0
-ln -s libndbclient.so.6.0.0 '%buildroot'%_libdir/libndbclient.so.6
 %endif
 if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
