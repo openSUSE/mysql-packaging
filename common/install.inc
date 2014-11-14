@@ -76,11 +76,6 @@ DOCDIR=%buildroot%_defaultdocdir/%name
 install -d -m 755 ${DOCDIR}
 install -d -m 755 %buildroot/etc/logrotate.d
 install -m 644 _build/support-files/mysql-log-rotate %buildroot/etc/logrotate.d/mysql
-%if 0%{?preferred} > 0%{?use_cmake}
-install -m 644 _buildlibmysqld/*.so* %buildroot%_libdir
-ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so.0
-ln -s libmysqld.so.0.0.1 %buildroot%_libdir/libmysqld.so
-%endif
 install -m 660 %{S:14} %buildroot/etc/my.cnf
 [ \! -f scripts/mysqlaccess.conf ] || install -m 640 scripts/mysqlaccess.conf %buildroot/etc/mysqlaccess.conf
 for i in "${DOCS[@]}"; do
