@@ -8,7 +8,7 @@ Index: build.inc
  %endif
 -export CFLAGS="$RPM_OPT_FLAGS -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
 +export CFLAGS="$RPM_OPT_FLAGS -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
- export CXXFLAGS="$CFLAGS -fno-exceptions -fno-rtti"
+ export CXXFLAGS="$CFLAGS
  
  %if 0%{use_cmake} < 1
 

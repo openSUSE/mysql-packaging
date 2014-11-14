@@ -6,7 +6,7 @@
  Source5:        mysql.SuSEfirewall2
 -Source7:        README.install
 +Source7:        rc.mysql-multi
- Source8:        README.SuSE
+ Source8:        README.SUSE
  Source9:        mysql-patches.tar.bz2
  Source10:       build.inc
  Source11:       install.inc
