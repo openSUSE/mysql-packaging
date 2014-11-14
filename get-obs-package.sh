@@ -101,5 +101,3 @@ else
 fi
 
 checkout_packages
-
-
