@@ -24,6 +24,7 @@ BuildMySQL() {
             -DWITH_LIBEDIT=0                                             \
             -DINSTALL_LAYOUT=RPM                                         \
             -DMYSQL_UNIX_ADDR=%{socketpath}/mysql.sock                   \
+            -DINSTALL_UNIX_ADDRDIR="%{socketpath}/mysql.sock"            \
             -DINSTALL_MYSQLSHAREDIR=share/%{name}                        \
             -DWITH_COMMENT="openSUSE MySQL rpm"                          \
             -DWITH_EXTRA_CHARSET=all                                     \
@@ -35,6 +36,7 @@ BuildMySQL() {
             -DDENABLE_DOWNLOADS=false                                    \
             -DINSTALL_PLUGINDIR_RPM="%{_lib}/mysql/plugin"               \
             -DINSTALL_LIBDIR_RPM="%{_lib}"                               \
+            -DINSTALL_SYSCONF2DIR="/etc/my.cnf.d"                        \
             -Wno-dev "$@" ..
     make %{?jobs:-j%jobs}
     nm --numeric-sort sql/mysqld > sql/mysqld.sym
@@ -42,5 +44,4 @@ BuildMySQL() {
 }
 
 BuildMySQL "" -DCMAKE_BUILD_TYPE=Release -DINSTALL_SQLBENCHDIR=share
-# TokuDB can't be compiled without optimisations turned on
-BuildMySQL "-debug" -DCMAKE_BUILD_TYPE=Debug -DWITHOUT_TOKUDB=1
+BuildMySQL "-debug" -DCMAKE_BUILD_TYPE=Debug

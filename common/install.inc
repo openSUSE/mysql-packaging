@@ -35,6 +35,9 @@ filelist()
 		if test -e usr/bin/"$i"; then
 			echo /usr/bin/"$i"
 		fi
+		if test -n "`ls -1 %buildroot$i 2> /dev/null`"; then
+			echo "$i"
+		fi
 		if ls usr/share/man/*/"$i".[1-9]* >/dev/null 2>&1; then
 			echo "%%doc %_mandir/*/$i.[1-9]*"
 		fi
@@ -43,12 +46,12 @@ filelist()
 }
 filelist innochecksum my_print_defaults myisam_ftdump myisamchk myisamlog myisampack mysql_fix_extensions mysql_fix_privilege_tables mysql_install_db mysql_secure_installation mysql_upgrade mysqlbug mysqld mysqld_multi mysqld_safe mysqlbinlog mysqldumpslow mysqlmanager resolve_stack_dump resolveip {m,}aria_chk {m,}aria_dump_log {m,}aria_ftdump {m,}aria_pack {m,}aria_read_log xtstat tokuftdump >mysql.files
 filelist mysql mysqladmin mysqlcheck mysqldump mysqlimport mysqlshow mysql_config_editor >mysql-client.files
-filelist mysql_config >libmysqlclient-devel.files
+filelist mysql_config /usr/share/pkgconfig/mariadb.pc >libmysqlclient-devel.files
 filelist mysqlslap >mysql-bench.files
 filelist mysql_client_test mysql_client_test_embedded mysql_waitpid mysqltest mysqltest_embedded >mysql-test.files
 # all binaries that don't need to be in a "default" install (mysql.rpm +
 # mysql-client.rpm)
-filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded %{name}_mytop hsclient >mysql-tools.files
+filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded %{name}_mytop hsclient %{_bindir}/wsrep* /usr/share/mysql/wsrep_notify >mysql-tools.files
 filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 filelist ndb_mgmd >mysql-ndb-management.files
 filelist ndb_{config,desc,error_reporter,mgm,print_backup_file,print_schema_file,print_sys_file,restore,select_all,select_count,show_tables,size.pl,test_platform,waiter} >mysql-ndb-tools.files

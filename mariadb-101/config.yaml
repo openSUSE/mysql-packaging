@@ -1,0 +1,21 @@
+---
+pkg-name:         mariadb_101
+display-name:     "MariaDB"
+systemd:          1
+preferred:        0
+use_extra_provides: 0
+extra_provides:   mariadb_101
+builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
+pkg-version:      "10.1.1"
+srv-version:      "5.6.20"
+url:              "https://www.mariadb.org"
+source:           "mariadb-%{version}.tar.bz2"
+src-dir:          "mariadb-%{version}"
+lib-version:      18
+lib-name:         mariadb101client
+description:      'MariaDB is a backward compatible, drop-in replacement branch of the MySQL
+
+Database Server. It includes all major open source storage engines, including
+
+the Maria storage engine.'
+---

@@ -18,6 +18,7 @@ DEVELPROJECT="server:database"
 DEVELPKGS=(
     "mariadb"
     "mariadb-100"
+    "mariadb-101"
     "mariadb-55"
     "mysql-community-server-55"
     "mysql-community-server-56"
