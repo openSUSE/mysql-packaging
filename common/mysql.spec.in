@@ -546,15 +546,4 @@ fi
 %_bindir/mysqlanalyze
 %_bindir/mysqloptimize
 
-%if 0%{cluster} > 0
-%files ndb-storage -f mysql-ndb-storage.files
-
-%files ndb-management -f mysql-ndb-management.files
-
-%files ndb-tools -f mysql-ndb-tools.files
-
-%files ndb-extra -f mysql-ndb-extra.files
-
-%endif
-
 %changelog

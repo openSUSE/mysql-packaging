@@ -126,7 +126,6 @@ rm -rf '%buildroot'/%_datadir/aclocal
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlrepair
 ln -s mysqlcheck '%buildroot'%_bindir/mysqlanalyze
 ln -s mysqlcheck '%buildroot'%_bindir/mysqloptimize
-%endif
 if [ -f '%buildroot'/usr/bin/mysqlaccess.conf ]; then
 	mv '%buildroot'/usr/bin/mysqlaccess.conf '%buildroot'/etc/mysqlaccess.conf
 fi
