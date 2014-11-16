@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+. `dirname "$0"`/common-config.sh
+
 # Fetch OBS packages for all currently supported platforms
 
 help() {
@@ -12,18 +14,6 @@ help() {
     echo "			otherwise presumed they are already in correct state"
     exit 0
 }
-
-WORKDIR="$(pwd)/obsclone"
-DEVELPROJECT="server:database"
-DEVELPKGS=(
-    "mariadb"
-    "mariadb-100"
-    "mariadb-101"
-    "mariadb-55"
-    "mysql-community-server-55"
-    "mysql-community-server-56"
-    "mysql-community-server-57"
-)
 
 # Create new branch of the package in your home and copy it on the disk
 # param1: source prj

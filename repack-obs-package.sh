@@ -1,25 +1,14 @@
 #!/usr/bin/env bash
 
-# Fetch OBS packages for all currently supported platforms
+. `dirname "$0"`/common-config.sh
 
 help() {
-    echo "Automatic updater syncing git state to OBS packages."
+    echo "Run recursively the update-package script on the obs clone"
     echo
     echo "Using this expects you to have properly configured osc command."
     echo
     exit 0
 }
-
-WORKDIR="$(pwd)/obsclone"
-DEVELPKGS=(
-    "mariadb"
-    "mariadb-100"
-    "mariadb-101"
-    "mariadb-55"
-    "mysql-community-server-55"
-    "mysql-community-server-56"
-    "mysql-community-server-57"
-)
 
 # Run the update script in each of the pkg dirs
 # param1: package name
