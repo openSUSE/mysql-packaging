@@ -1,10 +1,10 @@
-export EXTRA_FLAGS=" -Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter -fno-exceptions -fno-rtti -fno-implicit-templates -felide-constructors "
+%build
+EXTRA_FLAGS="-Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter -fno-exceptions -fno-rtti -fno-implicit-templates -felide-constructors"
 %ifarch ppc64
-export EXTRA_FLAGS=" -mminimal-toc "
+EXTRA_FLAGS="${EXTRA_FLAGS} -mminimal-toc"
 %endif
-export CFLAGS="$RPM_OPT_FLAGS -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS "
+export CFLAGS="%{optflags} -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS"
 export CXXFLAGS="$CFLAGS"
-
 %cmake -DWITH_SSL=system                                             \
         -DWITH_ZLIB=system                                           \
         -DWITH_LIBEVENT=system                                       \
@@ -12,8 +12,8 @@ export CXXFLAGS="$CFLAGS"
         -DWITH_READLINE=0                                            \
         -DWITH_LIBEDIT=0                                             \
         -DINSTALL_LAYOUT=RPM                                         \
-        -DMYSQL_UNIX_ADDR="/var/run/mysql/mysql.sock"                \
-        -DINSTALL_UNIX_ADDRDIR="/var/run/mysql/mysql.sock"           \
+        -DMYSQL_UNIX_ADDR="%{_localstatedir}/run/mysql/mysql.sock"      \
+        -DINSTALL_UNIX_ADDRDIR="%{_localstatedir}/run/mysql/mysql.sock" \
         -DINSTALL_MYSQLSHAREDIR=share/%{name}                        \
         -DWITH_COMMENT="openSUSE MySQL rpm"                          \
         -DWITH_EXTRA_CHARSET=all                                     \
@@ -25,7 +25,7 @@ export CXXFLAGS="$CFLAGS"
         -DDENABLE_DOWNLOADS=false                                    \
         -DINSTALL_PLUGINDIR_RPM="%{_lib}/mysql/plugin"               \
         -DINSTALL_LIBDIR_RPM="%{_lib}"                               \
-        -DINSTALL_SYSCONF2DIR="/etc/my.cnf.d"                        \
+        -DINSTALL_SYSCONF2DIR="%{_sysconfdir}/my.cnf.d"              \
         -DCMAKE_C_FLAGS_RELWITHDEBINFO="$CFLAGS"                     \
         -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="$CXXFLAGS"                 \
         -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DINSTALL_SQLBENCHDIR=share \
@@ -33,5 +33,5 @@ export CXXFLAGS="$CFLAGS"
         -DCMAKE_CXX_FLAGS="$CXXFLAGS"                                \
         -DCMAKE_EXE_LINKER_FLAGS=-Wl,--as-needed -DCMAKE_MODULE_LINKER_FLAGS=-Wl,--as-needed -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--as-needed \
         -Wno-dev "$@" ..
-make %{?jobs:-j%jobs}
+make %{?_smp_mflags}
 nm --numeric-sort sql/mysqld > sql/mysqld.sym
