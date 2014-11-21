@@ -1,0 +1,12 @@
+--- mysql.spec.in_orig	2014-11-19 15:49:13.712135152 +0100
++++ mysql.spec.in	2014-11-19 15:50:12.790575700 +0100
+@@ -466,9 +466,6 @@
+ %config(noreplace) %attr(0640, root, mysql) /etc/my.cnf.d/*
+ %config /etc/logrotate.d/mysql
+ %doc %{_defaultdocdir}/%{name}
+-%if %have_info
+-%doc %{_infodir}/mysql.info.*
+-%endif
+ %if 0%{?use_systemd} > 0
+ %dir /usr/lib/mysql
+ /usr/lib/mysql/rcmysql
