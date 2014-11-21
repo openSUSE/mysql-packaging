@@ -1,10 +1,4 @@
-# install the debug server first, so that we don't overwrite the standard
-mkdir -p %buildroot%_libdir/mysql
-make -C _build-debug/sql install DESTDIR=%buildroot
-mv %buildroot/usr/sbin/mysqld %buildroot/usr/sbin/mysqld-debug
-install -m 644 _build-debug/sql/mysqld.sym %buildroot%_libdir/mysql/mysqld-debug.sym
-# install the client, extra tools, libraries and the standard server
-make -C _build install DESTDIR=%buildroot benchdir_root=/usr/share/
+%cmake_install benchdir_root=/usr/share/
 install -m 644 _build/sql/mysqld.sym %buildroot%_libdir/mysql/mysqld.sym
 # remove handler socket client
 rm -f %buildroot%_libdir/libhsclient*
