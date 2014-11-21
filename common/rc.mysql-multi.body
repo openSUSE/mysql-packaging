@@ -213,9 +213,9 @@ else
 	unset MYSQLD
 
 	# use mysqld-debug only if explicitly requested (TODO: sysconfig variable?)
-	if test "$MYSQLD_DEBUG" = yes -a -x /usr/sbin/mysqld-debug
+	if test "$MYSQLD_DEBUG" = yes -a -x /usr/sbin/mysqld
 	then
-		MYSQLD=/usr/sbin/mysqld-debug
+		MYSQLD=/usr/sbin/mysqld
 	elif test -x /usr/sbin/mysqld-max
 	then
 	        MYSQLD=/usr/sbin/mysqld-max

@@ -1,7 +1,7 @@
 Debugging mysqld crashes
 ========================
 Author: Michal Marek <mmarek@suse.cz>
-Last modified: 2006-07-31
+Last modified: 2014-11-21
 
 Contents
 --------
@@ -67,22 +67,16 @@ packages and run
     gdb /usr/sbin/mysqld /var/lib/mysql/core
     (gdb) bt
 
-Replace mysqld with the mysqld version you used (mysqld, mysqld-max or
-mysqld-debug) and core with the actual name of the coredump.
+Replace mysqld with the mysqld version you used (mysqld, mysqld-max)
+and core with the actual name of the coredump.
 
 3) Trace files
 --------------
-You'll need the mysqld-debug binary from the mysql-debug package to get
-a trace file. Install the mysqld-debug package and the start mysqld
-using following command:
+Start mysqld using following command:
 
     $ MYSQLD_DEBUG=yes rcmysql start
 
-  Note: The init script doesn't automatically pick up the mysqld-debug
-  binary (as it does with mysqld-max), because it is expected to be used
-  just temporarily to help solving a particular problem.
-
-The init script will then start mysqld-debug and add the --core-file,
+The init script will then start mysqld and add the --core-file,
 --log and --debug options for you. The query log will be stored in
 
     /var/lib/mysql/myqld-query.log
@@ -92,9 +86,7 @@ and the trace file in
     /var/lib/mysql/mysqld.trace
 
 If you don't like the options set by the init script, just put your own
-into /etc/my.cnf and the init script will honor it. For information
-about the --debug option, see "The DBUG Package":
-http://dev.mysql.com/doc/refman/5.0/en/the-dbug-package.html .
+into /etc/my.cnf and the init script will honor them.
 
 The trace file will contain various debug information and function
 calls/returns and will become _extremly_ huge after a while, so don't
