@@ -61,7 +61,7 @@ Source17:       mysql.service
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if 0%{?suse_version}
 PreReq:         pwdutils
-%if %have_info
+%if 0%have_info > 0
 PreReq:         %install_info_prereq %insserv_prereq
 %endif
 %endif
@@ -388,7 +388,7 @@ if posix.access("/usr/sbin/rcmysql", "x") then
 end
 
 %posttrans
-%if %have_info
+%if 0%have_info > 0
 [ -z "`ls %{_infodir}/mysql.info.* 2> /dev/null`" ] || \
 %install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 %endif
@@ -436,7 +436,7 @@ fi
 
 %postun
 if [ $1 = 0 ]; then
-	%if %have_info
+	%if 0%have_info > 0
 	%install_info_delete --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 	%endif
 	%{insserv_cleanup}
@@ -457,7 +457,7 @@ fi
 %config(noreplace) %attr(0640, root, mysql) /etc/my.cnf.d/*
 %config /etc/logrotate.d/mysql
 %doc %{_defaultdocdir}/%{name}
-%if %have_info
+%if 0%have_info > 0
 %doc %{_infodir}/mysql.info.*
 %endif
 %if 0%{?use_systemd} > 0
