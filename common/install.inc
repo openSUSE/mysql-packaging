@@ -1,5 +1,5 @@
 %cmake_install benchdir_root=/usr/share/
-install -m 644 _build/sql/mysqld.sym %buildroot%_libdir/mysql/mysqld.sym
+install -m 644 build/sql/mysqld.sym %buildroot%_libdir/mysql/mysqld.sym
 # remove handler socket client
 rm -f %buildroot%_libdir/libhsclient*
 rm -f %buildroot%_bindir/hsclient*
@@ -72,7 +72,7 @@ DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/READ
 DOCDIR=%buildroot%_defaultdocdir/%name
 install -d -m 755 ${DOCDIR}
 install -d -m 755 %buildroot/etc/logrotate.d
-install -m 644 _build/support-files/mysql-log-rotate %buildroot/etc/logrotate.d/mysql
+install -m 644 build/support-files/mysql-log-rotate %buildroot/etc/logrotate.d/mysql
 install -m 660 %{S:14} %buildroot/etc/my.cnf
 [ \! -f scripts/mysqlaccess.conf ] || install -m 640 scripts/mysqlaccess.conf %buildroot/etc/mysqlaccess.conf
 for i in "${DOCS[@]}"; do

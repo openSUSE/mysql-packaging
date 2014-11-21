@@ -27,10 +27,12 @@ export CXXFLAGS="$CFLAGS"
         -DINSTALL_SYSCONF2DIR="%{_sysconfdir}/my.cnf.d"              \
         -DCMAKE_C_FLAGS_RELWITHDEBINFO="$CFLAGS"                     \
         -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="$CXXFLAGS"                 \
-        -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DINSTALL_SQLBENCHDIR=share \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo -DINSTALL_SQLBENCHDIR=share \
         -DCMAKE_C_FLAGS="$CFLAGS"                                    \
         -DCMAKE_CXX_FLAGS="$CXXFLAGS"                                \
-        -DCMAKE_EXE_LINKER_FLAGS=-Wl,--as-needed -DCMAKE_MODULE_LINKER_FLAGS=-Wl,--as-needed -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--as-needed \
+        -DCMAKE_EXE_LINKER_FLAGS="-Wl,--as-needed -pie -Wl,-z,relro,-z,now" \
+        -DCMAKE_MODULE_LINKER_FLAGS="-Wl,--as-needed -pie -Wl,-z,relro,-z,now" \
+        -DCMAKE_SHARED_LINKER_FLAGS="-Wl,--as-needed -pie -Wl,-z,relro,-z,now" \
         -Wno-dev "$@" ..
 make %{?_smp_mflags}
 nm --numeric-sort sql/mysqld > sql/mysqld.sym
