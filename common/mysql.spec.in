@@ -126,6 +126,20 @@ Provides:       mysql-server = %{srv_vers}
 Provides:       mariadb-server = %{srv_vers}
 Conflicts:      otherproviders(mysql-server)
 Conflicts:      otherproviders(mariadb-server)
+Provides:       %{name}-debug-version = %{srv_vers}
+Obsoletes:      %{name}-debug-version < %{srv_vers}
+Provides:       %{name}-debug = %{srv_vers}
+Provides:       mysql-debug = %{srv_vers}
+Provides:       %{extra_provides}-debug-verion = %{version}
+Obsoletes:      %{extra_provides}-debug-version < %{version}
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides}-debug-verion = %{version}
+Obsoletes:      %{extra_provides}-debug-version < %{version}
+%endif
+%if 0%{?preferred} > 0
+Obsoletes:      mysql-debug < %{srv_vers}
+%endif
+Conflicts:      otherproviders(mysql-debug)
 
 %description
 {{description}}
@@ -244,29 +258,6 @@ This package contains benchmark scripts and data for {{display-name}}.
 
 To run these database benchmarks, start the script "run-all-tests" in
 the directory /usr/share/sql-bench after starting {{display-name}}.
-
-
-%package debug-version
-Summary:        {{display-name}} with debug options turned on
-Group:          Productivity/Databases/Servers
-Requires:       %{name} = %{version}
-Provides:       %{name}-debug = %{srv_vers}
-Provides:       mysql-debug = %{srv_vers}
-%if 0%{?use_extra_provides} > 0
-Provides:       %{extra_provides}-debug-verion = %{version}
-Obsoletes:      %{extra_provides}-debug-version < %{version}
-%endif
-%if 0%{?preferred} > 0
-Obsoletes:      mysql-debug < %{srv_vers}
-%endif
-Conflicts:      otherproviders(mysql-debug)
-
-%description debug-version
-A version of the {{display-name}} that has some debug code turned on.
-It should be only used to track down problems with the standard
-servers. Note that merely installing this package will bot replace the
-standard server. Read /usr/share/doc/packages/mysql/README.debug for
-information on how to use the debug server.
 
 %package test
 Summary:        Testsuite for {{display-name}}
@@ -524,11 +515,6 @@ fi
 %files bench -f mysql-bench.files
 %defattr(-, root, root)
 /usr/share/sql-bench
-
-%files debug-version
-%defattr(-, root, root)
-/usr/sbin/mysqld-debug
-%{_libdir}/mysql/mysqld-debug.sym
 
 %files test -f mysql-test.files
 %defattr(-, root, root)
