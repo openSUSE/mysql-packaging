@@ -10,7 +10,7 @@ builtin_plugins:  partition,csv,heap,myisam,innobase
 pkg-version:      "5.6.21"
 srv-version:      "5.6.21"
 url:              "http://www.mysql.com"
-source:           "mysql-%{version}.tar.bz2"
+source:           "https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-%{version}.tar.gz"
 src-dir:          "mysql-%{version}"
 lib-version:      18
 lib-name:         mysql56client

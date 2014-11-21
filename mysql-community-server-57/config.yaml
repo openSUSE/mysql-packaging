@@ -8,7 +8,7 @@ builtin_plugins:  partition,csv,heap,myisam,innobase
 pkg-version:      "5.7.4"
 srv-version:      "5.7.4"
 url:              "http://www.mysql.com"
-source:           "mysql-%{version}-m14.tar.bz2"
+source:           "https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-%{version}-m14.tar.gz"
 src-dir:          "mysql-%{version}-m14"
 lib-version:      18
 lib-name:         mysql57client
