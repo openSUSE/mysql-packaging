@@ -67,10 +67,11 @@ Index: client/mysql_upgrade.c
    {
      printf("This installation of MySQL is already upgraded to %s, "
             "use --force if you still need to run mysql_upgrade\n",
-@@ -1026,9 +1042,6 @@ int main(int argc, char **argv)
+@@ -1026,9 +1042,7 @@ int main(int argc, char **argv)
    verbose("Phase 1/4: Checking mysql database");
    if (run_mysqlcheck_upgrade("--databases", "mysql"))
      die("Upgrade failed" );
++  verbose("Phase 2/4: Waiting with 'mysql_fix_privilege_tables' till the end...");
 -  verbose("Phase 2/4: Running 'mysql_fix_privilege_tables'...");
 -  if (run_sql_fix_privilege_tables())
 -    die("Upgrade failed" );
@@ -81,7 +82,7 @@ Index: client/mysql_upgrade.c
         run_mysqlcheck_upgrade("--all-databases","--skip-database=mysql")))
      die("Upgrade failed" );
  
-+  verbose("Phase 2/4: Running 'mysql_fix_privilege_tables'...");
++  verbose("Phase 5/4: Running 'mysql_fix_privilege_tables'...");
 +  if (run_sql_fix_privilege_tables())
 +    die("Upgrade failed" );
 +
