@@ -1,4 +1,3 @@
-%build
 EXTRA_FLAGS="-Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter -fno-exceptions -fno-rtti -fno-implicit-templates -felide-constructors"
 %ifarch ppc64
 EXTRA_FLAGS="${EXTRA_FLAGS} -mminimal-toc"
