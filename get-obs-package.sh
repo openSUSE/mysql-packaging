@@ -49,7 +49,7 @@ checkout_package() {
 # Prepare list of all packages we need to checkout
 checkout_packages() {
     for i in ${DEVELPKGS[@]}; do
-	echo "Checking out package..."
+        echo "Checking out package..."
         checkout_package ${DEVELPROJECT} $i
     done
 }

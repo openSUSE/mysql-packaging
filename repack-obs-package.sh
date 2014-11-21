@@ -15,14 +15,14 @@ replace_source_tarball(){
 	find . -regex '\./\(mariadb\|mysql\)-[0-9.]+\.tar\.\(gz\|bz2\)' -delete
 
     echo "Downloading the new source tarball..."
-	if `osc -A https://api.opensuse.org service localrun download_files` ; then
-		echo "The new source tarball was downloaded"
-	else
-		echo "Download failed!"
-		exit 1
-	fi
+    if `osc -A https://api.opensuse.org service localrun download_files` ; then
+        echo "The new source tarball was downloaded"
+    else
+        echo "Download failed!"
+        exit 1
+    fi
 
-	osc -A https://api.opensuse.org addremove
+    osc -A https://api.opensuse.org addremove
 }
 
 # Run the update script in each of the pkg dirs
@@ -32,11 +32,11 @@ update_package() {
     pushd "${WORKDIR}/"*"/${1}" > /dev/null
     bash ../../../update-package.sh ${1} || exit 1
 
-	replace_source_tarball
+    replace_source_tarball
 
     popd > /dev/null
     echo "Updated package \"${1}\""
-	echo "-------------------------------------------------------------"
+    echo "-------------------------------------------------------------"
 }
 
 # Run update for all of the DEVELPKGS
