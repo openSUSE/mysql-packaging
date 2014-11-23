@@ -1,11 +1,11 @@
-EXTRA_FLAGS="-Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter -fno-exceptions"
+EXTRA_FLAGS="-Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-parameter"
 # Mariadb devs seems to fall in love with -Werror option
 EXTRA_FLAGS="${EXTRA_FLAGS} -Wno-error"
 %ifarch ppc64
 EXTRA_FLAGS="${EXTRA_FLAGS} -mminimal-toc"
 %endif
 export CFLAGS="%{optflags} -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS"
-export CXXFLAGS="$CFLAGS -fno-rtti -fno-implicit-templates -felide-constructors"
+export CXXFLAGS="$CFLAGS -felide-constructors"
 %cmake -DWITH_SSL=system                                             \
         -DWITH_ZLIB=system                                           \
         -DWITH_LIBEVENT=system                                       \
