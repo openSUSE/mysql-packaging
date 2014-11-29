@@ -15,6 +15,6 @@ Alternatively you can run:
 '/usr/bin/mysql_secure_installation'
 
 which will also give you the option of removing the test
-databases and anonymous user created by default.  This is
+databases and anonymous user created by default. This is
 strongly recommended for production servers.
 
