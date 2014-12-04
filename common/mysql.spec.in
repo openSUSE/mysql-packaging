@@ -1,5 +1,5 @@
 #
-# spec file for package {{pkg-name}}
+# spec file for package mysql.spec
 #
 # Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
@@ -15,32 +15,22 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-# Few definitions which will alter build
+
 %define preferred    0{{preferred}}
-%define use_systemd  0{{systemd}}
 %define have_info    0{{have_info}}
 %define builtin_plugins {{builtin_plugins}}
 %define use_extra_provides {{use_extra_provides}}
 %define extra_provides {{extra_provides}}
-
+%define srv_vers {{srv-version}}
 %if ! %{defined _rundir}
 %define _rundir %{_localstatedir}/run
 %endif
-
-%if %{?rel:0}%{!?rel:1}
-%define rel 1
-%endif
-#Distribution:   %dist
-#Packager:       %packager
-#Vendor:         %vendor
-
 Name:           {{pkg-name}}
+Version:        {{pkg-version}}
+Release:        0
 Summary:        Server part of {{display-name}}
 License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Productivity/Databases/Servers
-Version:        {{pkg-version}}
-Release:        0
-%define srv_vers {{srv-version}}
 Url:            {{url}}
 Source:         {{source}}
 Source2:        baselibs.conf
@@ -58,15 +48,9 @@ Source14:       my.ini
 Source15:       rc.mysql.sysvinit
 Source16:       rc.mysql.systemd
 Source17:       mysql.service
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-%if 0%{?suse_version}
-PreReq:         pwdutils
-%if 0%have_info > 0
-PreReq:         %install_info_prereq %insserv_prereq
-%endif
-%endif
 BuildRequires:  bison
 BuildRequires:  cmake
+BuildRequires:  fdupes
 BuildRequires:  gcc-c++
 BuildRequires:  libaio-devel
 BuildRequires:  libedit-devel
@@ -76,62 +60,50 @@ BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
 BuildRequires:  procps
-BuildRequires:  readline-devel
-BuildRequires:  zlib-devel
-%if 0%{?suse_version}
 BuildRequires:  pwdutils
-BuildRequires:  tcpd-devel
-%endif
-%if 0%{?suse_version} > 1030 || 0%{?fedora_version} > 8
-BuildRequires:  fdupes
-%endif
-%if 0%{?fedora_version} > 11
+BuildRequires:  readline-devel
 BuildRequires:  sqlite
-%endif
-%if 0%{?suse_version} > 1030
-Recommends:     logrotate
-%else
-Requires:       logrotate
-%endif
+BuildRequires:  tcpd-devel
+BuildRequires:  zlib-devel
+BuildRequires:  pkgconfig(systemd)
 # required by rcmysql
 Requires:       %{name}-client
-Requires:       %{name}-errormessages = %version
-%if 0%{?suse_version}
+Requires:       %{name}-errormessages = %{version}
 Requires:       perl-base
-%else
-Requires:       perl
-%endif
-# systemd requirements for openSUSE >= 12.1
-%if 0%{?suse_version} >= 1210
-BuildRequires:  pkgconfig(systemd)
-%{?systemd_requires}
-%endif
-%if "%{name}" != mysql
-Provides:       mysql = %{srv_vers}
-%endif
+Requires(pre):  pwdutils
+Recommends:     logrotate
 Provides:       mysql-Max = %{srv_vers}
-%if 0%{?use_extra_provides} > 0
-Provides:       %{extra_provides} = %{version}
-Obsoletes:      %{extra_provides} < %{version}
-%endif
-%if 0%{?preferred} > 0
-%if "%{name}" != mysql
-Obsoletes:      mysql < %{srv_vers}
-%endif
-Obsoletes:      mysql-Max < %{srv_vers}
-%endif
-Conflicts:      otherproviders(mysql)
 # Compatibility with Fedora/CentOS
 Provides:       mysql-server = %{srv_vers}
 Provides:       mariadb-server = %{srv_vers}
-Conflicts:      otherproviders(mysql-server)
-Conflicts:      otherproviders(mariadb-server)
 Provides:       %{name}-debug-version = %{srv_vers}
 Obsoletes:      %{name}-debug-version < %{srv_vers}
 Provides:       %{name}-debug = %{srv_vers}
 Provides:       mysql-debug = %{srv_vers}
 Provides:       %{extra_provides}-debug-verion = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+Conflicts:      otherproviders(mysql)
+Conflicts:      otherproviders(mysql-server)
+Conflicts:      otherproviders(mariadb-server)
+Conflicts:      otherproviders(mysql-debug)
+%{?systemd_requires}
+%if 0%{have_info} > 0
+Requires(post): %{install_info_prereq} %insserv_prereq
+%endif
+%if "%{name}" != mysql
+Provides:       mysql = %{srv_vers}
+%endif
+%if 0%{?use_extra_provides} > 0
+Provides:       %{extra_provides} = %{version}
+Obsoletes:      %{extra_provides} < %{version}
+%endif
+%if 0%{?preferred} > 0
+Obsoletes:      mysql-Max < %{srv_vers}
+%if "%{name}" != mysql
+Obsoletes:      mysql < %{srv_vers}
+%endif
+%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-debug-verion = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
@@ -139,7 +111,6 @@ Obsoletes:      %{extra_provides}-debug-version < %{version}
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-debug < %{srv_vers}
 %endif
-Conflicts:      otherproviders(mysql-debug)
 
 %description
 {{description}}
@@ -148,16 +119,16 @@ This package only contains the server-side programs.
 
 %if 0%{?preferred} > 0
 %package -n libmysqlclient-devel
-# mysql-devel was last used in openSUSE 10.2
-Provides:       mysql-devel = %srv_vers-%release
-Obsoletes:      mysql-devel < %srv_vers
-Requires:       glibc-devel
-Requires:       libmysqlclient{{lib-version}} = %version
-Requires:       libmysqlclient_r{{lib-version}} = %version
-Requires:       openssl-devel
-Requires:       zlib-devel
 Summary:        {{display-name}} development header files and libraries
 Group:          Development/Libraries/C and C++
+Requires:       glibc-devel
+Requires:       libmysqlclient_r{{lib-version}} = %{version}
+Requires:       libmysqlclient{{lib-version}} = %{version}
+Requires:       openssl-devel
+Requires:       zlib-devel
+# mysql-devel was last used in openSUSE 10.2
+Provides:       mysql-devel = %{srv_vers}-%{release}
+Obsoletes:      mysql-devel < %{srv_vers}
 
 %description -n libmysqlclient-devel
 This package contains the development header files and libraries
@@ -166,7 +137,7 @@ necessary to develop client applications for {{display-name}}.
 %package -n libmysqld{{lib-version}}
 Summary:        {{display-name}} embedded server development files
 Group:          Development/Libraries/C and C++
-Requires:       %{name}-errormessages = %version
+Requires:       %{name}-errormessages = %{version}
 
 %description -n libmysqld{{lib-version}}
 This package contains the development header files and libraries
@@ -176,8 +147,8 @@ for developing applications that embed the {{display-name}}.
 Summary:        {{display-name}} embedded server development files
 Group:          Development/Libraries/C and C++
 # the headers files are the shared
-Requires:       libmysqlclient-devel = %version
-Requires:       libmysqld{{lib-version}} = %version
+Requires:       libmysqlclient-devel = %{version}
+Requires:       libmysqld{{lib-version}} = %{version}
 Requires:       tcpd-devel
 
 %description -n libmysqld-devel
@@ -205,23 +176,21 @@ languages and applications need to dynamically load and use {{display-name}}.
 %package client
 Summary:        Client for {{display-name}}
 Group:          Productivity/Databases/Clients
+Requires:       %{name}-errormessages = %{version}
+Conflicts:      otherproviders(mysql-client)
 %if "%{name}" != mysql
 Provides:       mysql-client = %{srv_vers}
 %endif
-%if 0%{?suse_version}
-PreReq:         pwdutils
-%endif
+Requires(pre):  pwdutils
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
 %endif
-Requires:       %{name}-errormessages = %version
 %if 0%{?preferred} > 0
 %if "%{name}" != mysql
 Obsoletes:      mysql-client < %{srv_vers}
 %endif
 %endif
-Conflicts:      otherproviders(mysql-client)
 
 %description client
 This package contains the standard clients for {{display-name}}.
@@ -235,10 +204,11 @@ This package provides the translated error messages for the standalone
 server daemon as well as the embedded server
 
 %package bench
-Requires:       %{name}-client
-Requires:       perl-DBD-mysql
 Summary:        Benchmarks for {{display-name}}
 Group:          Productivity/Databases/Tools
+Requires:       %{name}-client
+Requires:       perl-DBD-mysql
+Conflicts:      otherproviders(mysql-bench)
 %if "%{name}" != mysql
 Provides:       mysql-bench = %{srv_vers}
 %endif
@@ -251,13 +221,12 @@ Obsoletes:      %{extra_provides}-bench < %{version}
 Obsoletes:      mysql-bench < %{srv_vers}
 %endif
 %endif
-Conflicts:      otherproviders(mysql-bench)
 
 %description bench
 This package contains benchmark scripts and data for {{display-name}}.
 
 To run these database benchmarks, start the script "run-all-tests" in
-the directory /usr/share/sql-bench after starting {{display-name}}.
+the directory %{_datadir}/sql-bench after starting {{display-name}}.
 
 %package test
 Summary:        Testsuite for {{display-name}}
@@ -267,6 +236,7 @@ Requires:       %{name}-bench = %{version}
 Requires:       %{name}-client = %{version}
 Requires:       %{name}-tools = %{version}
 Requires:       perl-DBD-mysql
+Conflicts:      otherproviders(mysql-test)
 %if "%{name}" != mysql
 Provides:       mysql-test = %{srv_vers}
 %endif
@@ -279,23 +249,23 @@ Obsoletes:      %{extra_provides}-test < %{version}
 Obsoletes:      mysql-test < %{srv_vers}
 %endif
 %endif
-Conflicts:      otherproviders(mysql-test)
 
 %description test
 This package contains the test scripts and data for {{display-name}}.
 
-To run the testsuite, run /usr/share/mysql-test/suse-test-run.
+To run the testsuite, run %{_datadir}/mysql-test/suse-test-run.
 
 %package tools
 Summary:        {{display-name}} tools
 Group:          Productivity/Databases/Servers
 Requires:       perl-DBD-mysql
 # make sure this package is installed when updating from 10.2 and older
-Provides:       mysql-client:/usr/bin/perror
+Provides:       mysql-client:%{_bindir}/perror
+Provides:       mysql:%{_bindir}/mysqlhotcopy
+Conflicts:      otherproviders(mysql-tools)
 %if "%{name}" != mysql
 Provides:       mysql-tools = %{srv_vers}
 %endif
-Provides:       mysql:/usr/bin/mysqlhotcopy
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-tools = %{version}
 Obsoletes:      %{extra_provides}-tools < %{version}
@@ -305,7 +275,6 @@ Obsoletes:      %{extra_provides}-tools < %{version}
 Obsoletes:      mysql-tools < %{srv_vers}
 %endif
 %endif
-Conflicts:      otherproviders(mysql-tools)
 
 %description tools
 A set of scripts for administering a {{display-name}} or developing
@@ -313,11 +282,11 @@ applications with {{display-name}}.
 
 %prep
 %setup -q -n {{src-dir}} -D -a 9
-cp %_sourcedir/README.SUSE .
-cp %_sourcedir/suse-test-run .
+cp %{_sourcedir}/README.SUSE .
+cp %{_sourcedir}/suse-test-run .
 # apply patches from series
-mysql-patches/tools/quilt-setup.sh  "%{S:12}"
-mysql-patches/tools/apply-series.sh "%{S:12}"
+mysql-patches/tools/quilt-setup.sh  "%{SOURCE12}"
+mysql-patches/tools/apply-series.sh "%{SOURCE12}"
 # remove unneeded manpages ('make install' basically installs everything under
 # man/*)
 rm -f man/mysqlman.1        # dummy fallback manpage
@@ -330,7 +299,7 @@ rm -f man/comp_err.1        # built-time utility
 rm -f man/ndbd_redo_log_reader.1
 # breaks VPATH builds when in sourcedir, is generated in the builddirs
 rm -f sql/sql_builtin.cc
-sed -i 's|@localstatedir@|/var/log|' support-files/mysql-log-rotate.sh
+sed -i 's|@localstatedir@|%{_localstatedir}/log|' support-files/mysql-log-rotate.sh
 %if 0%{preferred} < 1
 for i in `grep -Rl mysqlclient .`; do
 	sed -i 's|mysqlclient|{{lib-name}}|g' $i
@@ -341,78 +310,73 @@ done
 rm -f mysql-test/t/file_contents.test mysql-test/r/file_contents.result
 # Specify perl path on shebangs
 for i in `grep -Rl '^#!@PERL@$' .`; do
-	sed -i 's|@PERL@|/usr/bin/perl|' $i
+	sed -i 's|@PERL@|%{_bindir}/perl|' $i
 done
 
 %build
-%{expand:%(cat %_sourcedir/build.inc)}
+%{expand:%(cat %{_sourcedir}/build.inc)}
 
 %install
-%{expand:%(cat %_sourcedir/install.inc)}
+%{expand:%(cat %{_sourcedir}/install.inc)}
 
 %pre
-/usr/sbin/groupadd -r mysql >/dev/null 2>/dev/null || :
-/usr/sbin/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
-                  -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
-/usr/sbin/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
-# systemd requirment
-%if 0%{?suse_version} >= 1210
+%{_sbindir}/groupadd -r mysql >/dev/null 2>/dev/null || :
+%{_sbindir}/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
+                  -s /bin/false -d %{_localstatedir}/lib/mysql mysql 2> /dev/null || :
+%{_sbindir}/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
 %service_add_pre mysql.service
-%endif
 
 %pre client
-/usr/sbin/groupadd -r mysql >/dev/null 2>/dev/null || :
-/usr/sbin/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
-                  -s /bin/false -d /var/lib/mysql mysql 2> /dev/null || :
-/usr/sbin/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
+%{_sbindir}/groupadd -r mysql >/dev/null 2>/dev/null || :
+%{_sbindir}/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
+                  -s /bin/false -d %{_localstatedir}/lib/mysql mysql 2> /dev/null || :
+%{_sbindir}/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
 
 %post
-# systemd requirment 
-%if 0%{?suse_version} >= 1210
 %service_add_post mysql.service
-%endif
 
 #######################################################################
 # preun and posttran takes care of restart                            #
 #######################################################################
+
 %preun
-[ $1 = 1 ] || /usr/sbin/rcmysql stop || true
+[ $1 = 1 ] || %{_sbindir}/rcmysql stop || true
 
 %pretrans -p <lua>
-if posix.access("/usr/sbin/rcmysql", "x") then
-  restart = os.execute("/usr/sbin/rcmysql status > /dev/null")
+if posix.access("%{_sbindir}/rcmysql", "x") then
+  restart = os.execute("%{_sbindir}/rcmysql status > /dev/null")
   if restart == 0 then
-    os.execute("/usr/sbin/rcmysql stop")
+    os.execute("%{_sbindir}/rcmysql stop")
     os.execute("/bin/mkdir -p %{_rundir}/mysql/restart")
   end
 end
 
 %posttrans
-%if 0%have_info > 0
+%if 0%{have_info} > 0
 [ -z "`ls %{_infodir}/mysql.info.* 2> /dev/null`" ] || \
 %install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 %endif
-if [ -d /var/lib/mysql ]; then
-	touch /var/lib/mysql/.run-mysql_upgrade
+if [ -d %{_localstatedir}/lib/mysql ]; then
+	touch %{_localstatedir}/lib/mysql/.run-mysql_upgrade
 fi
 for in in protected tmp; do
-	rmdir /var/lib/mysql/.$i 2>/dev/null || :
+	rmdir %{_localstatedir}/lib/mysql/.$i 2>/dev/null || :
 done
 # start mysql again if it should run
-if [ "`ls /etc/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d %{_rundir}/mysql/restart ]; then
-	[ -x /usr/sbin/rcmysql ] && /usr/sbin/rcmysql start
+if [ "`ls %{_sysconfdir}/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d %{_rundir}/mysql/restart ]; then
+	[ -x %{_sbindir}/rcmysql ] && %{_sbindir}/rcmysql start
 	# Might not be there, so ignoring errors
 	rmdir %{_rundir}/mysql/restart 2> /dev/null || :
 fi
 # warn on first run
-datadir="/var/lib/mysql"
-if [ -x /usr/bin/my_print_defaults ]; then
-	datadir="`/usr/bin/my_print_defaults mysqld mysql_server | sed -n 's|--datadir=||p'`"
-	[ "$datadir" ] || datadir="/var/lib/mysql"
+datadir="%{_localstatedir}/lib/mysql"
+if [ -x %{_bindir}/my_print_defaults ]; then
+	datadir="`%{_bindir}/my_print_defaults mysqld mysql_server | sed -n 's|--datadir=||p'`"
+	[ "$datadir" ] || datadir="%{_localstatedir}/lib/mysql"
 fi
 if [ \! -d "$datadir/mysql" ]; then
-cat > /var/adm/update-messages/%{name}-%{version}-%{release} << EOF
-%(cat %_sourcedir/README.install)
+cat > %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+%(cat %{_sourcedir}/README.install)
 EOF
 fi
 
@@ -436,13 +400,13 @@ fi
 
 %postun
 if [ $1 = 0 ]; then
-	%if 0%have_info > 0
+	%if 0%{have_info} > 0
 	%install_info_delete --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 	%endif
-	%{insserv_cleanup}
-	rm -f "/var/lib/systemd/migrated/mysql.service"
-	if [ -x /usr/bin/systemctl ]; then
-		/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+	%insserv_cleanup
+	rm -f "%{_localstatedir}/lib/systemd/migrated/mysql.service"
+	if [ -x %{_bindir}/systemctl ]; then
+		%{_bindir}/systemctl daemon-reload >/dev/null 2>&1 || :
 	fi
 fi
 
@@ -452,35 +416,31 @@ fi
 
 %files -f mysql.files
 %defattr(-, root, root)
-%config(noreplace) %attr(0640, root, mysql) /etc/my.cnf
-%dir %attr(0750, root, mysql) /etc/my.cnf.d
-%config(noreplace) %attr(0640, root, mysql) /etc/my.cnf.d/*
-%config /etc/logrotate.d/mysql
+%config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/my.cnf
+%dir %attr(0750, root, mysql) %{_sysconfdir}/my.cnf.d
+%config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/my.cnf.d/*
+%config %{_sysconfdir}/logrotate.d/mysql
 %doc %{_defaultdocdir}/%{name}
-%if 0%have_info > 0
+%if 0%{have_info} > 0
 %doc %{_infodir}/mysql.info.*
 %endif
-%if 0%{?use_systemd} > 0
-%dir /usr/lib/mysql
-/usr/lib/mysql/rcmysql
-/usr/lib/systemd/system/mysql.service
-%else
-/etc/init.d/mysql
-%endif
-/usr/sbin/rcmysql
-%dir /usr/share/%{name}
-%dir /usr/share/mysql
-/usr/share/%{name}/charsets/
-/usr/share/%{name}/*.sql
+%dir %{_libexecdir}/mysql
+%{_libexecdir}/mysql/rcmysql
+%{_libexecdir}/systemd/system/mysql.service
+%{_sbindir}/rcmysql
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/mysql
+%{_datadir}/%{name}/charsets/
+%{_datadir}/%{name}/*.sql
 %dir %{_libdir}/mysql
 %{_libdir}/mysql/mysqld.sym
-%config /etc/sysconfig/SuSEfirewall2.d/services/mysql
-%dir %_libdir/mysql/plugin
-%_libdir/mysql/plugin/[!d]*.so
+%config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/mysql
+%dir %{_libdir}/mysql/plugin
+%{_libdir}/mysql/plugin/[!d]*.so
 
 %files errormessages -f errormessages.files
 %defattr(-, root, root)
-/usr/share/%{name}/*/errmsg.sys
+%{_datadir}/%{name}/*/errmsg.sys
 
 %files client -f mysql-client.files
 %defattr(-, root, root)
@@ -488,20 +448,20 @@ fi
 %if 0%{preferred} > 0
 %files -n libmysqlclient-devel -f libmysqlclient-devel.files
 %defattr(-, root, root)
-/usr/include/mysql
+%{_includedir}/mysql
 %{_libdir}/libmysqlclient.so
 %{_libdir}/libmysqlclient_r.so
-%dir /usr/share/aclocal
-/usr/share/aclocal/mysql.m4
+%dir %{_datadir}/aclocal
+%{_datadir}/aclocal/mysql.m4
 
 %files -n libmysqld-devel
 %defattr(-,root,root)
-%_libdir/libmysqld.a
-%_libdir/libmysqld.so
+%{_libdir}/libmysqld.a
+%{_libdir}/libmysqld.so
 
 %files -n libmysqld18
 %defattr(-,root,root)
-%_libdir/libmysqld.so.*
+%{_libdir}/libmysqld.so.*
 %endif
 
 %files -n lib{{lib-name}}{{lib-version}}
@@ -514,22 +474,22 @@ fi
 
 %files bench -f mysql-bench.files
 %defattr(-, root, root)
-/usr/share/sql-bench
+%{_datadir}/sql-bench
 
 %files test -f mysql-test.files
 %defattr(-, root, root)
 %{_bindir}/my_safe_process
-%_mandir/man1/mysql-test-run.pl.1*
-%_mandir/man1/mysql-stress-test.pl.1*
-/usr/share/mysql-test/valgrind.supp
-%dir %attr(755, root, root)/usr/share/mysql-test
-/usr/share/mysql-test/[^v]*
-%dir %attr(755, mysql, mysql) /usr/share/mysql-test/var
+%{_mandir}/man1/mysql-test-run.pl.1*
+%{_mandir}/man1/mysql-stress-test.pl.1*
+%{_datadir}/mysql-test/valgrind.supp
+%dir %attr(755, root, root)%{_datadir}/mysql-test
+%{_datadir}/mysql-test/[^v]*
+%dir %attr(755, mysql, mysql) %{_datadir}/mysql-test/var
 
 %files tools -f mysql-tools.files
 %defattr(-, root, root)
-%_bindir/mysqlrepair
-%_bindir/mysqlanalyze
-%_bindir/mysqloptimize
+%{_bindir}/mysqlrepair
+%{_bindir}/mysqlanalyze
+%{_bindir}/mysqloptimize
 
 %changelog
