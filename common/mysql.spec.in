@@ -76,12 +76,11 @@ Provides:       mysql-Max = %{srv_vers}
 # Compatibility with Fedora/CentOS
 Provides:       mysql-server = %{srv_vers}
 Provides:       mariadb-server = %{srv_vers}
+# Compatibility with old version
 Provides:       %{name}-debug-version = %{srv_vers}
 Obsoletes:      %{name}-debug-version < %{srv_vers}
 Provides:       %{name}-debug = %{srv_vers}
-Provides:       mysql-debug = %{srv_vers}
-Provides:       %{extra_provides}-debug-verion = %{version}
-Obsoletes:      %{extra_provides}-debug-version < %{version}
+Obsoletes:      %{name}-debug < %{srv_vers}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Conflicts:      otherproviders(mysql)
 Conflicts:      otherproviders(mysql-server)
@@ -93,23 +92,20 @@ Requires(post): %{install_info_prereq} %insserv_prereq
 %endif
 %if "%{name}" != mysql
 Provides:       mysql = %{srv_vers}
+Provides:       mysql-debug = %{srv_vers}
 %endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
+Provides:       %{extra_provides}-debug-version = %{version}
+Obsoletes:      %{extra_provides}-debug-version < %{version}
 %endif
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-Max < %{srv_vers}
 %if "%{name}" != mysql
 Obsoletes:      mysql < %{srv_vers}
-%endif
-%endif
-%if 0%{?use_extra_provides} > 0
-Provides:       %{extra_provides}-debug-verion = %{version}
-Obsoletes:      %{extra_provides}-debug-version < %{version}
-%endif
-%if 0%{?preferred} > 0
 Obsoletes:      mysql-debug < %{srv_vers}
+%endif
 %endif
 
 %description
