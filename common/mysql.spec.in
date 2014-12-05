@@ -1,5 +1,5 @@
 #
-# spec file for package mysql.spec
+# spec file for package {{pkg-name}}
 #
 # Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
