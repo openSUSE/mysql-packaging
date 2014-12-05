@@ -78,20 +78,12 @@ install -m 660 %{S:14} %buildroot/etc/my.cnf
 for i in "${DOCS[@]}"; do
 	install -m 644 "${i}" "${DOCDIR}" || true
 done
-%if 0%{?use_systemd} > 0
 install -D -m 755 %_sourcedir/rc.mysql.systemd '%buildroot'/usr/lib/mysql/rcmysql
 sed -i 's|@MYSQLVER@|%{version}|' '%buildroot'/usr/lib/mysql/rcmysql
 ln -sf service '%buildroot'/usr/sbin/rcmysql
 install -D -m 644 %_sourcedir/mysql.service '%buildroot'/usr/lib/systemd/system/mysql.service
 sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/usr/lib/mysql/rcmysql
 rm -rf '%buildroot'/etc/init.d
-%else
-install -d -m 755 '%buildroot'/etc/init.d
-install -m 755 '%_sourcedir'/rc.mysql.sysvinit '%buildroot'/etc/init.d/mysql
-sed -i 's|@MYSQLVER@|%{version}|' '%buildroot'/etc/init.d/mysql
-ln -sf ../../etc/init.d/mysql '%buildroot'/usr/sbin/rcmysql
-sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%buildroot'/etc/init.d/mysql
-%endif
 # SuSEfirewall service description
 install -D -m 644 %_sourcedir/mysql.SuSEfirewall2 \
 	%buildroot/etc/sysconfig/SuSEfirewall2.d/services/mysql
