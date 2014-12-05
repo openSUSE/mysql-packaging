@@ -414,8 +414,7 @@ else
 			}
 
 			echo "Running protected MySQL... " | tee -a "$log_upgrade"
-			$SAFE_MYSQLD \
-				--mysqld=${MYSQLD#/usr/sbin/} \
+			$MYSQLD \
 				$debug_flags \
 				--skip-networking \
 				--skip-grant-tables \
