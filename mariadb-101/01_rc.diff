@@ -1,0 +1,14 @@
+diff --git a/common/rc.mysql-multi.body b/common/rc.mysql-multi.body
+index dfb813d..e70b34a 100644
+--- a/common/rc.mysql-multi.body
++++ b/common/rc.mysql-multi.body
+@@ -484,8 +483,7 @@ else
+ 
+ 		echo -n "Starting service MySQL "
+ 
+-		$SAFE_MYSQLD \
+-			--mysqld=${MYSQLD#/usr/sbin/} \
++		$MYSQLD \
+ 			$debug_flags \
+ 			--user="$mysql_daemon_user" \
+ 			--pid-file="$pid_file" \
