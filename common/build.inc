@@ -21,6 +21,14 @@ export CXXFLAGS="$CFLAGS -felide-constructors"
         -DDEFAULT_CHARSET=utf8  -DDEFAULT_COLLATION=utf8_general_ci  \
         -DWITH_INNOBASE_STORAGE_ENGINE=1                             \
         -DWITH_PERFSCHEMA_STORAGE_ENGINE=1                           \
+%if %{with oqgraph}
+        -DWITH_OQGRAPH_STORAGE_ENGINE=1                              \
+%endif
+%if %{with cassandra}
+        -DWITH_CASSANDRA_STORAGE_ENGINE=1                            \
+%endif
+        -DWITH_XTRADB_STORAGE_ENGINE=1                               \
+        -DWITH_CSV_STORAGE_ENGINE=1                                  \
         -DWITH_EMBEDDED_SERVER=true                                  \
         -DCOMPILATION_COMMENT="openSUSE package"                     \
         -DDENABLE_DOWNLOADS=false                                    \
