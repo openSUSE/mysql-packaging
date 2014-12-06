@@ -1,0 +1,111 @@
+PATCH-P0-FEATURE-UPSTREAM: Keep datadir across multiple calls
+
+mysql_upgrade script asks for datadir multiple times during update but at some
+point privileges gets updated and if --skip-grant-tables was used (like in SUSE
+init scripts), datadir is no longer queryable. So we cache the value.
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: client/mysql_upgrade.c
+===================================================================
+--- client/mysql_upgrade.c.orig
++++ client/mysql_upgrade.c
+@@ -611,21 +611,37 @@ static int extract_variable_from_show(DY
+ 
+ static int get_upgrade_info_file_name(char* name)
+ {
+-  DYNAMIC_STRING ds_datadir;
+-  DBUG_ENTER("get_upgrade_info_file_name");
++  static char *data_dir = NULL;
++  static size_t len;
+ 
+-  if (init_dynamic_string(&ds_datadir, NULL, 32, 32))
+-    die("Out of memory");
++  DBUG_ENTER("get_upgrade_info_file_name");
+ 
+-  if (run_query("show variables like 'datadir'",
+-                &ds_datadir, FALSE) ||
+-      extract_variable_from_show(&ds_datadir, name))
++  if(data_dir==NULL)
+   {
++    DYNAMIC_STRING ds_datadir;
++
++    if (init_dynamic_string(&ds_datadir, NULL, 32, 32))
++      die("Out of memory");
++
++    if (run_query("show variables like 'datadir'",
++                  &ds_datadir, FALSE) ||
++        extract_variable_from_show(&ds_datadir, name)
++        )
++    {
++      dynstr_free(&ds_datadir);
++      DBUG_RETURN(1); /* Query failed */
++    }
+     dynstr_free(&ds_datadir);
+-    DBUG_RETURN(1); /* Query failed */
+-  }
++    len = strlen(name)+1;
++    if ((data_dir=(char*)malloc(sizeof(char)*len))==NULL)
++    {
++      die("Out of memory");
++    }
++    strncpy(data_dir,name,len);
+ 
+-  dynstr_free(&ds_datadir);
++  } else {
++    strncpy(name, data_dir, len);
++  }
+ 
+   fn_format(name, "mysql_upgrade_info", name, "", MYF(0));
+   DBUG_PRINT("exit", ("name: %s", name));
+@@ -762,7 +778,7 @@ static int run_mysqlcheck_upgrade(const
+ 
+ static int run_mysqlcheck_fixnames(void)
+ {
+-  verbose("Phase 3/5: Fixing table and database names");
++  verbose("Phase 3/6: Fixing table and database names");
+   print_conn_args("mysqlcheck");
+   return run_tool(mysqlcheck_path,
+                   NULL, /* Send output from mysqlcheck directly to screen */
+@@ -1008,7 +1024,7 @@ int main(int argc, char **argv)
+     Read the mysql_upgrade_info file to check if mysql_upgrade
+     already has been run for this installation of MySQL
+   */
+-  if (!opt_force && upgrade_already_done())
++  if (upgrade_already_done() && !opt_force)
+   {
+     printf("This installation of MySQL is already upgraded to %s, "
+            "use --force if you still need to run mysql_upgrade\n",
+@@ -1024,23 +1040,26 @@ int main(int argc, char **argv)
+   /*
+     Run "mysqlcheck" and "mysql_fix_privilege_tables.sql"
+   */
+-  verbose("Phase 1/5: Checking mysql database");
++  verbose("Phase 1/6: Checking mysql database");
+   if (run_mysqlcheck_upgrade("--databases", "mysql"))
+     die("Upgrade failed" );
+-  verbose("Phase 2/5: Running 'mysql_fix_privilege_tables'...");
+-  if (run_sql_fix_privilege_tables())
+-    die("Upgrade failed" );
++  verbose("Phase 2/6: Skipping 'mysql_fix_privilege_tables' for now...");
+ 
+   if (!opt_systables_only &&
+       (run_mysqlcheck_fixnames() ||
+-       verbose("Phase 4/5: Checking and upgrading tables") ||
++       verbose("Phase 4/6: Checking and upgrading tables") ||
+        run_mysqlcheck_upgrade("--all-databases","--skip-database=mysql")))
+     die("Upgrade failed" );
+ 
+-  verbose("Phase 5/5: Running 'FLUSH PRIVILEGES'...");
++  verbose("Phase 5/6: Running 'mysql_fix_privilege_tables'...");
++  if (run_sql_fix_privilege_tables())
++    die("Upgrade failed" );
++
++  verbose("Phase 6/6: Running 'FLUSH PRIVILEGES'...");
+   if (run_query("FLUSH PRIVILEGES", NULL, TRUE))
+     die("Upgrade failed" );
+ 
++
+   verbose("OK");
+ 
+   /* Create a file indicating upgrade has been performed */

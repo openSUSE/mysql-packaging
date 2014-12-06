@@ -1,0 +1,14 @@
+PATCH-P0-FIX-UPSTREAM: define _DEFAULT_SOURCE to avoid warning about _SVID_SOURCE
+
+Index: storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
+===================================================================
+--- storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake.orig
++++ storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
+@@ -17,7 +17,6 @@ add_c_defines(
+ if (NOT CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
+   ## on FreeBSD these types of macros actually remove functionality
+   add_c_defines(
+-    _DEFAULT_SOURCE
+     _XOPEN_SOURCE=600
+     )
+ endif ()
