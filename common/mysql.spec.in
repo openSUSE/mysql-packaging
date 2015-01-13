@@ -79,6 +79,7 @@ BuildRequires:  lzo-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
+BuildRequires:  pcre-devel
 BuildRequires:  procps
 BuildRequires:  pwdutils
 BuildRequires:  readline-devel
@@ -358,42 +359,61 @@ done
 %preun
 [ $1 = 1 ] || %{_sbindir}/rcmysql stop || true
 
-%pretrans -p <lua>
-if posix.access("%{_sbindir}/rcmysql", "x") then
-  restart = os.execute("%{_sbindir}/rcmysql status > /dev/null")
-  if restart == 0 then
-    os.execute("%{_sbindir}/rcmysql stop")
-    os.execute("/bin/mkdir -p %{_rundir}/mysql/restart")
-  end
-end
-
 %posttrans
 %if 0%{have_info} > 0
 [ -z "`ls %{_infodir}/mysql.info.* 2> /dev/null`" ] || \
 %install_info --info-dir=%{_infodir} %{_infodir}/mysql.info.*
 %endif
-if [ -d %{_localstatedir}/lib/mysql ]; then
-	touch %{_localstatedir}/lib/mysql/.run-mysql_upgrade
-fi
+rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 for in in protected tmp; do
 	rmdir %{_localstatedir}/lib/mysql/.$i 2>/dev/null || :
 done
-# start mysql again if it should run
-if [ "`ls %{_sysconfdir}/rc.d/rc*.d/S*mysql 2> /dev/null`" ] || [ -d %{_rundir}/mysql/restart ]; then
-	[ -x %{_sbindir}/rcmysql ] && %{_sbindir}/rcmysql start
-	# Might not be there, so ignoring errors
-	rmdir %{_rundir}/mysql/restart 2> /dev/null || :
+# During package rename, there might be config file move
+if [ -f /etc/my.cnf.rpmsave ]; then
+	mv /etc/my.cnf{,.rpmnew}
+	mv /etc/my.cnf{.rpmsave,}
+cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+
+WARNING: /etc/my.cnf.rpmsave file detected!
+
+This probably means that you are upgrading from different variant of MySQL.
+Your original configuration file was restored. If it is not a case, you can
+find your original /etc/my.cnf as /etc/my.cnf.rpmnew
+
+EOF
+
 fi
 # warn on first run
-datadir="%{_localstatedir}/lib/mysql"
 if [ -x %{_bindir}/my_print_defaults ]; then
 	datadir="`%{_bindir}/my_print_defaults mysqld mysql_server | sed -n 's|--datadir=||p'`"
-	[ "$datadir" ] || datadir="%{_localstatedir}/lib/mysql"
 fi
-if [ \! -d "$datadir/mysql" ]; then
-cat > %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+[ -n "$datadir" ] || datadir="%{_localstatedir}/lib/mysql"
+if [ -d "$datadir/mysql" ]; then
+	touch "$datadir/.run-mysql_upgrade"
+fi
+for in in protected tmp; do
+	rmdir "$datadir"/.$i 2>/dev/null || :
+done
+if [ \! -f "$datadir/mysql_upgrade_info" ]; then
+cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+
 %(cat %{_sourcedir}/README.install)
+
 EOF
+else
+MYSQLVER="`echo %{version} | sed 's|\.[0-9]\+$||'`"
+if [ -f "$datadir/mysql_upgrade_info" ] && \
+   [ -z "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ]; then
+cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+
+WARNING: You are upgrading from different stable version of MySQL!
+
+Your database will be migrated automatically during next restart of MySQL.
+Before you do that make sure you have up to date backup of your data. It
+should be mainly in $datadir directory.
+
+EOF
+fi
 fi
 
 #######################################################################

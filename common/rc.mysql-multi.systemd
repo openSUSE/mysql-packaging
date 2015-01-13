@@ -8,6 +8,10 @@
 #      rc_reset         clear local rc status (overall remains)
 #      rc_exit          exit appropriate to overall rc status
 
+_rc_status_ret=0
+_rc_status=$_rc_status_ret
+_rc_status_all=$_rc_status
+
 rc_check ()
 {
     _rc_status_ret=$?

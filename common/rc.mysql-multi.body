@@ -334,22 +334,7 @@ else
 		# Run mysql_upgrade on every package install/upgrade. Not always
 		# necessary, but doesn't do any harm. On big upgrade, require
 		# user confirmation.
-		if [ -f "/var/lib/mysql/.run-mysql_upgrade" ]; then
-			if [ \! -f "/var/lib/mysql/.force_upgrade" ] && \
-			   [ -f "$datadir/mysql_upgrade_info" ] && \
-			   [ -z "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ]; then
-			   echo
-			   echo "You are upgrading from different stable version of MySQL!"
-			   echo "Make sure you to make backup of your data (mostly $datadir)!"
-			   echo
-			   echo "If you want to continue upgrading your database, run following commands:"
-			   echo
-			   echo "   touch /var/lib/mysql/.force_upgrade"
-			   echo "   rcmysql restart"
-			   echo
-			   rc_failed;  rc_status -v; rc_exit
-
-			fi
+		if [ -f "$datadir/.run-mysql_upgrade" ]; then
 			echo > "$log_upgrade"
 			echo "`LANG="" date` - upgrading MySQL..." >> "$log_upgrade"
 			echo >> "$log_upgrade"
@@ -475,6 +460,8 @@ else
 			rm -f /var/lib/mysql/.run-mysql_upgrade
 			rm -f /var/lib/mysql/.force_upgrade
 			rm -f "$datadir"/{update-stamp-*,mysql/stamp-4.1} # used in the past
+			MYSQLVERSION="`mysqld --version 2> /dev/null | sed -n 's|mysqld[[:blank:]]\+Ver[[:blank:]]\+\([^[:blank:]]\+\)[[:blank:]].*|\1|p'`"
+			[ -z "$MYSQLVERSION" ] || echo "$MYSQLVERSION" > "$datadir"/mysql_upgrade_info
 			chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$log_upgrade"
 			chmod 640 "$log_upgrade"
 		fi
