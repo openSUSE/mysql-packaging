@@ -29,6 +29,7 @@ export CXXFLAGS="$CFLAGS -felide-constructors"
 %endif
         -DWITH_XTRADB_STORAGE_ENGINE=1                               \
         -DWITH_CSV_STORAGE_ENGINE=1                                  \
+        -DWITH_HANDLERSOCKET_STORAGE_ENGINE=1                        \
         -DWITH_EMBEDDED_SERVER=true                                  \
         -DCOMPILATION_COMMENT="openSUSE package"                     \
         -DDENABLE_DOWNLOADS=false                                    \
