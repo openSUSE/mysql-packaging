@@ -415,6 +415,12 @@ should be mainly in $datadir directory.
 EOF
 fi
 fi
+# start mysql again if it should run - migration from old setup
+if [ -d %{_rundir}/mysql/restart ]; then
+       [ -x %{_sbindir}/rcmysql ] && %{_sbindir}/rcmysql start
+       # Might not be there, so ignoring errors
+       rmdir %{_rundir}/mysql/restart 2> /dev/null
+fi
 
 #######################################################################
 # Various ldconfig post scripts                                       #
