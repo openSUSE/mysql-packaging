@@ -339,7 +339,7 @@ else
 			echo "`LANG="" date` - upgrading MySQL..." >> "$log_upgrade"
 			echo >> "$log_upgrade"
 			echo "Will update MySQL now, if you encounter any problems, please read following file:" | tee -a "$log_upgrade"
-			echo "	/usr/share/doc/packages/mysql/README.SuSE" | tee -a "$log_upgrade"
+			echo "	/usr/share/doc/packages/mysql/README.SUSE" | tee -a "$log_upgrade"
 			sed -i -e 's|^\([[:blank:]]*\)skip-locking|\1skip-external-locking|' \
 			       -e 's|^\([[:blank:]]*skip-federated\)|#\1|' /etc/my.cnf
 			[ -d /etc/mysql ] || \

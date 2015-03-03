@@ -71,7 +71,7 @@ errmsg_list()
 errmsg_list > errormessages.files
 ### files not installed by make install
 # Create directory structure
-DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/README.SuSE plugin/daemon_example/daemon_example.ini)
+DOCS=(COPYING README EXCEPTIONS-CLIENT %_sourcedir/README.debug %_sourcedir/README.SUSE plugin/daemon_example/daemon_example.ini)
 DOCDIR=%buildroot%_defaultdocdir/%name
 install -d -m 755 ${DOCDIR}
 install -d -m 755 %buildroot/etc/logrotate.d
