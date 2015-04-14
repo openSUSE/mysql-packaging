@@ -11,6 +11,7 @@ rm -f %buildroot%_libdir/*.a
 [ \! -f "%buildroot%_libdir/"libmysqld.static ] || mv "%buildroot%_libdir/"libmysqld.static "%buildroot%_libdir/"libmysqld.a
 rm -f %buildroot%_libdir/mysql/{,plugin}/*.{a,la}
 rm -f %buildroot%_libdir/mysql/libndbclient.*
+rm -f %buildroot%_libdir/mysql/plugin/debug_key_management.so
 rm -f %{buildroot}/usr/share/mysql-test/{mysql-test-run,mtr}
 rm -f %{buildroot}/usr/share/mysql/{binary-configure,errmsg-utf8.txt,magic,mysql-log-rotate,mysql*.server}
 rm -f %{buildroot}%{_libdir}/mysql/plugin/daemon_example.ini
