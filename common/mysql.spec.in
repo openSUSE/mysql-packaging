@@ -26,9 +26,15 @@
 %define _rundir %{_localstatedir}/run
 %endif
 
-%bcond_with     jemalloc
-%bcond_with     oqgraph
-%bcond_with     cassandra
+%if 0{{build_extras}} > 0
+%define with_jemalloc 1
+%define with_oqgraph 1
+%define with_cassandra 1
+%else
+%define with_jemalloc 0
+%define with_oqgraph 0
+%define with_cassandra 0
+%endif
 
 Name:           {{pkg-name}}
 Version:        {{pkg-version}}
@@ -54,23 +60,23 @@ Source15:       rc.mysql.sysvinit
 Source16:       rc.mysql.systemd
 Source17:       mysql.service
 BuildRequires:  bison
-%if %{with oqgraph} || %{with cassandra}
+%if 0%{with_oqgraph} > 0 || 0%{with_cassandra} > 0
 BuildRequires:  boost-devel
 %endif
 BuildRequires:  cmake
 BuildRequires:  fdupes
 BuildRequires:  gcc-c++
-%if %{with jemalloc}
+%if 0%{with_jemalloc} > 0
 BuildRequires:  jemalloc-devel
 %endif
-%if %{with oqgraph}
+%if 0%{with_oqgraph} > 0
 BuildRequires:  judy-devel
 %endif
 BuildRequires:  libaio-devel
 BuildRequires:  libbz2-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libevent-devel
-%if %{with cassandra}
+%if 0%{with_cassandra} > 0
 BuildRequires:  libthrift-devel
 %endif
 BuildRequires:  libtool

@@ -21,10 +21,10 @@ export CXXFLAGS="$CFLAGS -felide-constructors"
         -DDEFAULT_CHARSET=utf8  -DDEFAULT_COLLATION=utf8_general_ci  \
         -DWITH_INNOBASE_STORAGE_ENGINE=1                             \
         -DWITH_PERFSCHEMA_STORAGE_ENGINE=1                           \
-%if %{with oqgraph}
+%if 0%{with_oqgraph} > 0
         -DWITH_OQGRAPH_STORAGE_ENGINE=1                              \
 %endif
-%if %{with cassandra}
+%if 0%{with_cassandra} > 0
         -DWITH_CASSANDRA_STORAGE_ENGINE=1                            \
 %endif
         -DWITH_XTRADB_STORAGE_ENGINE=1                               \
