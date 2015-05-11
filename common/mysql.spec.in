@@ -471,9 +471,6 @@ fi
 %config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/my.cnf.d/*
 %config %{_sysconfdir}/logrotate.d/mysql
 %doc %{_defaultdocdir}/%{name}
-%if 0%{have_info} > 0
-%doc %{_infodir}/mysql.info.*
-%endif
 %dir %{_libexecdir}/mysql
 %{_libexecdir}/mysql/rcmysql
 %{_libexecdir}/systemd/system/mysql.service
