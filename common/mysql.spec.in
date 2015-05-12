@@ -1,7 +1,7 @@
 #
 # spec file for package {{pkg-name}}
 #
-# Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -182,6 +182,7 @@ for developing applications that embed the {{display-name}}.
 %package -n lib{{lib-name}}{{lib-version}}
 Summary:        Shared Libraries for {{display-name}}
 Group:          Development/Libraries/Other
+Requires:       %{name}-errormessages = %{version}
 
 %description -n lib{{lib-name}}{{lib-version}}
 This package contains the shared libraries (.so) which certain
@@ -191,6 +192,7 @@ languages and applications need to dynamically load and use {{display-name}}.
 Summary:        Shared Libraries for {{display-name}}
 Group:          Development/Libraries/Other
 Requires:       lib{{lib-name}}{{lib-version}}
+Requires:       %{name}-errormessages = %{version}
 
 %description -n lib{{lib-name}}_r{{lib-version}}
 This package contains the shared libraries (.so) which certain
@@ -478,7 +480,6 @@ fi
 %{_sbindir}/rcmysql
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/mysql
-%{_datadir}/%{name}/charsets/
 %{_datadir}/%{name}/*.sql
 %dir %{_libdir}/mysql
 %{_libdir}/mysql/mysqld.sym
@@ -489,6 +490,7 @@ fi
 %files errormessages -f errormessages.files
 %defattr(-, root, root)
 %{_datadir}/%{name}/*/errmsg.sys
+%{_datadir}/%{name}/charsets/
 
 %files client -f mysql-client.files
 %defattr(-, root, root)
