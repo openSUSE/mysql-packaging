@@ -200,6 +200,8 @@ languages and applications need to dynamically load and use {{display-name}}.
 Summary:        Client for {{display-name}}
 Group:          Productivity/Databases/Clients
 Requires:       %{name}-errormessages = %{version}
+# Explicit requires to pull in charsets for errormessages
+Requires:       lib{{lib-name}}{{lib-version}}
 Conflicts:      otherproviders(mysql-client)
 %if "%{name}" != mysql
 Provides:       mysql-client = %{srv_vers}
