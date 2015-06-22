@@ -1,0 +1,20 @@
+PATCH-P0-FEATURE-SUSE: Returning 0 when already upgraded.
+
+Returning non-zero exit status in this case is not nice to scripts using
+mysql_upgrade (eg. our init script)
+
+Maintainer: Michal Hrusecky <Michal.Hrusecky@opensuse.org>
+
+Index: mysql-test/t/mysql_upgrade.test
+===================================================================
+--- mysql-test/t/mysql_upgrade.test.orig
++++ mysql-test/t/mysql_upgrade.test
+@@ -14,7 +14,7 @@ file_exists $MYSQLD_DATADIR/mysql_upgrad
+ 
+ --echo Run it again - should say already completed
+ --replace_result $MYSQL_SERVER_VERSION VERSION
+---error 2
++--error 0
+ --exec $MYSQL_UPGRADE --skip-verbose 2>&1
+ 
+ # It should have created a file in the MySQL Servers datadir
