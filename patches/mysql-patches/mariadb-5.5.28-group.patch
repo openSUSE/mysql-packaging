@@ -9,23 +9,23 @@ Index: scripts/mysqld_safe.sh
 ===================================================================
 --- scripts/mysqld_safe.sh.orig
 +++ scripts/mysqld_safe.sh
-@@ -24,6 +24,7 @@ logging=init
+@@ -26,6 +26,7 @@ logging=init
  want_syslog=0
  syslog_tag=
  user='@MYSQLD_USER@'
 +group='@MYSQLD_GROUP@'
  pid_file=
  err_log=
- 
-@@ -187,6 +188,7 @@ parse_arguments() {
+ err_log_base=
+@@ -207,6 +208,7 @@ parse_arguments() {
        --pid-file=*) pid_file="$val" ;;
        --plugin-dir=*) PLUGIN_DIR="$val" ;;
        --user=*) user="$val"; SET_USER=1 ;;
 +      --group=*) group="$val"; SET_USER=1 ;;
        --log-basename=*|--hostname=*|--loose-log-basename=*)
          pid_file="$val.pid";
- 	err_log="$val.err";
-@@ -579,11 +581,17 @@ then
+ 	err_log_base="$val";
+@@ -626,11 +628,17 @@ then
    if test "$user" != "root" -o $SET_USER = 1
    then
      USER_OPTION="--user=$user"
@@ -44,7 +44,7 @@ Index: scripts/mysqld_safe.sh
    fi
    if test -n "$open_files"
    then
-@@ -606,7 +614,12 @@ then
+@@ -653,7 +661,12 @@ then
      echo "Fatal error Can't create database directory '$mysql_unix_port'"
      exit 1
    fi
@@ -96,7 +96,7 @@ Index: scripts/mysql_install_db.sh
        --skip-name-resolve) ip_only=1 ;;
        --verbose) verbose=1 ;; # Obsolete
        --rpm) in_rpm=1 ;;
-@@ -385,7 +391,12 @@ do
+@@ -386,7 +392,12 @@ do
    fi
    if test -n "$user"
    then
@@ -110,7 +110,7 @@ Index: scripts/mysql_install_db.sh
      if test $? -ne 0
      then
        echo "Cannot change ownership of the database directories to the '$user'"
-@@ -400,6 +411,11 @@ then
+@@ -401,6 +412,11 @@ then
    args="$args --user=$user"
  fi
  
@@ -126,7 +126,7 @@ Index: scripts/CMakeLists.txt
 ===================================================================
 --- scripts/CMakeLists.txt.orig
 +++ scripts/CMakeLists.txt
-@@ -137,6 +137,7 @@ ENDIF()
+@@ -132,6 +132,7 @@ ENDIF()
  
  SET(HOSTNAME "hostname")
  SET(MYSQLD_USER "mysql")
