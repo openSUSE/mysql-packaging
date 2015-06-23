@@ -1,7 +1,7 @@
 #
 # spec file for package {{pkg-name}}
 #
-# Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -25,7 +25,6 @@
 %if ! %{defined _rundir}
 %define _rundir %{_localstatedir}/run
 %endif
-
 %if 0{{build_extras}} > 0
 %define with_jemalloc 1
 %define with_oqgraph 1
@@ -35,7 +34,6 @@
 %define with_oqgraph 0
 %define with_cassandra 0
 %endif
-
 Name:           {{pkg-name}}
 Version:        {{pkg-version}}
 Release:        0
@@ -60,25 +58,13 @@ Source15:       rc.mysql.sysvinit
 Source16:       rc.mysql.systemd
 Source17:       mysql.service
 BuildRequires:  bison
-%if 0%{with_oqgraph} > 0 || 0%{with_cassandra} > 0
-BuildRequires:  boost-devel
-%endif
 BuildRequires:  cmake
 BuildRequires:  fdupes
 BuildRequires:  gcc-c++
-%if 0%{with_jemalloc} > 0
-BuildRequires:  jemalloc-devel
-%endif
-%if 0%{with_oqgraph} > 0
-BuildRequires:  judy-devel
-%endif
 BuildRequires:  libaio-devel
 BuildRequires:  libbz2-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libevent-devel
-%if 0%{with_cassandra} > 0
-BuildRequires:  libthrift-devel
-%endif
 BuildRequires:  libtool
 BuildRequires:  libxml2-devel
 BuildRequires:  lzo-devel
@@ -99,6 +85,10 @@ Requires:       %{name}-errormessages = %{version}
 Requires:       perl-base
 Requires(pre):  pwdutils
 Recommends:     logrotate
+Conflicts:      otherproviders(mariadb-server)
+Conflicts:      otherproviders(mysql)
+Conflicts:      otherproviders(mysql-debug)
+Conflicts:      otherproviders(mysql-server)
 Provides:       mysql-Max = %{srv_vers}
 # Compatibility with Fedora/CentOS
 Provides:       mysql-server = %{srv_vers}
@@ -108,17 +98,25 @@ Provides:       %{name}-debug-version = %{srv_vers}
 Obsoletes:      %{name}-debug-version < %{srv_vers}
 Provides:       %{name}-debug = %{srv_vers}
 Obsoletes:      %{name}-debug < %{srv_vers}
+Provides:       mysql = %{srv_vers}
+Provides:       mysql-debug = %{srv_vers}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-Conflicts:      otherproviders(mysql)
-Conflicts:      otherproviders(mysql-server)
-Conflicts:      otherproviders(mariadb-server)
-Conflicts:      otherproviders(mysql-debug)
 %{?systemd_requires}
+%if 0%{with_oqgraph} > 0 || 0%{with_cassandra} > 0
+BuildRequires:  boost-devel
+%endif
+%if 0%{with_jemalloc} > 0
+BuildRequires:  jemalloc-devel
+%endif
+%if 0%{with_oqgraph} > 0
+BuildRequires:  judy-devel
+%endif
+%if 0%{with_cassandra} > 0
+BuildRequires:  libthrift-devel
+%endif
 %if 0%{have_info} > 0
 Requires(post): %{install_info_prereq} %insserv_prereq
 %endif
-Provides:       mysql = %{srv_vers}
-Provides:       mysql-debug = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
@@ -197,9 +195,9 @@ Group:          Productivity/Databases/Clients
 Requires:       %{name}-errormessages = %{version}
 # Explicit requires to pull in charsets for errormessages
 Requires:       lib{{lib-name}}{{lib-version}}
+Requires(pre):  pwdutils
 Conflicts:      otherproviders(mysql-client)
 Provides:       mysql-client = %{srv_vers}
-Requires(pre):  pwdutils
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
@@ -267,10 +265,10 @@ To run the testsuite, run %{_datadir}/mysql-test/suse-test-run.
 Summary:        {{display-name}} tools
 Group:          Productivity/Databases/Servers
 Requires:       perl-DBD-mysql
+Conflicts:      otherproviders(mysql-tools)
 # make sure this package is installed when updating from 10.2 and older
 Provides:       mysql-client:%{_bindir}/perror
 Provides:       mysql:%{_bindir}/mysqlhotcopy
-Conflicts:      otherproviders(mysql-tools)
 Provides:       mysql-tools = %{srv_vers}
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-tools = %{version}
@@ -356,16 +354,16 @@ for in in protected tmp; do
 	rmdir %{_localstatedir}/lib/mysql/.$i 2>/dev/null || :
 done
 # During package rename, there might be config file move
-if [ -f /etc/my.cnf.rpmsave ]; then
-	mv /etc/my.cnf{,.rpmnew}
-	mv /etc/my.cnf{.rpmsave,}
+if [ -f %{_sysconfdir}/my.cnf.rpmsave ]; then
+	mv %{_sysconfdir}/my.cnf{,.rpmnew}
+	mv %{_sysconfdir}/my.cnf{.rpmsave,}
 cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
 
-WARNING: /etc/my.cnf.rpmsave file detected!
+WARNING: %{_sysconfdir}/my.cnf.rpmsave file detected!
 
 This probably means that you are upgrading from different variant of MySQL.
 Your original configuration file was restored. If it is not a case, you can
-find your original /etc/my.cnf as /etc/my.cnf.rpmnew
+find your original %{_sysconfdir}/my.cnf as %{_sysconfdir}/my.cnf.rpmnew
 
 EOF
 
