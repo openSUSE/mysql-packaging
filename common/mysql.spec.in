@@ -16,7 +16,8 @@
 #
 
 
-%define preferred    0{{preferred}}
+%define pretty_name {{display-name}}
+%define preferred 0{{preferred}}
 %define builtin_plugins {{builtin_plugins}}
 %define extra_provides {{extra_provides}}
 %define srv_vers {{srv-version}}
@@ -36,7 +37,7 @@
 Name:           {{pkg-name}}
 Version:        {{pkg-version}}
 Release:        0
-Summary:        Server part of {{display-name}}
+Summary:        Server part of %{pretty_name}
 License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Productivity/Databases/Servers
 Url:            {{url}}
@@ -132,7 +133,7 @@ This package only contains the server-side programs.
 
 %if 0%{?preferred} > 0
 %package -n libmysqlclient-devel
-Summary:        {{display-name}} development header files and libraries
+Summary:        %{pretty_name} development header files and libraries
 Group:          Development/Libraries/C and C++
 Requires:       glibc-devel
 Requires:       libmysqlclient_r{{lib-version}} = %{version}
@@ -142,19 +143,19 @@ Requires:       zlib-devel
 
 %description -n libmysqlclient-devel
 This package contains the development header files and libraries
-necessary to develop client applications for {{display-name}}.
+necessary to develop client applications for %{pretty_name}.
 
 %package -n libmysqld{{lib-version}}
-Summary:        {{display-name}} embedded server development files
+Summary:        %{pretty_name} embedded server development files
 Group:          Development/Libraries/C and C++
 Requires:       %{name}-errormessages = %{version}
 
 %description -n libmysqld{{lib-version}}
 This package contains the development header files and libraries
-for developing applications that embed the {{display-name}}.
+for developing applications that embed the %{pretty_name}.
 
 %package -n libmysqld-devel
-Summary:        {{display-name}} embedded server development files
+Summary:        %{pretty_name} embedded server development files
 Group:          Development/Libraries/C and C++
 # the headers files are the shared
 Requires:       libmysqlclient-devel = %{version}
@@ -163,28 +164,28 @@ Requires:       tcpd-devel
 
 %description -n libmysqld-devel
 This package contains the development header files and libraries
-for developing applications that embed the {{display-name}}.
+for developing applications that embed the %{pretty_name}.
 %endif
 
 %package -n lib{{lib-name}}{{lib-version}}
-Summary:        Shared Libraries for {{display-name}}
+Summary:        Shared Libraries for %{pretty_name}
 Group:          Development/Libraries/Other
 
 %description -n lib{{lib-name}}{{lib-version}}
 This package contains the shared libraries (.so) which certain
-languages and applications need to dynamically load and use {{display-name}}.
+languages and applications need to dynamically load and use %{pretty_name}.
 
 %package -n lib{{lib-name}}_r{{lib-version}}
-Summary:        Shared Libraries for {{display-name}}
+Summary:        Shared Libraries for %{pretty_name}
 Group:          Development/Libraries/Other
 Requires:       lib{{lib-name}}{{lib-version}}
 
 %description -n lib{{lib-name}}_r{{lib-version}}
 This package contains the shared libraries (.so) which certain
-languages and applications need to dynamically load and use {{display-name}}.
+languages and applications need to dynamically load and use %{pretty_name}.
 
 %package client
-Summary:        Client for {{display-name}}
+Summary:        Client for %{pretty_name}
 Group:          Productivity/Databases/Clients
 Requires:       %{name}-errormessages = %{version}
 # Explicit requires to pull in charsets for errormessages
@@ -199,7 +200,7 @@ Obsoletes:      mysql-client < %{srv_vers}
 %endif
 
 %description client
-This package contains the standard clients for {{display-name}}.
+This package contains the standard clients for %{pretty_name}.
 
 %package errormessages
 Summary:        MySQL Community Server development header files and libraries
@@ -210,7 +211,7 @@ This package provides the translated error messages for the standalone
 server daemon as well as the embedded server
 
 %package bench
-Summary:        Benchmarks for {{display-name}}
+Summary:        Benchmarks for %{pretty_name}
 Group:          Productivity/Databases/Tools
 Requires:       %{name}-client
 Requires:       perl-DBD-mysql
@@ -223,13 +224,13 @@ Obsoletes:      mysql-bench < %{srv_vers}
 %endif
 
 %description bench
-This package contains benchmark scripts and data for {{display-name}}.
+This package contains benchmark scripts and data for %{pretty_name}.
 
 To run these database benchmarks, start the script "run-all-tests" in
-the directory %{_datadir}/sql-bench after starting {{display-name}}.
+the directory %{_datadir}/sql-bench after starting %{pretty_name}.
 
 %package test
-Summary:        Testsuite for {{display-name}}
+Summary:        Testsuite for %{pretty_name}
 Group:          Productivity/Databases/Servers
 Requires:       %{name} = %{version}
 Requires:       %{name}-bench = %{version}
@@ -245,12 +246,12 @@ Obsoletes:      mysql-test < %{srv_vers}
 %endif
 
 %description test
-This package contains the test scripts and data for {{display-name}}.
+This package contains the test scripts and data for %{pretty_name}.
 
 To run the testsuite, run %{_datadir}/mysql-test/suse-test-run.
 
 %package tools
-Summary:        {{display-name}} tools
+Summary:        %{pretty_name} tools
 Group:          Productivity/Databases/Servers
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-tools)
@@ -265,8 +266,8 @@ Obsoletes:      mysql-tools < %{srv_vers}
 %endif
 
 %description tools
-A set of scripts for administering a {{display-name}} or developing
-applications with {{display-name}}.
+A set of scripts for administering a %{pretty_name} or developing
+applications with %{pretty_name}.
 
 %prep
 %setup -q -n {{src-dir}} -D -a 9
