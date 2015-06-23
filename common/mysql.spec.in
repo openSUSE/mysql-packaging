@@ -122,10 +122,8 @@ Provides:       %{extra_provides}-debug-version = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-Max < %{srv_vers}
-%if "%{name}" != mysql
 Obsoletes:      mysql < %{srv_vers}
 Obsoletes:      mysql-debug < %{srv_vers}
-%endif
 %endif
 
 %description
