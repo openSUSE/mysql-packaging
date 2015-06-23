@@ -100,7 +100,7 @@ find '%buildroot'/usr/share/mysql-test -name '*.orig' -delete
 %fdupes -s '%buildroot'/usr/share/mysql-test
 fdupes -q -n -r '%buildroot'/usr/share/mysql-test
 for i in `grep -Rl '\r' '%buildroot'/usr/share/sql-bench`; do
-	dos2unixConversion "$i"
+	dos2unix "$i"
 done
 %if ! 0%{preferred} > 0
 cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
