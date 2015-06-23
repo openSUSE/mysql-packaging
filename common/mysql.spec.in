@@ -16,6 +16,10 @@
 #
 
 
+### WARNING!!!! ##############################################################
+# This package is developed on http://github.com/openSUSE/mysql-packaging/
+# Do not change anything here in OBS.
+##############################################################################
 %define pretty_name {{display-name}}
 %define libname {{lib-name}}
 %define soname {{lib-version}}
