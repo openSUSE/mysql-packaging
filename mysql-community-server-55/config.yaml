@@ -4,8 +4,8 @@ display-name:     "MySQL Community Server"
 preferred:        0
 extra_provides:   mysql-community-server_55
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.5.40"
-srv-version:      "5.5.40"
+pkg-version:      "5.5.44"
+srv-version:      "5.5.44"
 url:              "http://www.mysql.com"
 source:           "https://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-%{version}.tar.gz"
 src-dir:          "mysql-%{version}"
