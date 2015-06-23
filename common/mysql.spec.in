@@ -18,7 +18,6 @@
 
 %define preferred    0{{preferred}}
 %define builtin_plugins {{builtin_plugins}}
-%define use_extra_provides {{use_extra_provides}}
 %define extra_provides {{extra_provides}}
 %define srv_vers {{srv-version}}
 %if ! %{defined _rundir}
@@ -113,12 +112,10 @@ BuildRequires:  judy-devel
 %if 0%{with_cassandra} > 0
 BuildRequires:  libthrift-devel
 %endif
-%if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
 Provides:       %{extra_provides}-debug-version = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
-%endif
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-Max < %{srv_vers}
 %if "%{name}" != mysql
@@ -194,10 +191,8 @@ Requires:       lib{{lib-name}}{{lib-version}}
 Requires(pre):  pwdutils
 Conflicts:      otherproviders(mysql-client)
 Provides:       mysql-client = %{srv_vers}
-%if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
-%endif
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-client < %{srv_vers}
 %endif
@@ -220,10 +215,8 @@ Requires:       %{name}-client
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-bench)
 Provides:       mysql-bench = %{srv_vers}
-%if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-bench = %{version}
 Obsoletes:      %{extra_provides}-bench < %{version}
-%endif
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-bench < %{srv_vers}
 %endif
@@ -244,10 +237,8 @@ Requires:       %{name}-tools = %{version}
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-test)
 Provides:       mysql-test = %{srv_vers}
-%if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-test = %{version}
 Obsoletes:      %{extra_provides}-test < %{version}
-%endif
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-test < %{srv_vers}
 %endif
@@ -266,10 +257,8 @@ Conflicts:      otherproviders(mysql-tools)
 Provides:       mysql-client:%{_bindir}/perror
 Provides:       mysql:%{_bindir}/mysqlhotcopy
 Provides:       mysql-tools = %{srv_vers}
-%if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-tools = %{version}
 Obsoletes:      %{extra_provides}-tools < %{version}
-%endif
 %if 0%{?preferred} > 0
 Obsoletes:      mysql-tools < %{srv_vers}
 %endif

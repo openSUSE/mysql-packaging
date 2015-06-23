@@ -1,9 +1,7 @@
 ---
 pkg-name:         mariadb_100
 display-name:     "MariaDB"
-systemd:          1
 preferred:        0
-use_extra_provides: 0
 extra_provides:   mariadb_100
 builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
 pkg-version:      "10.0.19"

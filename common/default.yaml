@@ -1,5 +1,3 @@
 ---
 preferred:          0
-use_extra_provides: 0
-systemd:            1
 extra_provides:     mysql
