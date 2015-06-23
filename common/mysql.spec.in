@@ -117,10 +117,8 @@ Conflicts:      otherproviders(mysql-debug)
 %if 0%{have_info} > 0
 Requires(post): %{install_info_prereq} %insserv_prereq
 %endif
-%if "%{name}" != mysql
 Provides:       mysql = %{srv_vers}
 Provides:       mysql-debug = %{srv_vers}
-%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
@@ -200,18 +198,14 @@ Requires:       %{name}-errormessages = %{version}
 # Explicit requires to pull in charsets for errormessages
 Requires:       lib{{lib-name}}{{lib-version}}
 Conflicts:      otherproviders(mysql-client)
-%if "%{name}" != mysql
 Provides:       mysql-client = %{srv_vers}
-%endif
 Requires(pre):  pwdutils
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
 %endif
 %if 0%{?preferred} > 0
-%if "%{name}" != mysql
 Obsoletes:      mysql-client < %{srv_vers}
-%endif
 %endif
 
 %description client
@@ -231,17 +225,13 @@ Group:          Productivity/Databases/Tools
 Requires:       %{name}-client
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-bench)
-%if "%{name}" != mysql
 Provides:       mysql-bench = %{srv_vers}
-%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-bench = %{version}
 Obsoletes:      %{extra_provides}-bench < %{version}
 %endif
 %if 0%{?preferred} > 0
-%if "%{name}" != mysql
 Obsoletes:      mysql-bench < %{srv_vers}
-%endif
 %endif
 
 %description bench
@@ -259,17 +249,13 @@ Requires:       %{name}-client = %{version}
 Requires:       %{name}-tools = %{version}
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-test)
-%if "%{name}" != mysql
 Provides:       mysql-test = %{srv_vers}
-%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-test = %{version}
 Obsoletes:      %{extra_provides}-test < %{version}
 %endif
 %if 0%{?preferred} > 0
-%if "%{name}" != mysql
 Obsoletes:      mysql-test < %{srv_vers}
-%endif
 %endif
 
 %description test
@@ -285,17 +271,13 @@ Requires:       perl-DBD-mysql
 Provides:       mysql-client:%{_bindir}/perror
 Provides:       mysql:%{_bindir}/mysqlhotcopy
 Conflicts:      otherproviders(mysql-tools)
-%if "%{name}" != mysql
 Provides:       mysql-tools = %{srv_vers}
-%endif
 %if 0%{?use_extra_provides} > 0
 Provides:       %{extra_provides}-tools = %{version}
 Obsoletes:      %{extra_provides}-tools < %{version}
 %endif
 %if 0%{?preferred} > 0
-%if "%{name}" != mysql
 Obsoletes:      mysql-tools < %{srv_vers}
-%endif
 %endif
 
 %description tools
