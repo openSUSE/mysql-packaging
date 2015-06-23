@@ -20,5 +20,4 @@ SUPPORTED_PLATFORMS=(
 # to decide if something needs fixing
 MAYBE_WORKING_PLATFORMS=(
     "SLE_12"
-    "SLE_11_SP3"
 )
