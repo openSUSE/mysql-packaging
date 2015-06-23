@@ -428,14 +428,14 @@ filelist ndb_{cpcd,delete_all,drop_index,index_stat,print_file,redo_log_reader,d
 echo '%{_datadir}/mysql/*.cnf' >> mysql.files
 
 # Special errormessages approach
-echo '%%defattr(-, root, root)' > errormessages.files
+echo '%%defattr(-, root, root)' > %{_builddir}/errormessages.files
 pushd %{buildroot} >/dev/null
 for f in usr/share/%{name}/*; do
     if test -e $f/errmsg.sys; then
-        echo "%%dir /$f" >> errormessages.files
+        echo "%%dir /$f" >> %{_builddir}/errormessages.files
     fi
 done
-echo %{_datadir}/%{name}/errmsg-utf8.txt >> errormessages.files
+echo %{_datadir}/%{name}/errmsg-utf8.txt >> %{_builddir}/errormessages.files
 popd >/dev/null
 
 ### files not installed by make install
@@ -632,7 +632,7 @@ fi
 %dir %{_libdir}/mysql/plugin
 %{_libdir}/mysql/plugin/[!d]*.so
 
-%files errormessages -f errormessages.files
+%files errormessages -f %{_builddir}/errormessages.files
 %defattr(-, root, root)
 %{_datadir}/%{name}/*/errmsg.sys
 
