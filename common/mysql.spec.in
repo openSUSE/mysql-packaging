@@ -372,7 +372,7 @@ filelist()
 			echo "$i"
 		fi
 		if ls usr/share/man/*/"$i".[1-9]* >/dev/null 2>&1; then
-			echo "%%doc %{_mandir}/*/$i.[1-9]*"
+			echo "%{_mandir}/*/$i.[1-9]*"
 		fi
 	done
 	popd >/dev/null
