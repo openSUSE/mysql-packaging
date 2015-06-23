@@ -94,7 +94,6 @@ Conflicts:      otherproviders(mariadb-server)
 Conflicts:      otherproviders(mysql)
 Conflicts:      otherproviders(mysql-debug)
 Conflicts:      otherproviders(mysql-server)
-Provides:       mysql-Max = %{srv_vers}
 # Compatibility with Fedora/CentOS
 Provides:       mysql-server = %{srv_vers}
 Provides:       mariadb-server = %{srv_vers}
@@ -124,7 +123,6 @@ Obsoletes:      %{extra_provides} < %{version}
 Provides:       %{extra_provides}-debug-version = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
 %if 0%{?preferred} > 0
-Obsoletes:      mysql-Max < %{srv_vers}
 Obsoletes:      mysql < %{srv_vers}
 Obsoletes:      mysql-debug < %{srv_vers}
 %endif
