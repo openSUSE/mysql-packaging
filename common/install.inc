@@ -126,9 +126,7 @@ fi
 rm -rf '%buildroot'/etc/my.cnf.d
 mkdir -p '%buildroot'/etc/my.cnf.d
 bzip2 -cd '%_sourcedir'/configuration-tweaks.tar.bz2 | tar -C '%buildroot'/etc/my.cnf.d -xvf -
-%if %have_info < 1
 [ -z "`ls '%buildroot'/usr/share/info/mysql.info* 2> /dev/null`" ] || rm -f '%buildroot'/usr/share/info/mysql.info*
-%endif
 [ -z "`ls '%buildroot'/usr/share/mysql-test/suite/innodb/t/*.zip`" ] || chmod a-x '%buildroot'/usr/share/mysql-test/suite/innodb/t/*.zip
 if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
 	echo '%%dir %%_libdir/mysql'               >> mysql-client.files
