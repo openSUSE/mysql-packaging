@@ -449,9 +449,9 @@ fi
 %postun -n lib%{libname}_r%{soname} -p /sbin/ldconfig
 
 %if 0%{preferred} > 0
-%post -n libmysqld18 -p /sbin/ldconfig
+%post -n libmysqld%{soname} -p /sbin/ldconfig
 
-%postun -n libmysqld18 -p /sbin/ldconfig
+%postun -n libmysqld%{soname} -p /sbin/ldconfig
 %endif
 
 %postun
@@ -509,7 +509,7 @@ fi
 %{_libdir}/libmysqld.a
 %{_libdir}/libmysqld.so
 
-%files -n libmysqld18
+%files -n libmysqld%{soname}
 %defattr(-,root,root)
 %{_libdir}/libmysqld.so.*
 %endif
