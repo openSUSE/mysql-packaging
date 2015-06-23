@@ -83,6 +83,7 @@ BuildRequires:  readline-devel
 BuildRequires:  sqlite
 BuildRequires:  tcpd-devel
 BuildRequires:  zlib-devel
+BuildRequires:  dos2unix
 BuildRequires:  pkgconfig(systemd)
 # required by rcmysql
 Requires:       %{name}-client

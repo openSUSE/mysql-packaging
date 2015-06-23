@@ -42,7 +42,7 @@ filelist()
 	done
 	popd >/dev/null
 }
-filelist innochecksum my_print_defaults myisam_ftdump myisamchk myisamlog myisampack mysql_fix_extensions mysql_fix_privilege_tables mysql_install_db mysql_secure_installation mysql_upgrade mysqlbug mysqld mysqld_multi mysqld_safe mysqlbinlog mysqldumpslow mysqlmanager mroonga resolve_stack_dump resolveip {m,}aria_chk {m,}aria_dump_log {m,}aria_ftdump {m,}aria_pack {m,}aria_read_log xtstat tokuftdump >mysql.files
+filelist innochecksum my_print_defaults myisam_ftdump myisamchk myisamlog myisampack mysql_fix_extensions mysql_fix_privilege_tables mysql_install_db mysql_secure_installation mysql_upgrade mysqlbug mysqld mysqld_multi mysqld_safe mysqlbinlog mysqldumpslow mysqlmanager mroonga resolve_stack_dump resolveip {m,}aria_chk {m,}aria_dump_log {m,}aria_ftdump {m,}aria_pack {m,}aria_read_log xtstat tokuft_logprint tokuftdump >mysql.files
 filelist mysql mysqladmin mysqlcheck mysqldump mysqlimport mysqlshow mysql_config_editor >mysql-client.files
 filelist mysql_config /usr/share/pkgconfig/mariadb.pc >libmysqlclient-devel.files
 filelist mysqlslap >mysql-bench.files
@@ -99,9 +99,6 @@ mkdir '%buildroot'/usr/share/mysql-test/var
 find '%buildroot'/usr/share/mysql-test -name '*.orig' -delete
 %fdupes -s '%buildroot'/usr/share/mysql-test
 fdupes -q -n -r '%buildroot'/usr/share/mysql-test
-dos2unixConversion() {
-	%{__sed} -i 's/\r//g' "$1"
-}
 for i in `grep -Rl '\r' '%buildroot'/usr/share/sql-bench`; do
 	dos2unixConversion "$i"
 done
