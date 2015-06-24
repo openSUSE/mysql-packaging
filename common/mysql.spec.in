@@ -636,11 +636,11 @@ exit 0
 %doc %{_defaultdocdir}/%{name}
 %dir %{_libexecdir}/mysql
 %dir %attr(0700, mysql, mysql) %{_localstatedir}/log/mysql
-%{_libexecdir}/mysql/rcmysql
+%{_libexecdir}/mysql/mysql-systemd-helper
 %{_libexecdir}/systemd/system/mysql@.service
 %{_libexecdir}/systemd/system/mysql@default.service
 %{_libexecdir}/systemd/system/mysql.target
-%{_sbindir}/rcmysql
+%{_sbindir}/rcmysql@default
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/mysql
 %{_datadir}/%{name}/charsets/
