@@ -23,9 +23,10 @@
 %define pretty_name {{display-name}}
 %define libname {{lib-name}}
 %define soname {{lib-version}}
-%define preferred 0{{preferred}}
+%define preferred {{preferred}}
 %define builtin_plugins {{builtin_plugins}}
 %define extra_provides {{extra_provides}}
+%define with_mandatory_boost {{mandatory_boost}}
 # Remove when 13.1 is out of support scope
 %if ! %{defined _rundir}
 %define _rundir %{_localstatedir}/run
@@ -110,7 +111,7 @@ Provides:       %{extra_provides}-debug-version = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %{?systemd_requires}
-%if "%{name}" == "mysql-community-server" && %{version} > 5.6
+%if 0%{with_mandatory_boost} > 0
 BuildRequires:  boost-devel >= 1.57.0
 %endif
 %if 0%{with_oqgraph} > 0 || 0%{with_cassandra} > 0

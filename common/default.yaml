@@ -1,3 +1,4 @@
 ---
 preferred:          0
+mandatory_boost:    0
 extra_provides:     mysql
