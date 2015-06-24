@@ -489,7 +489,7 @@ cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
 	rm -f ."$tmp"
 done
 rm -rf '%{buildroot}'/%{_libdir}/libmysqld.*
-rm -rf '%{buildroot}'/%{_libdir}/{*.la,*.so,*.a}
+rm -rf '%{buildroot}'/%{_libdir}/{*.so,*.a}
 rm -rf '%{buildroot}'/%{_mandir}/*/mysql_config.1*
 rm -rf '%{buildroot}'/%{_includedir}
 rm -rf '%{buildroot}'/%{_datadir}/aclocal
@@ -517,6 +517,7 @@ getent group mysql >/dev/null || groupadd -r mysql
 getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d %{_localstatedir}/lib/mysql mysql
 usermod -g mysql -s /bin/false mysql
+exit 0
 
 %service_add_pre mysql.service
 
@@ -575,6 +576,7 @@ should be mainly in $datadir directory.
 EOF
     fi
 fi
+exit 0
 
 %preun
 %service_add_preun mysql.service
