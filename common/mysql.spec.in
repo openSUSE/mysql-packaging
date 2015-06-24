@@ -392,7 +392,7 @@ fi
 mv %{buildroot}%{_sysconfdir}/logrotate.d/mysql %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # Create log directory with the expected perms of mysql
-install -d -m 770 %{buildroot}%{_localstatedir}/log/mysql/
+install -d -m 700 %{buildroot}%{_localstatedir}/log/mysql/
 
 # Symbols from build to go into libdir
 install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
@@ -634,7 +634,7 @@ exit 0
 %config %{_sysconfdir}/logrotate.d/%{name}
 %doc %{_defaultdocdir}/%{name}
 %dir %{_libexecdir}/mysql
-%dir %{_localstatedir}/log/mysql
+%dir %attr(0700, mysql, mysql) %{_localstatedir}/log/mysql
 %{_libexecdir}/mysql/rcmysql
 %{_libexecdir}/systemd/system/mysql.service
 %{_sbindir}/rcmysql
