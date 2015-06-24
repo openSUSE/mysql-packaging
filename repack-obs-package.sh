@@ -32,7 +32,7 @@ replace_source_tarball(){
 update_package() {
     echo "Working on package \"${1}\""
     pushd "${WORKDIR}/"*"/${1}" > /dev/null
-    bash ../../../update-package.sh ${1} || exit 1
+    bash ../../../update-package.sh || exit 1
 
     if [[ $2 == "--nodownload" ]]; then
         echo "Leaving the original tarball untouched"
