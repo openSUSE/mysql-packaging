@@ -26,7 +26,6 @@
 %define preferred 0{{preferred}}
 %define builtin_plugins {{builtin_plugins}}
 %define extra_provides {{extra_provides}}
-%define srv_vers {{srv-version}}
 # Remove when 13.1 is out of support scope
 %if ! %{defined _rundir}
 %define _rundir %{_localstatedir}/run
@@ -78,6 +77,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
 BuildRequires:  pcre-devel
+BuildRequires:  pkg-config
 BuildRequires:  procps
 BuildRequires:  pwdutils
 BuildRequires:  readline-devel
@@ -96,15 +96,15 @@ Conflicts:      otherproviders(mysql)
 Conflicts:      otherproviders(mysql-debug)
 Conflicts:      otherproviders(mysql-server)
 # Compatibility with Fedora/CentOS
-Provides:       mysql-server = %{srv_vers}
-Provides:       mariadb-server = %{srv_vers}
+Provides:       mysql-server = %{version}
+Provides:       mariadb-server = %{version}
 # Compatibility with old version
-Provides:       %{name}-debug-version = %{srv_vers}
-Obsoletes:      %{name}-debug-version < %{srv_vers}
-Provides:       %{name}-debug = %{srv_vers}
-Obsoletes:      %{name}-debug < %{srv_vers}
-Provides:       mysql = %{srv_vers}
-Provides:       mysql-debug = %{srv_vers}
+Provides:       %{name}-debug-version = %{version}
+Obsoletes:      %{name}-debug-version < %{version}
+Provides:       %{name}-debug = %{version}
+Obsoletes:      %{name}-debug < %{version}
+Provides:       mysql = %{version}
+Provides:       mysql-debug = %{version}
 Provides:       %{extra_provides} = %{version}
 Obsoletes:      %{extra_provides} < %{version}
 Provides:       %{extra_provides}-debug-version = %{version}
@@ -124,8 +124,8 @@ BuildRequires:  judy-devel
 BuildRequires:  libthrift-devel
 %endif
 %if 0%{?preferred} > 0
-Obsoletes:      mysql < %{srv_vers}
-Obsoletes:      mysql-debug < %{srv_vers}
+Obsoletes:      mysql < %{version}
+Obsoletes:      mysql-debug < %{version}
 %endif
 
 %description
@@ -194,11 +194,11 @@ Requires:       %{name}-errormessages = %{version}
 Requires:       lib%{libname}%{soname}
 Requires(pre):  pwdutils
 Conflicts:      otherproviders(mysql-client)
-Provides:       mysql-client = %{srv_vers}
+Provides:       mysql-client = %{version}
 Provides:       %{extra_provides}-client = %{version}
 Obsoletes:      %{extra_provides}-client < %{version}
 %if 0%{?preferred} > 0
-Obsoletes:      mysql-client < %{srv_vers}
+Obsoletes:      mysql-client < %{version}
 %endif
 
 %description client
@@ -218,11 +218,11 @@ Group:          Productivity/Databases/Tools
 Requires:       %{name}-client
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-bench)
-Provides:       mysql-bench = %{srv_vers}
+Provides:       mysql-bench = %{version}
 Provides:       %{extra_provides}-bench = %{version}
 Obsoletes:      %{extra_provides}-bench < %{version}
 %if 0%{?preferred} > 0
-Obsoletes:      mysql-bench < %{srv_vers}
+Obsoletes:      mysql-bench < %{version}
 %endif
 
 %description bench
@@ -240,11 +240,11 @@ Requires:       %{name}-client = %{version}
 Requires:       %{name}-tools = %{version}
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-test)
-Provides:       mysql-test = %{srv_vers}
+Provides:       mysql-test = %{version}
 Provides:       %{extra_provides}-test = %{version}
 Obsoletes:      %{extra_provides}-test < %{version}
 %if 0%{?preferred} > 0
-Obsoletes:      mysql-test < %{srv_vers}
+Obsoletes:      mysql-test < %{version}
 %endif
 
 %description test
@@ -260,11 +260,11 @@ Conflicts:      otherproviders(mysql-tools)
 # make sure this package is installed when updating from 10.2 and older
 Provides:       mysql-client:%{_bindir}/perror
 Provides:       mysql:%{_bindir}/mysqlhotcopy
-Provides:       mysql-tools = %{srv_vers}
+Provides:       mysql-tools = %{version}
 Provides:       %{extra_provides}-tools = %{version}
 Obsoletes:      %{extra_provides}-tools < %{version}
 %if 0%{?preferred} > 0
-Obsoletes:      mysql-tools < %{srv_vers}
+Obsoletes:      mysql-tools < %{version}
 %endif
 
 %description tools
@@ -380,6 +380,9 @@ filelist()
 
 # Install the package itself
 %cmake_install benchdir_root=%{_datadir}/
+
+# Logrotate file should be named as the package
+mv %{buildroot}%{_sysconfdir}/logrotate.d/mysql %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # Symbols from build to go into libdir
 install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
@@ -505,28 +508,23 @@ rm -f  '%{buildroot}'%{_datadir}/doc/* 2> /dev/null || true
 # Unwanted packaged stuff
 rm -rf '%{buildroot}'%{_datadir}/mysql/{solaris,SELinux}
 
-%pre
-%{_sbindir}/groupadd -r mysql >/dev/null 2>/dev/null || :
-%{_sbindir}/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
-                  -s /bin/false -d %{_localstatedir}/lib/mysql mysql 2> /dev/null || :
-%{_sbindir}/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
-%service_add_pre mysql.service
 
-%pre client
-%{_sbindir}/groupadd -r mysql >/dev/null 2>/dev/null || :
-%{_sbindir}/useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
-                  -s /bin/false -d %{_localstatedir}/lib/mysql mysql 2> /dev/null || :
-%{_sbindir}/usermod -g mysql -s /bin/false mysql 2> /dev/null || :
+%pre
+getent group mysql >/dev/null || groupadd -r mysql
+getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
+                  -s /bin/false -d %{_localstatedir}/lib/mysql mysql
+usermod -g mysql -s /bin/false mysql
+
+%service_add_pre mysql.service
 
 %post
 %service_add_post mysql.service
 
-#######################################################################
-# preun and posttran takes care of restart                            #
-#######################################################################
-
 %preun
-[ $1 = 1 ] || %{_sbindir}/rcmysql stop || true
+%service_add_preun mysql.service
+
+%postun
+%service_add_postun mysql.service
 
 %posttrans
 rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
@@ -587,10 +585,6 @@ if [ -d %{_rundir}/mysql/restart ]; then
        rmdir %{_rundir}/mysql/restart 2> /dev/null
 fi
 
-#######################################################################
-# Various ldconfig post scripts                                       #
-#######################################################################
-
 %post -n lib%{libname}%{soname} -p /sbin/ldconfig
 
 %postun -n lib%{libname}%{soname} -p /sbin/ldconfig
@@ -605,27 +599,15 @@ fi
 %postun -n libmysqld%{soname} -p /sbin/ldconfig
 %endif
 
-%postun
-if [ $1 = 0 ]; then
-	%insserv_cleanup
-	rm -f "%{_localstatedir}/lib/systemd/migrated/mysql.service"
-	if [ -x %{_bindir}/systemctl ]; then
-		%{_bindir}/systemctl daemon-reload >/dev/null 2>&1 || :
-	fi
-fi
-
-#######################################################################
-# Files section                                                       #
-#######################################################################
-
 %files -f mysql.files
 %defattr(-, root, root)
 %config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/my.cnf
 %dir %attr(0750, root, mysql) %{_sysconfdir}/my.cnf.d
 %config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/my.cnf.d/*
-%config %{_sysconfdir}/logrotate.d/mysql
+%config %{_sysconfdir}/logrotate.d/%{name}
 %doc %{_defaultdocdir}/%{name}
 %dir %{_libexecdir}/mysql
+%dir %{_localstatedir}/log/mysql
 %{_libexecdir}/mysql/rcmysql
 %{_libexecdir}/systemd/system/mysql.service
 %{_sbindir}/rcmysql

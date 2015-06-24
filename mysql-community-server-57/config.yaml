@@ -5,7 +5,6 @@ preferred:        0
 extra_provides:   mysql-community-server_57
 builtin_plugins:  partition,csv,heap,myisam,innobase
 pkg-version:      "5.7.7"
-srv-version:      "5.7.7"
 url:              "http://www.mysql.com"
 source:           "https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-%{version}-rc.tar.gz"
 src-dir:          "mysql-%{version}-rc"
