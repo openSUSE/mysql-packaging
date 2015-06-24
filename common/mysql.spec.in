@@ -77,7 +77,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
 BuildRequires:  pcre-devel
-BuildRequires:  pkg-config
+BuildRequires:  pkgconfig
 BuildRequires:  procps
 BuildRequires:  pwdutils
 BuildRequires:  readline-devel
@@ -520,54 +520,48 @@ usermod -g mysql -s /bin/false mysql
 %post
 %service_add_post mysql.service
 
-%preun
-%service_add_preun mysql.service
-
-%postun
-%service_add_postun mysql.service
-
-%posttrans
-rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
+# SLE11 Migration support
 for in in protected tmp; do
-	rmdir %{_localstatedir}/lib/mysql/.$i 2>/dev/null || :
+    rmdir "$datadir"/.$i 2>/dev/null || :
 done
-# During package rename, there might be config file move
+# Remove any messages that could've been in place about the upgrade
+rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
+
+# During package rename (migration maria->mysql-community-server),
+# there might be config file move and we get rpmsave that we should keep
 if [ -f %{_sysconfdir}/my.cnf.rpmsave ]; then
-	mv %{_sysconfdir}/my.cnf{,.rpmnew}
-	mv %{_sysconfdir}/my.cnf{.rpmsave,}
-cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+    mv %{_sysconfdir}/my.cnf{,.rpmnew}
+    mv %{_sysconfdir}/my.cnf{.rpmsave,}
+    cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
 
 WARNING: %{_sysconfdir}/my.cnf.rpmsave file detected!
 
-This probably means that you are upgrading from different variant of MySQL.
-Your original configuration file was restored. If it is not a case, you can
-find your original %{_sysconfdir}/my.cnf as %{_sysconfdir}/my.cnf.rpmnew
+This probably means that you are migrating from different variant of MySQL.
+Your configuration was left intact and you can see the new configuration in
+%{_sysconfdir}/my.cnf.rpmnew
 
 EOF
+fi
 
-fi
 # warn on first run
-if [ -x %{_bindir}/my_print_defaults ]; then
-	datadir="`%{_bindir}/my_print_defaults mysqld mysql_server | sed -n 's|--datadir=||p'`"
-fi
+datadir="`%{_bindir}/my_print_defaults mysqld mysql_server | sed -n 's|--datadir=||p'`"
 [ -n "$datadir" ] || datadir="%{_localstatedir}/lib/mysql"
 if [ -d "$datadir/mysql" ]; then
-	touch "$datadir/.run-mysql_upgrade"
+    touch "$datadir/.run-mysql_upgrade"
 fi
-for in in protected tmp; do
-	rmdir "$datadir"/.$i 2>/dev/null || :
-done
 if [ \! -f "$datadir/mysql_upgrade_info" ]; then
-cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+    if [ $1 -eq 1 ]; then
+        cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
 
 %(cat %{_sourcedir}/README.install)
 
 EOF
+    fi
 else
-MYSQLVER="`echo %{version} | sed 's|\.[0-9]\+$||'`"
-if [ -f "$datadir/mysql_upgrade_info" ] && \
-   [ -z "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ]; then
-cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+    MYSQLVER="`echo %{version} | sed 's|\.[0-9]\+$||'`"
+    if [ -f "$datadir/mysql_upgrade_info" ] && \
+        [ -z "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ]; then
+    cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
 
 WARNING: You are upgrading from different stable version of MySQL!
 
@@ -576,14 +570,14 @@ Before you do that make sure you have up to date backup of your data. It
 should be mainly in $datadir directory.
 
 EOF
+    fi
 fi
-fi
-# start mysql again if it should run - migration from old setup
-if [ -d %{_rundir}/mysql/restart ]; then
-       [ -x %{_sbindir}/rcmysql ] && %{_sbindir}/rcmysql start
-       # Might not be there, so ignoring errors
-       rmdir %{_rundir}/mysql/restart 2> /dev/null
-fi
+
+%preun
+%service_add_preun mysql.service
+
+%postun
+%service_add_postun mysql.service
 
 %post -n lib%{libname}%{soname} -p /sbin/ldconfig
 
@@ -620,6 +614,7 @@ fi
 %config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/mysql
 %dir %{_libdir}/mysql/plugin
 %{_libdir}/mysql/plugin/[!d]*.so
+%ghost %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 
 %files errormessages -f errormessages.files
 %defattr(-, root, root)
