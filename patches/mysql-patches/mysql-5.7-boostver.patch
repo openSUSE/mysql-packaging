@@ -1,0 +1,18 @@
+PATCH-P1-FEATURE-UPSTREAM: Rely on any newer boost than 1.56
+
+Index: mysql-5.7.7-rc/cmake/boost.cmake
+===================================================================
+--- mysql-5.7.7-rc.orig/cmake/boost.cmake
++++ mysql-5.7.7-rc/cmake/boost.cmake
+@@ -252,9 +252,9 @@ IF(NOT BOOST_MAJOR_VERSION EQUAL 10)
+   COULD_NOT_FIND_BOOST()
+ ENDIF()
+ 
+-IF(NOT BOOST_MINOR_VERSION EQUAL 57)
++IF(NOT BOOST_MINOR_VERSION GREATER 56)
+   MESSAGE(WARNING "Boost minor version found is ${BOOST_MINOR_VERSION} "
+-    "we need 57"
++    "we need at least 57"
+     )
+   COULD_NOT_FIND_BOOST()
+ ENDIF()
