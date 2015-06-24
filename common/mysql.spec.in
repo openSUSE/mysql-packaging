@@ -390,8 +390,8 @@ if [ ! -e %{buildroot}%{_sysconfdir}/logrotate.d/mysql ]; then
 fi
 mv %{buildroot}%{_sysconfdir}/logrotate.d/mysql %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
-# Create log directory
-install -d -m 755 %{buildroot}%{_localstatedir}/log/mysql/
+# Create log directory with the expected perms of mysql
+install -d -m 770 %{buildroot}%{_localstatedir}/log/mysql/
 
 # Symbols from build to go into libdir
 install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
