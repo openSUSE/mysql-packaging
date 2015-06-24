@@ -400,6 +400,7 @@ install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
 if [ -f scripts/mysqlaccess.conf ] ; then
     install -m 640 scripts/mysqlaccess.conf %{buildroot}%{_sysconfdir}/mysqlaccess.conf
     rm -f %{buildroot}%{_bindir}/mysqlaccess.conf
+    echo '%config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/mysqlaccess.conf' >> mysql-client.files
 fi
 
 # Remove handler socket client
