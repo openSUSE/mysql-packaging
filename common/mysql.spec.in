@@ -384,6 +384,9 @@ filelist()
 # Logrotate file should be named as the package
 mv %{buildroot}%{_sysconfdir}/logrotate.d/mysql %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
+# Create log directory
+install -d -m 755 %{buildroot}%{_localstatedir}/log/mysql/
+
 # Symbols from build to go into libdir
 install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
 # Remove handler socket client
