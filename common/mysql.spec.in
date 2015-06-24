@@ -533,13 +533,19 @@ rm -f  '%{buildroot}'%{_datadir}/doc/* 2> /dev/null || true
 # Unwanted packaged stuff
 rm -rf '%{buildroot}'%{_datadir}/mysql/{solaris,SELinux}
 
+# client does not require server and needs the user too
+%pre client
+getent group mysql >/dev/null || groupadd -r mysql
+getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
+                  -s /bin/false -d %{_localstatedir}/lib/mysql mysql
+usermod -g mysql -s /bin/false mysql
+exit 0
 
 %pre
 getent group mysql >/dev/null || groupadd -r mysql
 getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d %{_localstatedir}/lib/mysql mysql
 usermod -g mysql -s /bin/false mysql
-exit 0
 
 %service_add_pre mysql.service
 
@@ -601,10 +607,10 @@ fi
 exit 0
 
 %preun
-%service_add_preun mysql.service
+%service_del_preun mysql.service
 
 %postun
-%service_add_postun mysql.service
+%service_del_postun mysql.service
 
 %post -n lib%{libname}%{soname} -p /sbin/ldconfig
 
