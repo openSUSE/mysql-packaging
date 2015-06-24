@@ -392,10 +392,19 @@ install -d -m 755 %{buildroot}%{_localstatedir}/log/mysql/
 
 # Symbols from build to go into libdir
 install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
+
+# Mysql has configuration file in _bindir
+if [ -f scripts/mysqlaccess.conf ] ; then
+    install -m 640 scripts/mysqlaccess.conf %{buildroot}%{_sysconfdir}/mysqlaccess.conf
+    rm -f %{buildroot}%{_bindir}/mysqlaccess.conf
+fi
+
 # Remove handler socket client
 rm -f %{buildroot}%{_libdir}/mysql/plugin/handlersocket.so
+
 # Remove debug management for keys Mariadb 101+
 rm -f %{buildroot}%{_libdir}/mysql/plugin/debug_key_management.so
+
 # Remove most static libs (FIXME: don't build them at all...)
 [ \! -f "%{buildroot}%{_libdir}/"libmysqld.a ] || mv "%{buildroot}%{_libdir}/"libmysqld.a "%{buildroot}%{_libdir}/"libmysqld.static
 rm -f %{buildroot}%{_libdir}/*.a
@@ -439,6 +448,10 @@ filelist ndb_{cpcd,delete_all,drop_index,index_stat,print_file,redo_log_reader,d
 
 # All configuration files
 echo '%{_datadir}/mysql/*.cnf' >> mysql.files
+# Mysql-community server has dictionary file in datadir
+if [ -f "%{buildroot}%{_datadir}/%{name}"/dictionary.txt ]; then
+    echo "%{_datadir}/%{name}/dictionary.txt" >> mysql.files
+fi
 
 # Special errormessages approach
 echo '%%defattr(-, root, root)' > %{_builddir}/errormessages.files
