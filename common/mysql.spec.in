@@ -382,6 +382,10 @@ filelist()
 %cmake_install benchdir_root=%{_datadir}/
 
 # Logrotate file should be named as the package
+if [ ! -e %{buildroot}%{_sysconfdir}/logrotate.d/mysql ]; then
+    # some versions do not install it automatically
+    install -m 644 build/support-files/mysql-log-rotate %{buildroot}%{_sysconfdir}/logrotate.d/mysql
+fi
 mv %{buildroot}%{_sysconfdir}/logrotate.d/mysql %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # Create log directory
