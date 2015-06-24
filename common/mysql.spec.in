@@ -397,13 +397,6 @@ install -d -m 770 %{buildroot}%{_localstatedir}/log/mysql/
 # Symbols from build to go into libdir
 install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
 
-# Mysql has configuration file in _bindir
-if [ -f scripts/mysqlaccess.conf ] ; then
-    install -m 640 scripts/mysqlaccess.conf %{buildroot}%{_sysconfdir}/mysqlaccess.conf
-    rm -f %{buildroot}%{_bindir}/mysqlaccess.conf
-    echo '%config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/mysqlaccess.conf' >> mysql-client.files
-fi
-
 # Remove handler socket client
 rm -f %{buildroot}%{_libdir}/mysql/plugin/handlersocket.so
 
@@ -433,6 +426,12 @@ if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
     echo '%%dir %%_libdir/mysql'               >> mysql-client.files
     echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
     echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
+fi
+# Mysql has configuration file in _bindir
+if [ -f scripts/mysqlaccess.conf ] ; then
+    install -m 640 scripts/mysqlaccess.conf %{buildroot}%{_sysconfdir}/mysqlaccess.conf
+    rm -f %{buildroot}%{_bindir}/mysqlaccess.conf
+    echo '%config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/mysqlaccess.conf' >> mysql-client.files
 fi
 
 filelist mysql_config %{_datadir}/pkgconfig/mariadb.pc >libmysqlclient-devel.files
