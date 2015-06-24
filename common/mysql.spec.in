@@ -54,7 +54,6 @@ Source5:        mysql.SuSEfirewall2
 Source7:        README.install
 Source8:        README.SUSE
 Source9:        mysql-patches.tar.bz2
-Source11:       install.inc
 Source12:       series
 Source13:       configuration-tweaks.tar.bz2
 Source14:       my.ini
@@ -384,7 +383,7 @@ filelist()
 # Logrotate file should be named as the package
 if [ ! -e %{buildroot}%{_sysconfdir}/logrotate.d/mysql ]; then
     # some versions do not install it automatically
-    install -m 644 build/support-files/mysql-log-rotate %{buildroot}%{_sysconfdir}/logrotate.d/mysql
+    install -D -m 644 build/support-files/mysql-log-rotate %{buildroot}%{_sysconfdir}/logrotate.d/mysql
 fi
 mv %{buildroot}%{_sysconfdir}/logrotate.d/mysql %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
