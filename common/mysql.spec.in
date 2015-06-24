@@ -58,9 +58,9 @@ Source9:        mysql-patches.tar.bz2
 Source12:       series
 Source13:       configuration-tweaks.tar.bz2
 Source14:       my.ini
-Source15:       rc.mysql.sysvinit
-Source16:       rc.mysql.systemd
-Source17:       mysql.service
+Source15:       mysql.service
+Source16:       mysql.target
+Source17:       mysql-systemd-helper
 BuildRequires:  bison
 BuildRequires:  cmake
 BuildRequires:  dos2unix
@@ -481,11 +481,12 @@ done
 install -m 660 %{SOURCE14} %{buildroot}%{_sysconfdir}/my.cnf
 
 # Systemd/initscript
-install -D -m 755 %{_sourcedir}/rc.mysql.systemd '%{buildroot}'%{_libexecdir}/mysql/rcmysql
-sed -i 's|@MYSQLVER@|%{version}|' '%{buildroot}'%{_libexecdir}/mysql/rcmysql
-ln -sf service '%{buildroot}'%{_sbindir}/rcmysql
-install -D -m 644 %{_sourcedir}/mysql.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql.service
-sed -i 's|doc/packages/mysql|doc/packages/%{name}|g' '%{buildroot}'%{_libexecdir}/mysql/rcmysql
+install -D -m 755 %{_sourcedir}/mysql-systemd-helper '%{buildroot}'%{_libexecdir}/mysql/mysql-systemd-helper
+sed -i 's|@MYSQLVER@|%{version}|' '%{buildroot}'%{_libexecdir}/mysql/mysql-systemd-helper
+ln -sf service '%{buildroot}'%{_sbindir}/rcmysql@default
+install -D -m 644 %{_sourcedir}/mysql.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@.service
+install -D -m 644 %{_sourcedir}/mysql.target '%{buildroot}'%{_libexecdir}/systemd/system/mysql.target
+ln -s mysql@.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@default.service
 rm -rf '%{buildroot}'%{_sysconfdir}/init.d
 
 # SuSEfirewall service description
@@ -636,7 +637,9 @@ exit 0
 %dir %{_libexecdir}/mysql
 %dir %attr(0700, mysql, mysql) %{_localstatedir}/log/mysql
 %{_libexecdir}/mysql/rcmysql
-%{_libexecdir}/systemd/system/mysql.service
+%{_libexecdir}/systemd/system/mysql@.service
+%{_libexecdir}/systemd/system/mysql@default.service
+%{_libexecdir}/systemd/system/mysql.target
 %{_sbindir}/rcmysql
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/mysql
