@@ -45,10 +45,6 @@ done
 rm *.orig &> /dev/null
 echo "Additional patching done."
 
-cat rc.mysql-multi.head rc.mysql-multi.sysvinit rc.mysql-multi.body > rc.mysql.sysvinit
-cat rc.mysql-multi.head rc.mysql-multi.systemd  rc.mysql-multi.body > rc.mysql.systemd
-rm rc.mysql-multi.*
-
 if [[ -f to_delete ]]; then
    cat to_delete | while read f; do
       echo "Deleting $f..."
