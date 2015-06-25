@@ -82,10 +82,8 @@ mysql_upgrade() {
 		[ -n "$protected" ] || die "Can't create a tmp dir '$protected'"
 
 		# Create a secure tmp dir
-		chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$protected"
-		chmod 0700  "$protected"
-		[[ $(ls -ld "$protected" | grep -q "^drwx------[\\.\+]\?[[:blank:]]\+[0-9]\+[[:blank:]]\+$mysql_daemon_user[[:blank:]]\+$mysql_daemon_group[[:blank:]]\+.*") ]] || \
-			die "Can't secure tmp dir '$protected'"
+		chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" "$protected" || die "Failed to set group/user to '$protected'"
+		chmod 0700  "$protected" || die "Failed to set permissions to '$protected'"
 
 		# Run protected MySQL accessible only though socket in our directory
 		echo "Running protected MySQL... "
@@ -109,7 +107,7 @@ mysql_upgrade() {
 			up_ok=""
 			rm -f "$datadir/.run-mysql_upgrade"
 			[[ $(grep -q "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null) ]] || \
-				echo -n "@MYSQLVER@" > "$datadir/mysql_upgrade_info"
+				echo -n "$MYSQLVER" > "$datadir/mysql_upgrade_info"
 		else
 			echo "Upgrade failed"
 			up_ok="false"
@@ -149,6 +147,9 @@ mysql_wait() {
 mysql_start() {
 	/usr/sbin/mysqld --user="$mysql_daemon_user" --group="$mysql_daemon_group" $opts 
 }
+
+# We rely on output in english at some points
+LC_ALL=C
 
 INSTANCE="$2"
 read_config
