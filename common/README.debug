@@ -45,14 +45,6 @@ following line to your /etc/my.cnf into section [mysqld]:
 
     core-file
 
-  Note: this unfortunatelly doesn't work in SUSE Linux 10.1 and older.
-  On these systems, you need to run safe_mysqld directly under user
-  mysql:
-
-    su - mysql
-    mysqld_safe --socket=/var/lib/mysql/mysql.sock \
-        --datadir=/var/lib/mysql --core-file &
-
 The core file will be written to the /var/lib/mysql/ directory. I
 suggest setting the kernel variable kernel.core_uses_pid to 1
 
@@ -64,31 +56,19 @@ multiple crashes.
 After you got the core file, install the gdb and mysql-debuginfo
 packages and run
 
-    gdb /usr/sbin/mysqld /var/lib/mysql/core
+    gdb /usr/sbin/mysqld /var/lib/mysql/<core>
     (gdb) bt
 
-Replace mysqld with the mysqld version you used (mysqld, mysqld-max)
-and core with the actual name of the coredump.
+Replace the <core> with the actual name of the coredump.
 
 3) Trace files
 --------------
-Start mysqld using following command:
-
-    $ MYSQLD_DEBUG=yes rcmysql start
-
-The init script will then start mysqld and add the --core-file,
---log and --debug options for you. The query log will be stored in
-
-    /var/lib/mysql/myqld-query.log
-
-and the trace file in
-
-    /var/lib/mysql/mysqld.trace
-
-If you don't like the options set by the init script, just put your own
-into /etc/my.cnf and the init script will honor them.
-
 The trace file will contain various debug information and function
 calls/returns and will become _extremly_ huge after a while, so don't
 attach it to bugzilla unless requested.
 
+Add the following line to your /etc/my.cnf into section [mysqld]:
+
+    stack-trace
+
+The trace file will be then written to /var/lib/mysql directory.
