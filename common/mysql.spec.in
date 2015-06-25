@@ -27,6 +27,8 @@
 %define builtin_plugins {{builtin_plugins}}
 %define extra_provides {{extra_provides}}
 %define with_mandatory_boost {{mandatory_boost}}
+# _tmpfilesdir is not defined in systemd macros up to openSUSE 13.2
+%{!?_tmpfilesdir: %global _tmpfilesdir %{_libexecdir}/tmpfiles.d }
 # Remove when 13.1 is out of support scope
 %if ! %{defined _rundir}
 %define _rundir %{_localstatedir}/run
@@ -491,6 +493,14 @@ install -D -m 644 %{_sourcedir}/mysql.target '%{buildroot}'%{_libexecdir}/system
 ln -s mysql@.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@default.service
 rm -rf '%{buildroot}'%{_sysconfdir}/init.d
 
+# Tmpfiles file to exclude mysql tempfiles that are auto-cleaned up
+# bnc#852451
+mkdir -p %{buildroot}%{_tmpfilesdir}
+cat > %{buildroot}%{_tmpfilesdir}/mysql.conf <<EOF
+x /var/tmp/mysql.*
+X /var/tmp/mysql.*
+EOF
+
 # SuSEfirewall service description
 install -D -m 644 %{_sourcedir}/mysql.SuSEfirewall2 %{buildroot}%{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/mysql
 
@@ -554,6 +564,8 @@ usermod -g mysql -s /bin/false mysql
 
 %post
 %service_add_post mysql.service mysql@.service mysql.target mysql@default.service
+# Use %tmpfiles_create when 13.2 is oldest in support scope
+/usr/bin/systemd-tmpfiles --create %{_tmpfilesdir}/mysql.conf || :
 
 # SLE11 Migration support
 for in in protected tmp; do
@@ -643,6 +655,7 @@ exit 0
 %{_libexecdir}/systemd/system/mysql@.service
 %{_libexecdir}/systemd/system/mysql@default.service
 %{_libexecdir}/systemd/system/mysql.target
+%{_tmpfilesdir}/mysql.conf
 %{_sbindir}/rcmysql
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/mysql
