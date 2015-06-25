@@ -88,6 +88,21 @@ BuildRequires:  sqlite
 BuildRequires:  tcpd-devel
 BuildRequires:  zlib-devel
 BuildRequires:  pkgconfig(systemd)
+# Tests requires time and ps and some perl modules
+# Keep in sync with Requires of mysql-testsuite
+BuildRequires:  procps
+BuildRequires:  time
+BuildRequires:  perl(Env)
+BuildRequires:  perl(Exporter)
+BuildRequires:  perl(Fcntl)
+BuildRequires:  perl(File::Temp)
+BuildRequires:  perl(Data::Dumper)
+BuildRequires:  perl(Getopt::Long)
+BuildRequires:  perl(IPC::Open3)
+BuildRequires:  perl(Socket)
+BuildRequires:  perl(Sys::Hostname)
+BuildRequires:  perl(Test::More)
+BuildRequires:  perl(Time::HiRes)
 # required by rcmysql
 Requires:       %{name}-client
 Requires:       %{name}-errormessages = %{version}
@@ -244,6 +259,20 @@ Requires:       %{name} = %{version}
 Requires:       %{name}-bench = %{version}
 Requires:       %{name}-client = %{version}
 Requires:       %{name}-tools = %{version}
+# Tests requires time and ps and some perl modules
+Requires:       procps
+Requires:       time
+Requires:       perl(Env)
+Requires:       perl(Exporter)
+Requires:       perl(Fcntl)
+Requires:       perl(File::Temp)
+Requires:       perl(Data::Dumper)
+Requires:       perl(Getopt::Long)
+Requires:       perl(IPC::Open3)
+Requires:       perl(Socket)
+Requires:       perl(Sys::Hostname)
+Requires:       perl(Test::More)
+Requires:       perl(Time::HiRes)
 Requires:       perl-DBD-mysql
 Conflicts:      otherproviders(mysql-test)
 Provides:       mysql-test = %{version}
@@ -556,8 +585,25 @@ rm -f  '%{buildroot}'%{_datadir}/doc/* 2> /dev/null || true
 rm -rf '%{buildroot}'%{_datadir}/mysql/{solaris,SELinux}
 
 %check
+cd build
+
 # First run simple ctest unittests
 LD_LIBRARY_PATH=$(pwd)/unittest/mytap make test %{?_smp_mflags}
+
+# And then run discustingly HUGE testsuite that might fail here and there
+# Basically we run it to have overview to check how it goes
+cd mysql-test
+./mysql-test-run.pl \
+    --parallel=%{?jobs:%{jobs}} \
+    --force \
+    --retry=0 \
+    --ssl \
+    --suite-timeout=720 \
+    --testcase-timeout=30 \
+    --mysqld=--binlog-format=mixed \
+    --force-restart \
+    --shutdown-timeout=60 \
+    --max-test-fail=0 || :
 
 # client does not require server and needs the user too
 %pre client
