@@ -517,6 +517,15 @@ for i in `grep -Rl '\r' '%{buildroot}'%{_datadir}/sql-bench`; do
 	dos2unix "$i"
 done
 
+# Fix libmysqlclient_r.so.18 symlinking to be done against plain .so file
+# and thus broken later on. Fixes bnc#906147
+pushd "%{buildroot}%{_libdir}"
+rm -f lib%{libname}_r.so*
+ln -sf lib%{libname}%{soname}.so.%{soname}.0.0 lib%{libname}_r.so
+ln -sf lib%{libname}%{soname}.so.%{soname}.0.0 lib%{libname}_r.so.%{soname}
+ln -sf lib%{libname}%{soname}.so.%{soname}.0.0 lib%{libname}_r.so.%{soname}.0.0
+popd
+
 # If not preffered simply reduce main develpackage to NULL
 %if ! 0%{preferred} > 0
 cat libmysqlclient-devel.files | sed 's|%%doc\ ||' | while read tmp; do
