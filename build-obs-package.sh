@@ -19,7 +19,7 @@ FAILED=0
 build_package() {
     echo -n "Test build ${2}/${1}: "
     pushd "${WORKDIR}/"*"/${1}" > /dev/null
-    osc build --ccache --cpio-bulk-download --download-api-only ${2} &> /dev/null || {
+    osc build --cpio-bulk-download --download-api-only ${2} &> /dev/null || {
         echo "FAILED"
         if [[ -z $3 ]]; then
             FAILED=1
