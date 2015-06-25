@@ -555,6 +555,10 @@ rm -f  '%{buildroot}'%{_datadir}/doc/* 2> /dev/null || true
 # Unwanted packaged stuff
 rm -rf '%{buildroot}'%{_datadir}/mysql/{solaris,SELinux}
 
+%check
+# First run simple ctest unittests
+LD_LIBRARY_PATH=$(pwd)/unittest/mytap make test %{?_smp_mflags}
+
 # client does not require server and needs the user too
 %pre client
 getent group mysql >/dev/null || groupadd -r mysql
