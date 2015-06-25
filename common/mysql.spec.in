@@ -483,8 +483,9 @@ install -m 660 %{SOURCE14} %{buildroot}%{_sysconfdir}/my.cnf
 # Systemd/initscript
 install -D -m 755 %{_sourcedir}/mysql-systemd-helper '%{buildroot}'%{_libexecdir}/mysql/mysql-systemd-helper
 sed -i 's|@MYSQLVER@|%{version}|' '%{buildroot}'%{_libexecdir}/mysql/mysql-systemd-helper
-ln -sf service '%{buildroot}'%{_sbindir}/rcmysql@default
-install -D -m 644 %{_sourcedir}/mysql.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@.service
+ln -sf service '%{buildroot}'%{_sbindir}/rcmysql
+install -D -m 644 %{_sourcedir}/mysql.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql.service
+install -D -m 644 %{_sourcedir}/mysql@.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@.service
 install -D -m 644 %{_sourcedir}/mysql.target '%{buildroot}'%{_libexecdir}/systemd/system/mysql.target
 ln -s mysql@.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@default.service
 rm -rf '%{buildroot}'%{_sysconfdir}/init.d
@@ -637,10 +638,11 @@ exit 0
 %dir %{_libexecdir}/mysql
 %dir %attr(0700, mysql, mysql) %{_localstatedir}/log/mysql
 %{_libexecdir}/mysql/mysql-systemd-helper
+%{_libexecdir}/systemd/system/mysql.service
 %{_libexecdir}/systemd/system/mysql@.service
 %{_libexecdir}/systemd/system/mysql@default.service
 %{_libexecdir}/systemd/system/mysql.target
-%{_sbindir}/rcmysql@default
+%{_sbindir}/rcmysql
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/mysql
 %{_datadir}/%{name}/charsets/
