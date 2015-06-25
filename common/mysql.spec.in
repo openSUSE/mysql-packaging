@@ -549,10 +549,10 @@ getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL databas
                   -s /bin/false -d %{_localstatedir}/lib/mysql mysql
 usermod -g mysql -s /bin/false mysql
 
-%service_add_pre mysql.service
+%service_add_pre mysql.service mysql@.service mysql.target mysql@default.service
 
 %post
-%service_add_post mysql.service
+%service_add_post mysql.service mysql@.service mysql.target mysql@default.service
 
 # SLE11 Migration support
 for in in protected tmp; do
@@ -609,10 +609,10 @@ fi
 exit 0
 
 %preun
-%service_del_preun mysql.service
+%service_del_preun mysql.service mysql@.service mysql.target mysql@default.service
 
 %postun
-%service_del_postun mysql.service
+%service_del_postun mysql.service mysql@.service mysql.target mysql@default.service
 
 %post -n lib%{libname}%{soname} -p /sbin/ldconfig
 
