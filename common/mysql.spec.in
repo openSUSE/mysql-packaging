@@ -61,6 +61,7 @@ Source14:       my.ini
 Source15:       mysql.service
 Source16:       mysql.target
 Source17:       mysql-systemd-helper
+Source18:       mysql@.service
 BuildRequires:  bison
 BuildRequires:  cmake
 BuildRequires:  dos2unix
