@@ -23,7 +23,8 @@ read_config() {
 		opts="`/usr/bin/my_print_defaults --mysqld mysqld_multi "$2"`"
 		tmp_opts="$opts"
 	else
-		tmp_opts="`/usr/bin/my_print_defaults --mysqld`"
+		opts="`/usr/bin/my_print_defaults --mysqld`"
+		tmp_opts="$opts"
 	fi
 
 	# Update local variables according to the settings from config
