@@ -9,3 +9,4 @@ mysql-5.7.7-upgrade-datadir.patch
 mysql-community-server-5.6.12-srv_buf_size.patch
 mysql-community-server-5.6.12-logrotate-su.patch
 mysql-5.7.7-boost-1.58.patch
+mysql-community-server-5.7.7-static_library.patch
