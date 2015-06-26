@@ -9,7 +9,7 @@ pkg-version:      "5.7.7"
 url:              "http://www.mysql.com"
 source:           "https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-%{version}-rc.tar.gz"
 src-dir:          "mysql-%{version}-rc"
-lib-version:      18
+lib-version:      20
 lib-name:         mysql57client
 description:      'SQL is the most popular database language in the world. MySQL is a
 

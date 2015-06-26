@@ -1,5 +1,8 @@
 <constraints>
   <hardware>
+    <physicalmemory>
+      <size unit="M">5000</size>
+    </physicalmemory>
     <disk>
       <size unit="G">13</size>
     </disk>
