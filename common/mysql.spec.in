@@ -163,10 +163,9 @@ Requires:       libmysqlclient%{soname} = %{version}
 Requires:       libmysqlclient_r%{soname} = %{version}
 Requires:       openssl-devel
 Requires:       zlib-devel
-# mysql-devel was last used in openSUSE 10.2 yet some packages still depend
-# on it
-Provides:       mysql-devel = %{srv_vers}-%{release}
-Obsoletes:      mysql-devel < %{srv_vers}
+# mysql-devel needs to be provided as some pkgs still depend on it
+Provides:       mysql-devel = %{version}
+Obsoletes:      mysql-devel < %{version}
 
 %description -n libmysqlclient-devel
 This package contains the development header files and libraries
