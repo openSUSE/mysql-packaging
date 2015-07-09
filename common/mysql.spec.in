@@ -630,7 +630,7 @@ usermod -g mysql -s /bin/false mysql
 /usr/bin/systemd-tmpfiles --create %{_tmpfilesdir}/mysql.conf || :
 
 # SLE11 Migration support
-for in in protected tmp; do
+for i in protected tmp; do
     rmdir "$datadir"/.$i 2>/dev/null || :
 done
 # Remove any messages that could've been in place about the upgrade
