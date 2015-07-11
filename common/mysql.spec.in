@@ -553,9 +553,9 @@ done
 # and thus broken later on. Fixes bnc#906147
 pushd "%{buildroot}%{_libdir}"
 rm -f lib%{libname}_r.so*
-ln -sf lib%{libname}%{soname}.so.%{soname}.0.0 lib%{libname}_r.so
-ln -sf lib%{libname}%{soname}.so.%{soname}.0.0 lib%{libname}_r.so.%{soname}
-ln -sf lib%{libname}%{soname}.so.%{soname}.0.0 lib%{libname}_r.so.%{soname}.0.0
+ln -sf lib%{libname}.so.%{soname}.0.0 lib%{libname}_r.so
+ln -sf lib%{libname}.so.%{soname}.0.0 lib%{libname}_r.so.%{soname}
+ln -sf lib%{libname}.so.%{soname}.0.0 lib%{libname}_r.so.%{soname}.0.0
 popd
 
 # If not preffered simply reduce main develpackage to NULL
