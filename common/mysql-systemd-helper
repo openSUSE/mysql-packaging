@@ -20,10 +20,10 @@ read_config() {
 
 	# Read options - important for multi setup
 	if [[ -n "$INSTANCE" && "x$INSTANCE" != "xdefault" ]]; then
-		opts="$(/usr/bin/my_print_defaults --mysqld mysqld_multi "$INSTANCE")"
+		opts="$(/usr/bin/my_print_defaults mysqld mysqld_multi "$INSTANCE")"
 		tmp_opts="$opts"
 	else
-		opts="$(/usr/bin/my_print_defaults --mysqld)"
+		opts="$(/usr/bin/my_print_defaults mysqld)"
 		tmp_opts="$opts"
 	fi
 
