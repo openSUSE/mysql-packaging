@@ -79,34 +79,27 @@ BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  pam-devel
 BuildRequires:  pcre-devel
-BuildRequires:  pkgconfig
-BuildRequires:  procps
-BuildRequires:  pwdutils
-# On mariadb we want readline5 and on mysql we use libedit from system
-%if %{name} == mariadb*
-BuildRequires:  readline5-devel
-%else
-BuildRequires:  libedit-devel
-%endif
-BuildRequires:  sqlite
-BuildRequires:  tcpd-devel
-BuildRequires:  zlib-devel
-BuildRequires:  pkgconfig(systemd)
-# Tests requires time and ps and some perl modules
-# Keep in sync with Requires of mysql-testsuite
-BuildRequires:  procps
-BuildRequires:  time
+BuildRequires:  perl(Data::Dumper)
 BuildRequires:  perl(Env)
 BuildRequires:  perl(Exporter)
 BuildRequires:  perl(Fcntl)
 BuildRequires:  perl(File::Temp)
-BuildRequires:  perl(Data::Dumper)
 BuildRequires:  perl(Getopt::Long)
 BuildRequires:  perl(IPC::Open3)
 BuildRequires:  perl(Socket)
 BuildRequires:  perl(Sys::Hostname)
 BuildRequires:  perl(Test::More)
 BuildRequires:  perl(Time::HiRes)
+BuildRequires:  pkgconfig
+# Tests requires time and ps and some perl modules
+# Keep in sync with Requires of mysql-testsuite
+BuildRequires:  procps
+BuildRequires:  pwdutils
+BuildRequires:  sqlite
+BuildRequires:  tcpd-devel
+BuildRequires:  time
+BuildRequires:  zlib-devel
+BuildRequires:  pkgconfig(systemd)
 # required by rcmysql
 Requires:       %{name}-client
 Requires:       %{name}-errormessages = %{version}
@@ -133,6 +126,12 @@ Provides:       %{extra_provides}-debug-version = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %{?systemd_requires}
+# On mariadb we want readline5 and on mysql we use libedit from system
+%if %{name} == mariadb*
+BuildRequires:  readline5-devel
+%else
+BuildRequires:  libedit-devel
+%endif
 %if 0%{with_mandatory_boost} > 0
 BuildRequires:  boost-devel >= 1.57.0
 %endif
@@ -267,13 +266,11 @@ Requires:       %{name}-bench = %{version}
 Requires:       %{name}-client = %{version}
 Requires:       %{name}-tools = %{version}
 # Tests requires time and ps and some perl modules
-Requires:       procps
-Requires:       time
+Requires:       perl(Data::Dumper)
 Requires:       perl(Env)
 Requires:       perl(Exporter)
 Requires:       perl(Fcntl)
 Requires:       perl(File::Temp)
-Requires:       perl(Data::Dumper)
 Requires:       perl(Getopt::Long)
 Requires:       perl(IPC::Open3)
 Requires:       perl(Socket)
@@ -281,6 +278,8 @@ Requires:       perl(Sys::Hostname)
 Requires:       perl(Test::More)
 Requires:       perl(Time::HiRes)
 Requires:       perl-DBD-mysql
+Requires:       procps
+Requires:       time
 Conflicts:      otherproviders(mysql-test)
 Provides:       mysql-test = %{version}
 Provides:       %{extra_provides}-test = %{version}
@@ -465,7 +464,7 @@ filelist innochecksum my_print_defaults myisam_ftdump myisamchk myisamlog myisam
 
 filelist mysql mysqladmin mysqlcheck mysqldump mysqlimport mysqlshow mysql_config_editor >mysql-client.files
 # The dialog stuff is mariadb only
-if [ "`ls '%buildroot'%_libdir/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
+if [ "`ls '%{buildroot}'%{_libdir}/mysql/plugin/dialog*.so 2> /dev/null`" ]; then
     echo '%%dir %%_libdir/mysql'               >> mysql-client.files
     echo '%%dir %%_libdir/mysql/plugin'        >> mysql-client.files
     echo '%%_libdir/mysql/plugin/dialog*.so'   >> mysql-client.files
@@ -537,8 +536,8 @@ rm -rf '%{buildroot}'%{_sysconfdir}/init.d
 # bnc#852451
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat > %{buildroot}%{_tmpfilesdir}/mysql.conf <<EOF
-x /var/tmp/mysql.*
-X /var/tmp/mysql.*
+x %{_localstatedir}/tmp/mysql.*
+X %{_localstatedir}/tmp/mysql.*
 EOF
 
 # SuSEfirewall service description
@@ -617,6 +616,7 @@ cd mysql-test
     --max-test-fail=0 || :
 
 # client does not require server and needs the user too
+
 %pre client
 getent group mysql >/dev/null || groupadd -r mysql
 getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
@@ -635,7 +635,7 @@ usermod -g mysql -s /bin/false mysql
 %post
 %service_add_post mysql.service mysql@.service mysql.target mysql@default.service
 # Use %%tmpfiles_create when 13.2 is oldest in support scope
-/usr/bin/systemd-tmpfiles --create %{_tmpfilesdir}/mysql.conf || :
+%{_bindir}/systemd-tmpfiles --create %{_tmpfilesdir}/mysql.conf || :
 
 # SLE11 Migration support
 for i in protected tmp; do
