@@ -1,0 +1,15 @@
+diff --git a/common/my.ini b/common/my.ini
+index 91087c7..616f0de 100644
+--- a/common/my.ini
++++ b/common/my.ini
+@@ -55,6 +55,10 @@ server-id	= 1
+ # sort_buffer_size = 2M
+ # read_rnd_buffer_size = 2M 
+ 
++# The following option disables Performance Schema in order to decrease
++# MySQL memory usage.
++performance_schema=OFF
++
+ sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+ 
+ [mysqld_multi]
