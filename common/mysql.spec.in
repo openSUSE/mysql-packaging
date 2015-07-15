@@ -71,7 +71,6 @@ BuildRequires:  fdupes
 BuildRequires:  gcc-c++
 BuildRequires:  libaio-devel
 BuildRequires:  libbz2-devel
-BuildRequires:  libedit-devel
 BuildRequires:  libevent-devel
 BuildRequires:  libtool
 BuildRequires:  libxml2-devel
@@ -83,7 +82,12 @@ BuildRequires:  pcre-devel
 BuildRequires:  pkgconfig
 BuildRequires:  procps
 BuildRequires:  pwdutils
-BuildRequires:  readline-devel
+# On mariadb we want readline5 and on mysql we use libedit from system
+%if %{name} == mariadb*
+BuildRequires:  readline5-devel
+%else
+BuildRequires:  libedit-devel
+%endif
 BuildRequires:  sqlite
 BuildRequires:  tcpd-devel
 BuildRequires:  zlib-devel
@@ -354,6 +358,7 @@ export CXXFLAGS="$CFLAGS -felide-constructors"
         -DWITH_JEMALLOC=auto                                         \
         -DWITH_READLINE=0                                            \
         -DWITH_LIBEDIT=0                                             \
+        -DWITH_EDITLINE=system                                       \
         -DINSTALL_LAYOUT=RPM                                         \
         -DMYSQL_UNIX_ADDR="%{_localstatedir}/run/mysql/mysql.sock"      \
         -DINSTALL_UNIX_ADDRDIR="%{_localstatedir}/run/mysql/mysql.sock" \
