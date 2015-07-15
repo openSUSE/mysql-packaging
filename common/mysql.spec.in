@@ -431,6 +431,9 @@ install -d -m 700 %{buildroot}%{_localstatedir}/log/mysql/
 
 # Symbols from build to go into libdir
 install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
+# INFO_BIN and INFO_SRC binaries
+install -p -m 644 build/Docs/INFO_SRC %{buildroot}%{_libdir}/mysql/
+install -p -m 644 build/Docs/INFO_BIN %{buildroot}%{_libdir}/mysql/
 
 # Remove handler socket client
 rm -f %{buildroot}%{_libdir}/mysql/plugin/handlersocket.so
@@ -725,6 +728,8 @@ exit 0
 %{_datadir}/%{name}/*.sql
 %dir %{_libdir}/mysql
 %{_libdir}/mysql/mysqld.sym
+%{_libdir}/mysql/INFO_BIN
+%{_libdir}/mysql/INFO_SRC
 %config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/mysql
 %dir %{_libdir}/mysql/plugin
 %{_libdir}/mysql/plugin/[!d]*.so
