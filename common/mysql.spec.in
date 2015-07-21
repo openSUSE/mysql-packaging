@@ -626,7 +626,7 @@ usermod -g mysql -s /bin/false mysql
 
 %post
 %service_add_post mysql.service mysql@.service mysql.target mysql@default.service
-# Use %tmpfiles_create when 13.2 is oldest in support scope
+# Use %%tmpfiles_create when 13.2 is oldest in support scope
 /usr/bin/systemd-tmpfiles --create %{_tmpfilesdir}/mysql.conf || :
 
 # SLE11 Migration support
