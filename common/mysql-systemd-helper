@@ -34,7 +34,6 @@ read_config() {
 			--socket=*)    socket="$(echo "$arg"             | sed -e 's/^[^=]*=//')" ;;
 			--datadir=*)   datadir="$(echo "$arg"            | sed -e 's/^[^=]*=//')" ;;
 			--user=*)      mysql_daemon_user="$(echo "$arg"  | sed -e 's/^[^=]*=//')" ;;
-			--group=*)     mysql_daemon_group="$(echo "$arg" | sed -e 's/^[^=]*=//')" ;;
 		esac
 	done
 }
@@ -88,7 +87,7 @@ mysql_upgrade() {
 		# Run protected MySQL accessible only though socket in our directory
 		echo "Running protected MySQL... "
 		/usr/sbin/mysqld \
-			--user="$mysql_daemon_user" --group="$mysql_daemon_group" \
+			--user="$mysql_daemon_user" \
 			$opts \
 			--skip-networking \
 			--skip-grant-tables \
@@ -145,7 +144,7 @@ mysql_wait() {
 }
 
 mysql_start() {
-	/usr/sbin/mysqld --user="$mysql_daemon_user" --group="$mysql_daemon_group" $opts 
+	/usr/sbin/mysqld --user="$mysql_daemon_user" $opts 
 }
 
 # We rely on output in english at some points
