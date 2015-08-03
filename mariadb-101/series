@@ -13,5 +13,4 @@ mysql-community-server-5.6.12-srv_buf_size.patch
 mariadb-10.1.1-header_files_const_warnings.patch
 mariadb-10.0.15-logrotate-su.patch
 mariadb-10.1.4-fortify-and-O.patch
-mariadb-10.1.4-no-return-in-nonvoid-function.patch
-mariadb-10.1.5-tabxml-bufferoverflowstrncat.patch
+mariadb-10.1.6-tabxml-bufferoverflowstrncat.patch
