@@ -702,6 +702,8 @@ exit 0
 
 %postun
 %service_del_postun mysql.service mysql@.service mysql.target mysql@default.service
+# Remove the /var/adm updatemsg that was hand-created and thus not on filelist
+rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 
 %post -n lib%{libname}%{soname} -p /sbin/ldconfig
 
