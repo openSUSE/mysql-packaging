@@ -4,7 +4,7 @@ display-name:     "MariaDB Galera"
 preferred:        0
 extra_provides:   mysql-cluster
 builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
-pkg-version:      "10.0.19"
+pkg-version:      "10.0.20"
 url:              "https://www.mariadb.org"
 source:           "https://downloads.mariadb.org/interstitial/mariadb-galera-%{version}/source/mariadb-galera-%{version}.tar.gz"
 src-dir:          "mariadb-%{version}"

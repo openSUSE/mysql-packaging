@@ -27,13 +27,14 @@
 %define builtin_plugins {{builtin_plugins}}
 %define extra_provides {{extra_provides}}
 %define with_mandatory_boost {{mandatory_boost}}
+%define build_extras {{build_extras}}
 # _tmpfilesdir is not defined in systemd macros up to openSUSE 13.2
 %{!?_tmpfilesdir: %global _tmpfilesdir %{_libexecdir}/tmpfiles.d }
 # Remove when 13.1 is out of support scope
 %if ! %{defined _rundir}
 %define _rundir %{_localstatedir}/run
 %endif
-%if 0{{build_extras}} > 0
+%if 0%{build_extras} > 0
 %define with_jemalloc 1
 %define with_oqgraph 1
 %define with_cassandra 1
