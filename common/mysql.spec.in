@@ -165,7 +165,6 @@ Group:          Development/Libraries/C and C++
 Requires:       glibc-devel
 Requires:       libmysqlclient%{soname} = %{version}
 Requires:       libmysqlclient_r%{soname} = %{version}
-Requires:       pkgconfig(libcrypto)
 Requires:       pkgconfig(libssl)
 Requires:       zlib-devel
 # mysql-devel needs to be provided as some pkgs still depend on it
