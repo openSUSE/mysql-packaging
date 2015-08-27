@@ -544,7 +544,6 @@ rm -rf '%{buildroot}'%{_sysconfdir}/init.d
 mkdir -p %{buildroot}%{_tmpfilesdir}
 cat > %{buildroot}%{_tmpfilesdir}/mysql.conf <<EOF
 x %{_localstatedir}/tmp/mysql.*
-X %{_localstatedir}/tmp/mysql.*
 EOF
 
 # SuSEfirewall service description
