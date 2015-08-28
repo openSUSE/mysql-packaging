@@ -38,12 +38,10 @@
 %define with_jemalloc 1
 %define with_oqgraph 1
 %define with_cassandra 1
-%define with_galera 1
 %else
 %define with_jemalloc 0
 %define with_oqgraph 0
 %define with_cassandra 0
-%define with_galera 0
 %endif
 Name:           {{pkg-name}}
 Version:        {{pkg-version}}
@@ -385,10 +383,8 @@ export CXXFLAGS="$CFLAGS -felide-constructors"
         -DWITH_CSV_STORAGE_ENGINE=1                                  \
         -DWITH_HANDLERSOCKET_STORAGE_ENGINE=1                        \
         -DWITH_EMBEDDED_SERVER=true                                  \
-%if 0%{with_galera} > 0
         -DWITH_WSREP=ON                                              \
         -DWITH_INNODB_DISALLOW_WRITES=1                              \
-%endif
         -DCOMPILATION_COMMENT="openSUSE package"                     \
         -DDENABLE_DOWNLOADS=false                                    \
         -DINSTALL_PLUGINDIR_RPM="%{_lib}/mysql/plugin"               \
