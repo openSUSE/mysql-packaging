@@ -13,3 +13,4 @@ mariadb-10.0.15-logrotate-su.patch
 mariadb-10.0.15-covscan-signexpr.patch
 mariadb-10.0.10-string-overflow.patch
 mariadb-10.0.20-tabxml-bufferoverflowstrncat.patch
+mariadb-10.0.21-mysql-test_innodb_simulate_comp_failures.patch
