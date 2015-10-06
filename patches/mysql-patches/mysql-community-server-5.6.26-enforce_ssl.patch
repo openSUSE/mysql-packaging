@@ -1,0 +1,66 @@
+PATCH-P1-FIX: fix MySQL lack of SSL enforcement
+BUGS: bnc#924663, bnc#928962, CVE-2015-3152
+
+Maintainer: Kristyna Streitova <kstreitova@suse.com>
+
+From 4ef74979969ac9339d0d42c11a6f26632e6776f1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vicen=C8=9Biu=20Ciorbaru?= <vicentiu@mariadb.org>
+Date: Tue, 9 Jun 2015 14:08:44 +0300
+Subject: [PATCH] MDEV-7937: Enforce SSL when --ssl client option is used
+
+Using --ssl-verify-server-cert and --ssl[-*] implies that
+the ssl connection is required. The mysql client will now print an error if ssl
+is required, but the server can not handle a ssl connection.
+---
+ sql-common/client.c | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
+
+Index: mysql-5.6.26/sql-common/client.c
+===================================================================
+--- mysql-5.6.26.orig/sql-common/client.c
++++ mysql-5.6.26/sql-common/client.c
+@@ -1742,6 +1742,7 @@ mysql_ssl_set(MYSQL *mysql __attribute__
+     mysql_options(mysql, MYSQL_OPT_SSL_CAPATH, capath) +
+     mysql_options(mysql, MYSQL_OPT_SSL_CIPHER, cipher)
+     ? 1 : 0;
++  mysql->options.use_ssl = TRUE;
+ #endif
+     DBUG_RETURN(result);
+ }
+@@ -2600,12 +2601,6 @@ static int send_client_reply_packet(MCPV
+     mysql->client_flag|= CLIENT_MULTI_RESULTS;
+ 
+ #if defined(HAVE_OPENSSL) && !defined(EMBEDDED_LIBRARY)
+-  if (mysql->options.ssl_key || mysql->options.ssl_cert ||
+-      mysql->options.ssl_ca || mysql->options.ssl_capath ||
+-      mysql->options.ssl_cipher ||
+-      (mysql->options.extension && mysql->options.extension->ssl_crl) || 
+-      (mysql->options.extension && mysql->options.extension->ssl_crlpath))
+-    mysql->options.use_ssl= 1;
+   if (mysql->options.use_ssl)
+     mysql->client_flag|= CLIENT_SSL;
+ #endif /* HAVE_OPENSSL && !EMBEDDED_LIBRARY*/
+@@ -2639,6 +2634,23 @@ static int send_client_reply_packet(MCPV
+     end= buff+5;
+   }
+ #ifdef HAVE_OPENSSL
++
++  /*
++     If client uses ssl and client also has to verify the server
++     certificate, a ssl connection is required.
++     If the server does not support ssl, we abort the connection.
++  */
++  if (mysql->options.use_ssl &&
++      (mysql->client_flag & CLIENT_SSL_VERIFY_SERVER_CERT) &&
++      !(mysql->server_capabilities & CLIENT_SSL))
++  {
++    set_mysql_extended_error(mysql, CR_SSL_CONNECTION_ERROR, unknown_sqlstate,
++                             ER(CR_SSL_CONNECTION_ERROR),
++                             "SSL is required, but the server does not "
++                             "support it");
++    goto error;
++  }
++
+   if (mysql->client_flag & CLIENT_SSL)
+   {
+     /* Do the SSL layering. */
