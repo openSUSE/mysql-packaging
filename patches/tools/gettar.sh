@@ -53,7 +53,7 @@ popd > /dev/null
 
 TO_PACK="./tools ./README ./MAINTAINERS"
 
-echo "Will create tarball from following patches:"
+echo "Will create tarball from the following patches:"
 while read patch; do
    patch="`echo "$patch" | sed -e 's|^[[:blank:]]*||' -e 's|[[:blank:]]*#.*||'`"
    [ -z "$patch" ] && continue
@@ -63,7 +63,7 @@ while read patch; do
       exit 1
    fi
    TO_PACK="$TO_PACK ./$NAME/$patch"
-   echo " * $patch"
+   echo "    $patch"
 done << EOF
 `echo "$series" | while read serie; do
    cat "$serie"

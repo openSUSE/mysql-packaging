@@ -20,13 +20,13 @@ build_package() {
     echo -n "Test build ${2}/${1}: "
     pushd "${WORKDIR}/"*"/${1}" > /dev/null
     osc build --cpio-bulk-download --download-api-only ${2} &> /dev/null || {
-        echo "FAILED"
+        echo -e "${RED}FAILED${NC}"
         if [[ -z $3 ]]; then
             FAILED=1
         fi ;
         return
     }
-    echo "PASSED"
+    echo -e "${GREEN}PASSED${NC}"
     popd > /dev/null
 }
 
@@ -50,9 +50,16 @@ if [[ $1 == "--help" || $1 == "-h" ]]; then
     help
 fi
 
+echo -e \
+"${BLUE}\
+------------------------------------------------------------------------
+Building of all products and packages of mysql/mariadb...
+------------------------------------------------------------------------\
+${NC}"
+
 build_packages
 
 if [[ ${FAILED} == 1 ]]; then
-   echo "Some important platforms failed to build!"
+   echo -e "${RED}Some important platforms failed to build!${NC}"
    exit 1
 fi

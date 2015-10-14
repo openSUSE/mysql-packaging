@@ -20,22 +20,24 @@ fi
 rm -f *.diff
 
 echo "Copying common files..."
-if ! cp -Lv "$REPOROOT"/common/* .; then
+if ! cp -Lv "$REPOROOT"/common/* . | sed -e 's/^/    /'; then
    echo "Unable to copy files!"
    exit 3
 fi
 
+echo
 echo "Copying $VARIANT files..."
-if ! cp -Lv "$REPOROOT"/"$VARIANT"/* .; then
+if ! cp -Lv "$REPOROOT"/"$VARIANT"/* . | sed -e 's/^/    /'; then
    echo "Unable to copy files!"
    exit 4
 fi
 
+echo
 echo "Checking for additional patches to the project..."
 for diff in [0-9]_*.diff [0-9][0-9]_*.diff; do
    if [ -f "$diff" ]; then
-      echo " * using $diff..."
-      if patch < "$diff"; then
+      echo "    using $diff..."
+      if patch < "$diff" | sed -e 's/^/    /'; then
          rm "$diff"
       else
          exit 5
@@ -43,16 +45,17 @@ for diff in [0-9]_*.diff [0-9][0-9]_*.diff; do
    fi
 done
 rm *.orig &> /dev/null
-echo "Additional patching done."
+echo "    Additional patching done."
 
 if [[ -f to_delete ]]; then
    cat to_delete | while read f; do
-      echo "Deleting $f..."
+      echo "    Deleting $f..."
       rm -f "$f"
    done
 fi
 rm -f to_delete
 
+echo
 echo "Creating files from templates..."
 if [ "`head -n 1 config.yaml | sed -n 's|---|yes|p'`" ]; then
    echo -e '1d\nwq\n' | ed config.yaml  > /dev/null 2> /dev/null
@@ -71,7 +74,7 @@ SPEC="`ls -1 *.spec | head -n1`"
 PKGNAME="`echo '{{pkg-name}}' | mustache ./whole-config.yaml -`"
 for i in ./*.in; do
    REALNAME="`echo "$i" | sed -e 's|\.in$||'`"
-   echo "Creating \"$REALNAME\"..."
+   echo "    Creating \"$REALNAME\"..."
    if !  mustache ./whole-config.yaml "$i" > "$REALNAME"; then
       echo "Creating \"$REALNAME\" failed!"
       exit 6
@@ -84,12 +87,14 @@ sleep 1
 
 [ "$SPEC" = "mysql.spec" ] || mv "mysql.spec" "$SPEC"
 
+echo
 echo "Packing configuration..."
 if ! tar -cjf configuration-tweaks.tar.bz2 *.cnf; then
    echo "Unable to create configuration tarball!"
    exit 4
 fi
 
+echo
 echo "Adding patches..."
 if ! "$REPOROOT"/patches/tools/gettar.sh; then
    echo "Getting patches failed!"
@@ -97,6 +102,7 @@ if ! "$REPOROOT"/patches/tools/gettar.sh; then
 fi
 
 echo "Cleaning up..."
+echo
 rm -f ./*.in ./default.yaml ./config.yaml ./whole-config.yaml ./*.cnf
 if [[ -x ./last_run.sh ]]; then
    ./last_run.sh && rm ./last_run.sh
