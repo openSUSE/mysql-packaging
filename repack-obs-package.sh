@@ -17,9 +17,9 @@ replace_source_tarball(){
 
     echo "Downloading the new source tarball..."
     if `osc -A https://api.opensuse.org service localrun download_files` ; then
-        echo "The new source tarball was downloaded"
+        echo "    The new source tarball was downloaded"
     else
-        echo "Download failed!"
+        echo -e "${RED}Download failed! ${NC}"
         exit 1
     fi
 
@@ -30,7 +30,8 @@ replace_source_tarball(){
 # param1: package name
 # param2: script option
 update_package() {
-    echo "Working on package \"${1}\""
+    echo -e "${YELLOW}Working on \"${1}\" package${NC}"
+    echo
     pushd "${WORKDIR}/"*"/${1}" > /dev/null
     bash ../../../update-package.sh || exit 1
 
@@ -41,13 +42,23 @@ update_package() {
     fi
 
     popd > /dev/null
-    echo "Updated package \"${1}\""
-    echo "-------------------------------------------------------------"
+    echo
+    echo -e "${GREEN}Package \"${1}\" is successfully prepared${NC}"
+    echo
+    echo "------------------------------------------------------------------------"
+
 }
 
 # Run update for all of the DEVELPKGS
 # param1: script option
 update_packages() {
+    echo -e \
+    "${BLUE}\
+------------------------------------------------------------------------
+Updating all packages...
+------------------------------------------------------------------------\
+${NC}"
+
     for i in ${DEVELPKGS[@]}; do
         update_package $i $1
     done

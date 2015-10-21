@@ -24,7 +24,7 @@ checkout_package() {
 
     osc -A https://api.opensuse.org branch $1/$2 &> $_branchstate
 
-    # if the branch already exist, recurse and quit
+    # If the branch already exist, recurse and quit
     if grep -q '^branch target package already exists:' $_branchstate ; then
         _prjname=`cat $_branchstate | grep "branch target package already exists" | sed 's/^branch target package already exists: //'`
         osc -A https://api.opensuse.org rdelete -f $_prjname -m "Replacing with new checkout" &> /dev/null
@@ -34,22 +34,23 @@ checkout_package() {
         _prjname="`cat $_branchstate | tail -n1 | sed 's/osc co //'`"
     else
 	cat $_branchstate
-        echo "ERROR: branching of package $1/$2 failed"
+        echo -e "${RED}ERROR: branching of package $1/$2 failed${NC}"
         exit 1
     fi
     pushd "${WORKDIR}" > /dev/null
     osc -A https://api.opensuse.org co $_prjname &> /dev/null || {
-        echo "ERROR: checkout of project $_prjname failed";
+        echo -e "${RED}ERROR: checkout of project $_prjname failed${NC}";
         exit 1;
     }
     popd > /dev/null
-    echo "Checked out package \"${WORKDIR}/$_prjname\""
+    echo "Successfully checked out -> ${WORKDIR}/$_prjname"
+    echo
 }
 
 # Prepare list of all packages we need to checkout
 checkout_packages() {
     for i in ${DEVELPKGS[@]}; do
-        echo "Checking out package..."
+        echo "Checking out the \"${i}\" package..."
         checkout_package ${DEVELPROJECT} $i
     done
 }
@@ -58,12 +59,20 @@ if [[ $1 == "--help" || $1 == "-h" ]]; then
     help
 fi
 
-# first some sanity checks
+echo -e \
+"${BLUE}\
+------------------------------------------------------------------------
+Fetching OBS packages for all currently supported platforms...
+------------------------------------------------------------------------\
+${NC}"
+
+# First some sanity checks
 if [[ -e "${WORKDIR}" ]]; then
     if [[ $1 == "--refresh" ]]; then
         rm -rf "${WORKDIR}"
     else
         echo "There already is present working directory and refresh was not given, skipping."
+        echo
     fi
     exit 0
 else
