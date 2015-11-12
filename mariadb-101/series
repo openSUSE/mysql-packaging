@@ -13,3 +13,4 @@ mariadb-10.0.15-logrotate-su.patch
 mariadb-10.1.4-fortify-and-O.patch
 mariadb-10.1.6-tabxml-bufferoverflowstrncat.patch
 mariadb-10.1.6-mysql-test_innodb_simulate_comp_failures.patch
+mariadb-10.0.21-mysql-test_main_bootstrap.patch
