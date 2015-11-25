@@ -1,0 +1,27 @@
+PATCH-P1-FIX-UPSTREAM: Fix build with -DENABLED_PROFILING=OFF
+
+[MDEV-9136], Fix Versions: 10.1.9, 10.0.23
+
+From bf186312e19bfe1e1cc5f83fc8280c84b7a17b21 Mon Sep 17 00:00:00 2001
+From: Sergei Golubchik <serg@mariadb.org>
+Date: Fri, 30 Oct 2015 13:06:02 +0100
+Subject: [PATCH] fix compilation with -DENABLED_PROFILING=OFF
+
+(with ENABLED_PROFILING=ON, field.h was included indirectly
+from sql_profile.h)
+---
+ sql/sql_class.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sql/sql_class.h b/sql/sql_class.h
+index b2fa684..a94236a 100644
+--- a/sql/sql_class.h
++++ b/sql/sql_class.h
+@@ -27,6 +27,7 @@
+ #include "log.h"
+ #include "rpl_tblmap.h"
+ #include "mdl.h"
++#include "field.h"                              // Create_field
+ #include "probes_mysql.h"
+ #include "sql_locale.h"                         /* my_locale_st */
+ #include "sql_profile.h"                   /* PROFILING */

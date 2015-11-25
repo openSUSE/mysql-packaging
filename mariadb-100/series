@@ -12,3 +12,4 @@ mariadb-10.0.15-covscan-signexpr.patch
 mariadb-10.0.10-string-overflow.patch
 mariadb-10.0.20-tabxml-bufferoverflowstrncat.patch
 mariadb-10.0.21-mysql-test_main_bootstrap.patch
+mariadb-10.0.22-fix_build_denabled_profiling_off.patch
