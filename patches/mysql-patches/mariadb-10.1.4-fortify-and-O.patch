@@ -9,7 +9,7 @@ Index: CMakeLists.txt
 ===================================================================
 --- CMakeLists.txt.orig
 +++ CMakeLists.txt
-@@ -206,7 +206,6 @@ IF(SECURITY_HARDENED)
+@@ -216,7 +216,6 @@ IF(SECURITY_HARDENED)
    MY_CHECK_AND_SET_COMPILER_FLAG("-pie -fPIC")
    MY_CHECK_AND_SET_COMPILER_FLAG("-Wl,-z,relro,-z,now")
    MY_CHECK_AND_SET_COMPILER_FLAG("-fstack-protector --param=ssp-buffer-size=4")
@@ -33,8 +33,8 @@ Index: storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
      )
  endif ()
  
-@@ -126,29 +124,29 @@ set_ldflags_if_supported(
-   )
+@@ -105,29 +103,29 @@ endif ()
+ MY_CHECK_AND_SET_COMPILER_FLAG(-Wno-error=strict-overflow)
  
  ## set extra debugging flags and preprocessor definitions
 -set(CMAKE_C_FLAGS_DEBUG "-g3 -O0 ${CMAKE_C_FLAGS_DEBUG}")

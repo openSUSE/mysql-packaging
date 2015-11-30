@@ -127,8 +127,8 @@ Provides:       %{extra_provides}-debug-version = %{version}
 Obsoletes:      %{extra_provides}-debug-version < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %{?systemd_requires}
-# On mariadb we want readline5 and on mysql we use libedit from system
-%if "%{name}" == "mariadb"
+# On mariadb we want readline5 (except for SLE12) and on mysql we use libedit from system
+%if ("%{name}" == "mariadb" ) && ! (( 0%{?suse_version} == 1315 ) && ( ! 0%{?is_opensuse} ))
 BuildRequires:  readline5-devel
 %else
 BuildRequires:  libedit-devel
