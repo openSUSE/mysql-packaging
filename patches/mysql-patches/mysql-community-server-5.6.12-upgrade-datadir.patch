@@ -10,7 +10,7 @@ Index: client/mysql_upgrade.c
 ===================================================================
 --- client/mysql_upgrade.c.orig
 +++ client/mysql_upgrade.c
-@@ -582,21 +582,37 @@ static int extract_variable_from_show(DY
+@@ -583,21 +583,37 @@ static int extract_variable_from_show(DY
  
  static int get_upgrade_info_file_name(char* name)
  {
@@ -58,7 +58,7 @@ Index: client/mysql_upgrade.c
  
    fn_format(name, "mysql_upgrade_info", name, "", MYF(0));
    DBUG_PRINT("exit", ("name: %s", name));
-@@ -1009,7 +1025,7 @@ int main(int argc, char **argv)
+@@ -1016,7 +1032,7 @@ int main(int argc, char **argv)
      Read the mysql_upgrade_info file to check if mysql_upgrade
      already has been run for this installation of MySQL
    */
@@ -67,15 +67,29 @@ Index: client/mysql_upgrade.c
    {
      printf("This installation of MySQL is already upgraded to %s, "
             "use --force if you still need to run mysql_upgrade\n",
-@@ -1030,9 +1046,9 @@ int main(int argc, char **argv)
-   */
-   if ((!opt_systables_only &&
-        (run_mysqlcheck_mysql_db_fixnames() || run_mysqlcheck_mysql_db_upgrade())) ||
--      run_sql_fix_privilege_tables() ||
-       (!opt_systables_only &&
--      (run_mysqlcheck_fixnames() || run_mysqlcheck_upgrade())))
-+      (run_mysqlcheck_fixnames() || run_mysqlcheck_upgrade()))
-+      || run_sql_fix_privilege_tables())
+@@ -1048,12 +1064,6 @@ int main(int argc, char **argv)
+           "mysql db");
+     }
+   }
+-  if (run_sql_fix_privilege_tables())
+-  {
+-    /* Specific error msg (if present) would be printed in the function call
+-     * above */
+-    die("Upgrade failed");
+-  }
+   if (!opt_systables_only)
    {
-     /*
-       The upgrade failed to complete in some way or another,
+     if (run_mysqlcheck_fixnames())
+@@ -1067,6 +1077,12 @@ int main(int argc, char **argv)
+           "all db(s) except mysql");
+     }
+   }
++  if (run_sql_fix_privilege_tables())
++  {
++    /* Specific error msg (if present) would be printed in the function call
++     * above */
++    die("Upgrade failed");
++  }
+   verbose("OK");
+
+   /* Create a file indicating upgrade has been performed */
