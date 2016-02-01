@@ -22,9 +22,11 @@ read_config() {
 	if [[ -n "$INSTANCE" && "x$INSTANCE" != "xdefault" ]]; then
 		opts="$(/usr/bin/my_print_defaults mysqld mysqld_multi "$INSTANCE")"
 		tmp_opts="$opts"
+		config="/etc/my${INSTANCE}.cnf"
 	else
 		opts="$(/usr/bin/my_print_defaults mysqld)"
 		tmp_opts="$opts"
+		config="/etc/my.cnf"
 	fi
 
 	# Update local variables according to the settings from config
@@ -87,8 +89,8 @@ mysql_upgrade() {
 		# Run protected MySQL accessible only though socket in our directory
 		echo "Running protected MySQL... "
 		/usr/sbin/mysqld \
+			--defaults-file="$config" \
 			--user="$mysql_daemon_user" \
-			$opts \
 			--skip-networking \
 			--skip-grant-tables \
 			--log-error="$protected/log_upgrade_run" \
@@ -144,7 +146,9 @@ mysql_wait() {
 }
 
 mysql_start() {
-	exec /usr/sbin/mysqld --user="$mysql_daemon_user" $opts 
+	exec /usr/sbin/mysqld \
+		--defaults-file="$config" \
+		--user="$mysql_daemon_user"
 }
 
 # We rely on output in english at some points
