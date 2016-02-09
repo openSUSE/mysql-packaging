@@ -602,6 +602,9 @@ rm -f  '%{buildroot}'%{_datadir}/doc/* 2> /dev/null || true
 # Unwanted packaged stuff
 rm -rf '%{buildroot}'%{_datadir}/mysql/{solaris,SELinux}
 
+# Create the directory specified in 'secure-file-priv' option
+mkdir -p '%{buildroot}'/var/lib/mysql-files
+
 %check
 cd build
 
@@ -749,6 +752,7 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %dir %{_libdir}/mysql/plugin
 %{_libdir}/mysql/plugin/[!d]*.so
 %ghost %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
+%dir %attr(0750, mysql, mysql) /var/lib/mysql-files
 
 %files errormessages -f errormessages.files
 %defattr(-, root, root)
