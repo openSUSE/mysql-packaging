@@ -1,2 +1,0 @@
-[server]
-plugin-load=blackhole=ha_blackhole.so;federated=ha_federated.so;archive=ha_archive.so
