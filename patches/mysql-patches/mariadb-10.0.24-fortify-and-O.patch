@@ -5,10 +5,10 @@ conflicts like FORTIFY and -O0. Removing hardcoded options.
 
 Maintainer: Michal Hrusecky <mhrusecky@suse.cz>
 
-Index: storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
+Index: storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake
 ===================================================================
---- storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake.orig
-+++ storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
+--- storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake.orig
++++ storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake
 @@ -25,7 +25,6 @@ endif ()
  if (CMAKE_VERSION VERSION_LESS 3.0)
    set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG TOKU_PTHREAD_DEBUG=1)

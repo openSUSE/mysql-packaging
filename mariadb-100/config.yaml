@@ -4,7 +4,7 @@ display-name:     "MariaDB"
 preferred:        1
 extra_provides:   mariadb_100
 builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
-pkg-version:      "10.0.22"
+pkg-version:      "10.0.24"
 url:              "https://www.mariadb.org"
 source:           "https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz"
 src-dir:          "mariadb-%{version}"
