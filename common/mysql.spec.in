@@ -36,7 +36,9 @@
 %endif
 %if 0%{build_extras} > 0
 %define with_jemalloc 1
-%define with_oqgraph 1
+#temporarily disable OQGraph (see MDEV-9479)
+#%define with_oqgraph 1
+%define with_oqgraph 0
 %define with_cassandra 1
 %else
 %define with_jemalloc 0
