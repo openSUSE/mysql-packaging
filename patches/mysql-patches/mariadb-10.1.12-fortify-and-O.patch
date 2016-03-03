@@ -17,10 +17,10 @@ Index: CMakeLists.txt
  ENDIF()
  
  OPTION(ENABLE_DEBUG_SYNC "Enable debug sync (debug builds only)" ON) 
-Index: storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
+Index: storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake
 ===================================================================
---- storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake.orig
-+++ storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
+--- storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake.orig
++++ storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake
 @@ -26,11 +26,9 @@ endif ()
  if (CMAKE_VERSION VERSION_LESS 3.0)
    set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG TOKU_PTHREAD_DEBUG=1)
@@ -33,8 +33,8 @@ Index: storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
      )
  endif ()
  
-@@ -105,29 +103,29 @@ endif ()
- MY_CHECK_AND_SET_COMPILER_FLAG(-Wno-error=strict-overflow)
+@@ -101,29 +99,29 @@ set_cflags_if_supported(
+   )
  
  ## set extra debugging flags and preprocessor definitions
 -set(CMAKE_C_FLAGS_DEBUG "-g3 -O0 ${CMAKE_C_FLAGS_DEBUG}")

@@ -470,6 +470,13 @@ rm -f %{buildroot}%{_libdir}/mysql/plugin/daemon_example.ini
 
 mv %{buildroot}%{_datadir}/mysql-test/lib/My/SafeProcess/my_safe_process %{buildroot}%{_bindir}
 
+# Remove unused services for mariadb_101
+%if "%{extra_provides}" == "mariadb_101"
+rm -f %{buildroot}'%{_libexecdir}/systemd/system/mariadb.service'
+rm -f %{buildroot}'%{_libexecdir}/systemd/system/mariadb@.service'
+rm -f %{buildroot}'%{_libexecdir}/systemd/system/mariadb@bootstrap.service.d/use_galera_new_cluster.conf'
+%endif
+
 # Generate various filelists
 filelist innochecksum my_print_defaults myisam_ftdump myisamchk myisamlog myisampack mysql_fix_extensions mysql_fix_privilege_tables mysql_ssl_rsa_setup mysql_install_db mysql_secure_installation mysql_upgrade mysqlbug mysqld mysqld_multi mysqld_safe mysqlbinlog mysqldumpslow mysqlmanager mroonga resolve_stack_dump resolveip {m,}aria_chk {m,}aria_dump_log {m,}aria_ftdump {m,}aria_pack {m,}aria_read_log xtstat tokuft_logprint tokuftdump >mysql.files
 
@@ -755,6 +762,23 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %{_libdir}/mysql/plugin/[!d]*.so
 %ghost %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %dir %attr(0750, mysql, mysql) /var/lib/mysql-files
+# Pack files for mariadb_101
+%if "%{extra_provides}" == "mariadb_101"
+%{_bindir}/galera_new_cluster
+%{_bindir}/mariadb-service-convert
+%dir %{_datadir}/mysql/policy
+%dir %{_datadir}/mysql/policy/apparmor
+%{_datadir}/mysql/policy/apparmor/README
+%{_datadir}/mysql/policy/apparmor/usr.sbin.mysqld*
+%dir %{_datadir}/mysql/policy/selinux
+%{_datadir}/mysql/policy/selinux/README
+%{_datadir}/mysql/policy/selinux/mariadb-server.*
+%dir %{_datadir}/mysql/systemd
+%{_datadir}/mysql/systemd/mariadb.service
+%{_datadir}/mysql/systemd/mariadb@.service
+%{_datadir}/mysql/systemd/use_galera_new_cluster.conf
+%endif
+
 
 %files errormessages -f errormessages.files
 %defattr(-, root, root)
