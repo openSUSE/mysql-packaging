@@ -5,11 +5,23 @@ conflicts like FORTIFY and -O0. Removing hardcoded options.
 
 Maintainer: Michal Hrusecky <mhrusecky@suse.cz>
 
-Index: storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
+Index: CMakeLists.txt
 ===================================================================
---- storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake.orig
-+++ storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
-@@ -25,7 +25,6 @@ endif ()
+--- CMakeLists.txt.orig
++++ CMakeLists.txt
+@@ -216,7 +216,6 @@ IF(SECURITY_HARDENED)
+   MY_CHECK_AND_SET_COMPILER_FLAG("-pie -fPIC")
+   MY_CHECK_AND_SET_COMPILER_FLAG("-Wl,-z,relro,-z,now")
+   MY_CHECK_AND_SET_COMPILER_FLAG("-fstack-protector --param=ssp-buffer-size=4")
+-  MY_CHECK_AND_SET_COMPILER_FLAG("-D_FORTIFY_SOURCE=2" RELEASE RELWITHDEBINFO)
+ ENDIF()
+ 
+ OPTION(ENABLE_DEBUG_SYNC "Enable debug sync (debug builds only)" ON) 
+Index: storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake
+===================================================================
+--- storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake.orig
++++ storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake
+@@ -26,11 +26,9 @@ endif ()
  if (CMAKE_VERSION VERSION_LESS 3.0)
    set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG TOKU_PTHREAD_DEBUG=1)
    set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DRD TOKU_PTHREAD_DEBUG=1)
@@ -17,7 +29,11 @@ Index: storage/tokudb/ft-index/cmake_modules/TokuSetupCompiler.cmake
  else ()
    set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
      $<$<OR:$<CONFIG:DEBUG>,$<CONFIG:DRD>>:TOKU_PTHREAD_DEBUG=1>
-@@ -125,29 +124,29 @@ set_ldflags_if_supported(
+-    $<$<CONFIG:DRD>:_FORTIFY_SOURCE=2>
+     )
+ endif ()
+ 
+@@ -101,29 +99,29 @@ set_cflags_if_supported(
    )
  
  ## set extra debugging flags and preprocessor definitions

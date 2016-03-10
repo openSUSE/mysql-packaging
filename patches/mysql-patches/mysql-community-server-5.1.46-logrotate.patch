@@ -25,9 +25,9 @@ Index: support-files/mysql-log-rotate.sh
 +	   ret=$?
 +	   if test $ret -ne 0
 +	   then
-+	      echo "@sysconfdir@/logrotate.d/mysql failed, probably because" >&2
++	      echo "@sysconfdir@/logrotate.d/mariadb failed, probably because" >&2
 +	      echo "the root acount is protected by password." >&2
-+	      echo "See comments in @sysconfdir@/logrotate.d/mysql on how to fix this" >&2
++	      echo "See comments in @sysconfdir@/logrotate.d/mariadb on how to fix this" >&2
 +	      exit $ret
 +	   fi
  	fi
