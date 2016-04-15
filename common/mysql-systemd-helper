@@ -124,7 +124,6 @@ mysql_upgrade() {
 
 		# Cleanup
 		echo "Final cleanup"
-
 		if [[ -z "$up_ok" ]]; then
 			rm -rf "$protected" "/var/run/mysql/protecteddir.$INSTANCE"
 		else 
