@@ -124,8 +124,11 @@ mysql_upgrade() {
 
 		# Cleanup
 		echo "Final cleanup"
-		rm -rf "$protected" "/var/run/mysql/protecteddir.$INSTANCE"
-		[[ -z "$up_ok" ]] || die "Something failed during upgrade, please check logs"
+		if [[ -z "$up_ok" ]]; then
+			rm -rf "$protected" "/var/run/mysql/protecteddir.$INSTANCE"
+		else 
+			die "Something failed during upgrade, please check logs"
+		fi
 	fi
 }
 
