@@ -4,7 +4,7 @@ display-name:     "MySQL Community Server"
 preferred:        0
 extra_provides:   mysql-community-server_56
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.6.28"
+pkg-version:      "5.6.30"
 url:              "http://www.mysql.com"
 source:           "https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-%{version}.tar.gz"
 src-dir:          "mysql-%{version}"
