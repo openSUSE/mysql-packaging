@@ -450,9 +450,6 @@ install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
 install -p -m 644 build/Docs/INFO_SRC %{buildroot}%{_libdir}/mysql/
 install -p -m 644 build/Docs/INFO_BIN %{buildroot}%{_libdir}/mysql/
 
-# Remove handler socket client
-rm -f %{buildroot}%{_libdir}/mysql/plugin/handlersocket.so
-
 # Remove debug management for keys Mariadb 101+
 rm -f %{buildroot}%{_libdir}/mysql/plugin/debug_key_management.so
 
