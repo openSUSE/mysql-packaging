@@ -141,7 +141,8 @@ BuildRequires:  boost-devel >= 1.57.0
 %if 0%{with_oqgraph} > 0 || 0%{with_cassandra} > 0
 BuildRequires:  boost-devel
 %endif
-%if 0%{with_jemalloc} > 0
+# Build with jemalloc even for mariadb-100 to enable TokuDB there (bnc#970287)
+%if 0%{with_jemalloc} > 0 || "%{extra_provides}" == "mariadb_100"
 BuildRequires:  jemalloc-devel
 %endif
 %if 0%{with_oqgraph} > 0
@@ -449,9 +450,6 @@ install -m 644 build/sql/mysqld.sym %{buildroot}%{_libdir}/mysql/mysqld.sym
 # INFO_BIN and INFO_SRC binaries
 install -p -m 644 build/Docs/INFO_SRC %{buildroot}%{_libdir}/mysql/
 install -p -m 644 build/Docs/INFO_BIN %{buildroot}%{_libdir}/mysql/
-
-# Remove handler socket client
-rm -f %{buildroot}%{_libdir}/mysql/plugin/handlersocket.so
 
 # Remove debug management for keys Mariadb 101+
 rm -f %{buildroot}%{_libdir}/mysql/plugin/debug_key_management.so
