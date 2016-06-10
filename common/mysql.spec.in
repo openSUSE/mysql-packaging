@@ -103,6 +103,10 @@ BuildRequires:  tcpd-devel
 BuildRequires:  time
 BuildRequires:  zlib-devel
 BuildRequires:  pkgconfig(systemd)
+# Enable systemd features for mariadb-101 on SLE12, openSUSE 13.2 and openSUSE Leap
+%if ("%{extra_provides}" == "mariadb_101") && ((0%{?suse_version} == 1315) || (0%{?suse_version} == 1320))
+BuildRequires: systemd-devel
+%endif
 # required by rcmysql
 Requires:       %{name}-client
 Requires:       %{name}-errormessages = %{version}
