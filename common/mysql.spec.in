@@ -30,10 +30,6 @@
 %define build_extras {{build_extras}}
 # _tmpfilesdir is not defined in systemd macros up to openSUSE 13.2
 %{!?_tmpfilesdir: %global _tmpfilesdir %{_libexecdir}/tmpfiles.d }
-# Remove when 13.1 is out of support scope
-%if ! %{defined _rundir}
-%define _rundir %{_localstatedir}/run
-%endif
 %if 0%{build_extras} > 0
 %define with_jemalloc 1
 #temporarily disable OQGraph (see MDEV-9479)
@@ -103,6 +99,10 @@ BuildRequires:  tcpd-devel
 BuildRequires:  time
 BuildRequires:  zlib-devel
 BuildRequires:  pkgconfig(systemd)
+# Enable systemd features for mariadb-101 on SLE12, openSUSE 13.2 and openSUSE Leap
+%if ("%{extra_provides}" == "mariadb_101") && ((0%{?suse_version} == 1315) || (0%{?suse_version} == 1320))
+BuildRequires: systemd-devel
+%endif
 # required by rcmysql
 Requires:       %{name}-client
 Requires:       %{name}-errormessages = %{version}
@@ -639,14 +639,18 @@ cd mysql-test
 getent group mysql >/dev/null || groupadd -r mysql
 getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d %{_localstatedir}/lib/mysql mysql
-usermod -g mysql -s /bin/false mysql
+# if mysql user is not in mysql group or if mysql user doesn't have '/bin/false' shell set, do so
+id -Gn mysql | grep '\bmysql\b' &>/dev/null || usermod -g mysql mysql
+getent passwd mysql | cut -d: -f7 | grep '\b/bin/false\b' &>/dev/null || usermod -s /bin/false mysql
 exit 0
 
 %pre
 getent group mysql >/dev/null || groupadd -r mysql
 getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d %{_localstatedir}/lib/mysql mysql
-usermod -g mysql -s /bin/false mysql
+# if mysql user is not in mysql group or if mysql user doesn't have '/bin/false' shell set, do so
+id -Gn mysql | grep '\bmysql\b' &>/dev/null || usermod -g mysql mysql
+getent passwd mysql | cut -d: -f7 | grep '\b/bin/false\b' &>/dev/null || usermod -s /bin/false mysql
 
 %service_add_pre mysql.service mysql@.service mysql.target mysql@default.service
 
