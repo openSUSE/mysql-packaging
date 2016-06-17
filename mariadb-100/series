@@ -9,4 +9,3 @@ mariadb-10.0.5-deharcode-libdir.patch
 mariadb-10.0.24-fortify-and-O.patch
 mariadb-10.0.15-logrotate-su.patch
 mariadb-10.0.10-string-overflow.patch
-mariadb-10.0.21-mysql-test_main_bootstrap.patch
