@@ -38,6 +38,14 @@ read_config() {
 			--user=*)      mysql_daemon_user="$(echo "$arg"  | sed -e 's/^[^=]*=//')" ;;
 		esac
 	done
+
+	# work-around for lost+found directory in $datadir (bug #986251)
+	if [ -d "$datadir/lost+found" ]
+	then
+		ignore_db_dir="--ignore-db-dir=lost+found"
+	else
+		ignore_db_dir=""
+	fi
 }
 
 # Create new empty database if needed
@@ -93,6 +101,7 @@ mysql_upgrade() {
 			--user="$mysql_daemon_user" \
 			--skip-networking \
 			--skip-grant-tables \
+			$ignore_db_dir \
 			--log-error="$protected/log_upgrade_run" \
 			--socket="$protected/mysql.sock" \
 			--pid-file="$protected/mysqld.pid" &
@@ -151,6 +160,7 @@ mysql_wait() {
 mysql_start() {
 	exec /usr/sbin/mysqld \
 		--defaults-file="$config" \
+		$ignore_db_dir \
 		--user="$mysql_daemon_user"
 }
 
