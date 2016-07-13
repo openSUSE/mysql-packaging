@@ -2,7 +2,7 @@
 Description=MySQL server - %I instance
 Wants=basic.target
 PartOf=mysql.target
-After=basic.target network.target syslog.target
+After=basic.target network.target
 
 [Service]
 Restart=on-failure

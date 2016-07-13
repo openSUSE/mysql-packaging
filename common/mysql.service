@@ -2,7 +2,7 @@
 Description=MySQL server
 Wants=basic.target
 Conflicts=mysql.target mysql@default.service
-After=basic.target network.target syslog.target
+After=basic.target network.target 
 
 [Service]
 Restart=on-failure
