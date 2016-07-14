@@ -388,6 +388,7 @@ export CXXFLAGS="$CFLAGS -felide-constructors"
         -DWITH_EMBEDDED_SERVER=true                                  \
         -DWITH_WSREP=ON                                              \
         -DWITH_INNODB_DISALLOW_WRITES=1                              \
+        -DWITH_BOOST=../boost/                                        \
         -DCOMPILATION_COMMENT="openSUSE package"                     \
         -DDENABLE_DOWNLOADS=false                                    \
         -DINSTALL_PLUGINDIR_RPM="%{_lib}/mysql/plugin"               \
