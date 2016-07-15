@@ -99,6 +99,9 @@ BuildRequires:  sqlite
 BuildRequires:  tcpd-devel
 BuildRequires:  time
 BuildRequires:  zlib-devel
+# pkgconfig(systemd) on most versions is in systemd main pkg, remove
+# after oldest supported is Leap 43
+BuildRequires:  systemd
 BuildRequires:  systemd-devel
 # required by rcmysql
 Requires:       %{name}-client
