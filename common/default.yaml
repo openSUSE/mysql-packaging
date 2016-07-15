@@ -1,6 +1,5 @@
 ---
 preferred:          0
-mandatory_boost:    0
 build_extras:       0
 build_readline:     0
 mandatory_lz4:      0

@@ -26,7 +26,6 @@
 %define preferred {{preferred}}
 %define builtin_plugins {{builtin_plugins}}
 %define extra_provides {{extra_provides}}
-%define with_mandatory_boost {{mandatory_boost}}
 %define with_mandatory_lz4 {{mandatory_lz4}}
 %define build_readline {{build_readline}}
 %define build_extras {{build_extras}}
@@ -136,9 +135,6 @@ BuildRequires:  liblz4-devel
 BuildRequires:  readline5-devel
 %else
 BuildRequires:  libedit-devel
-%endif
-%if 0%{with_mandatory_boost} > 0
-BuildRequires:  boost-devel >= 1.57.0
 %endif
 %if 0%{with_oqgraph} > 0 || 0%{with_cassandra} > 0
 BuildRequires:  boost-devel
