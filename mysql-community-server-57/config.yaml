@@ -3,6 +3,7 @@ pkg-name:         mysql-community-server
 display-name:     "MySQL Community Server"
 preferred:        0
 mandatory_boost:  1
+mandatory_lz4:    1
 extra_provides:   mysql-community-server_57
 builtin_plugins:  partition,csv,heap,myisam,innobase
 pkg-version:      "5.7.13"
