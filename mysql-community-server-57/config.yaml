@@ -2,13 +2,13 @@
 pkg-name:         mysql-community-server
 display-name:     "MySQL Community Server"
 preferred:        0
-mandatory_boost:  1
+mandatory_lz4:    1
 extra_provides:   mysql-community-server_57
 builtin_plugins:  partition,csv,heap,myisam,innobase
-pkg-version:      "5.7.7"
+pkg-version:      "5.7.13"
 url:              "http://www.mysql.com"
-source:           "https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-%{version}-rc.tar.gz"
-src-dir:          "mysql-%{version}-rc"
+source:           "https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz"
+src-dir:          "mysql-%{version}"
 lib-version:      20
 lib-name:         mysql57client
 description:      'SQL is the most popular database language in the world. MySQL is a

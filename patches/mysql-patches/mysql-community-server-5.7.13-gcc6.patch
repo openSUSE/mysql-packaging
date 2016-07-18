@@ -1,0 +1,18 @@
+PATCH-P0-FIX-UPSTREAM: gcc6 buildfix
+
+Simple fix to allow building with gcc6
+
+diff --git a/client/auth_utils.cc b/client/auth_utils.cc
+index 21416bb..03fd71c 100644
+--- client/auth_utils.cc.orig
++++ client/auth_utils.cc
+@@ -61,7 +61,7 @@ int parse_cnf_file(istream &sin, map<string, string > *options,
+     getline(sin, option_value);
+     trim(&option_value);
+     if (option_name.length() > 0)
+-      options->insert(make_pair<string, string >(option_name, option_value));
++      options->insert(make_pair(option_name, option_value));
+   }
+   return ALL_OK;
+   } catch(...)
+
