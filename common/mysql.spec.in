@@ -476,9 +476,9 @@ mv %{buildroot}%{_datadir}/mysql-test/lib/My/SafeProcess/my_safe_process %{build
 
 # Remove unused services for mariadb_101
 %if "%{extra_provides}" == "mariadb_101"
-rm -f %{buildroot}'%{_libexecdir}/systemd/system/mariadb.service'
-rm -f %{buildroot}'%{_libexecdir}/systemd/system/mariadb@.service'
-rm -f %{buildroot}'%{_libexecdir}/systemd/system/mariadb@bootstrap.service.d/use_galera_new_cluster.conf'
+rm -f %{buildroot}'%{_unitdir}/mariadb.service'
+rm -f %{buildroot}'%{_unitdir}/mariadb@.service'
+rm -f %{buildroot}'%{_unitdir}/mariadb@bootstrap.service.d/use_galera_new_cluster.conf'
 %endif
 
 # Generate various filelists
@@ -548,10 +548,10 @@ install -m 660 %{SOURCE14} %{buildroot}%{_sysconfdir}/my.cnf
 install -D -m 755 %{_sourcedir}/mysql-systemd-helper '%{buildroot}'%{_libexecdir}/mysql/mysql-systemd-helper
 sed -i 's|@MYSQLVER@|%{version}|' '%{buildroot}'%{_libexecdir}/mysql/mysql-systemd-helper
 ln -sf service '%{buildroot}'%{_sbindir}/rcmysql
-install -D -m 644 %{_sourcedir}/mysql.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql.service
-install -D -m 644 %{_sourcedir}/mysql@.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@.service
-install -D -m 644 %{_sourcedir}/mysql.target '%{buildroot}'%{_libexecdir}/systemd/system/mysql.target
-ln -s mysql@.service '%{buildroot}'%{_libexecdir}/systemd/system/mysql@default.service
+install -D -m 644 %{_sourcedir}/mysql.service '%{buildroot}'%{_unitdir}/mysql.service
+install -D -m 644 %{_sourcedir}/mysql@.service '%{buildroot}'%{_unitdir}/mysql@.service
+install -D -m 644 %{_sourcedir}/mysql.target '%{buildroot}'%{_unitdir}/mysql.target
+ln -s mysql@.service '%{buildroot}'%{_unitdir}/mysql@default.service
 rm -rf '%{buildroot}'%{_sysconfdir}/init.d
 
 # Tmpfiles file to exclude mysql tempfiles that are auto-cleaned up
@@ -751,10 +751,10 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %dir %{_libexecdir}/mysql
 %dir %attr(0700, mysql, mysql) %{_localstatedir}/log/mysql
 %{_libexecdir}/mysql/mysql-systemd-helper
-%{_libexecdir}/systemd/system/mysql.service
-%{_libexecdir}/systemd/system/mysql@.service
-%{_libexecdir}/systemd/system/mysql@default.service
-%{_libexecdir}/systemd/system/mysql.target
+%{_unitdir}/mysql.service
+%{_unitdir}/mysql@.service
+%{_unitdir}/mysql@default.service
+%{_unitdir}/mysql.target
 %{_tmpfilesdir}/mysql.conf
 %{_sbindir}/rcmysql
 %dir %{_datadir}/%{name}
