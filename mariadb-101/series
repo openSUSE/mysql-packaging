@@ -8,3 +8,4 @@ mariadb-10.1.4-group.patch
 mariadb-10.1.12-deharcode-libdir.patch
 mariadb-10.0.15-logrotate-su.patch
 mariadb-10.1.12-fortify-and-O.patch
+mariadb-10.1.16-systemd-cmake.patch

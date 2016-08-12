@@ -773,6 +773,7 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 # Pack files for mariadb_101
 %if "%{extra_provides}" == "mariadb_101"
 %{_bindir}/galera_new_cluster
+%{_bindir}/galera_recovery
 %{_bindir}/mariadb-service-convert
 %dir %{_datadir}/mysql/policy
 %dir %{_datadir}/mysql/policy/apparmor
