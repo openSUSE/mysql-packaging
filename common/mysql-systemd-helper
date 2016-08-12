@@ -10,7 +10,7 @@ read_config() {
 	MYSQLVER="$(echo @MYSQLVER@ | sed 's|\.[0-9]\+$||')"
 	mysql_daemon_user=mysql
 	mysql_daemon_group=mysql
-	if [[ -z "$INSTANCE" || "x$INSTANCE" = "xdefault" ]]; then
+	if [[ -z "$INSTANCE" ]]; then
 		datadir=/var/lib/mysql
 		socket="/var/run/mysql/mysql.sock"
 	else
@@ -19,7 +19,7 @@ read_config() {
 	fi
 
 	# Read options - important for multi setup
-	if [[ -n "$INSTANCE" && "x$INSTANCE" != "xdefault" ]]; then
+	if [[ -n "$INSTANCE" ]]; then
 		opts="$(/usr/bin/my_print_defaults mysqld mysqld_multi "$INSTANCE")"
 		tmp_opts="$opts"
 		config="/etc/my${INSTANCE}.cnf"

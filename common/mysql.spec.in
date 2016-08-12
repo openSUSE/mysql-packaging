@@ -551,7 +551,6 @@ ln -sf service '%{buildroot}'%{_sbindir}/rcmysql
 install -D -m 644 %{_sourcedir}/mysql.service '%{buildroot}'%{_unitdir}/mysql.service
 install -D -m 644 %{_sourcedir}/mysql@.service '%{buildroot}'%{_unitdir}/mysql@.service
 install -D -m 644 %{_sourcedir}/mysql.target '%{buildroot}'%{_unitdir}/mysql.target
-ln -s mysql@.service '%{buildroot}'%{_unitdir}/mysql@default.service
 rm -rf '%{buildroot}'%{_sysconfdir}/init.d
 
 # Tmpfiles file to exclude mysql tempfiles that are auto-cleaned up
@@ -658,10 +657,10 @@ getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL databas
 id -Gn mysql | grep '\bmysql\b' &>/dev/null || usermod -g mysql mysql
 getent passwd mysql | cut -d: -f7 | grep '\b/bin/false\b' &>/dev/null || usermod -s /bin/false mysql
 
-%service_add_pre mysql.service mysql@.service mysql.target mysql@default.service
+%service_add_pre mysql.service
 
 %post
-%service_add_post mysql.service mysql@.service mysql.target mysql@default.service
+%service_add_post mysql.service
 # Use %%tmpfiles_create when 13.2 is oldest in support scope
 %{_bindir}/systemd-tmpfiles --create %{_tmpfilesdir}/mysql.conf || :
 
@@ -720,10 +719,10 @@ fi
 exit 0
 
 %preun
-%service_del_preun mysql.service mysql@.service mysql.target mysql@default.service
+%service_del_preun mysql.service
 
 %postun
-%service_del_postun mysql.service mysql@.service mysql.target mysql@default.service
+%service_del_postun mysql.service
 # Remove the /var/adm updatemsg that was hand-created and thus not on filelist
 rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 
@@ -753,7 +752,6 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %{_libexecdir}/mysql/mysql-systemd-helper
 %{_unitdir}/mysql.service
 %{_unitdir}/mysql@.service
-%{_unitdir}/mysql@default.service
 %{_unitdir}/mysql.target
 %{_tmpfilesdir}/mysql.conf
 %{_sbindir}/rcmysql
