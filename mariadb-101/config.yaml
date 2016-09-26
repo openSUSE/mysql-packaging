@@ -6,7 +6,7 @@ build_readline:   1
 build_extras:     1
 extra_provides:   mariadb_101
 builtin_plugins:  partition,csv,heap,aria,pbxt,myisam,myisammrg,xtradb
-pkg-version:      "10.1.16"
+pkg-version:      "10.1.17"
 url:              "https://www.mariadb.org"
 source:           "https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz"
 src-dir:          "mariadb-%{version}"
