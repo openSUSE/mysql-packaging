@@ -25,14 +25,14 @@ Index: scripts/mysqld_safe.sh
  
        # these might have been set in a [mysqld_safe] section of my.cnf
        # they are added to mysqld command line to override settings from my.cnf
-@@ -592,11 +594,17 @@ then
+@@ -597,11 +599,17 @@ then
    if test "$user" != "root" -o $SET_USER = 1
    then
      USER_OPTION="--user=$user"
 +    GROUP_OPTION="--group=$group"
    fi
    # Change the err log to the right user, if it is in use
-   if [ $want_syslog -eq 0 ]; then
+   if [ $want_syslog -eq 0 -a ! -h "$err_log" ]; then
      touch "$err_log"
 -    chown $user "$err_log"
 +    if [ "$user" -a "$group" ]; then
@@ -44,20 +44,20 @@ Index: scripts/mysqld_safe.sh
    fi
    if test -n "$open_files"
    then
-@@ -615,7 +623,12 @@ mysql_unix_port_dir=`dirname $safe_mysql
- if [ ! -d $mysql_unix_port_dir ]
+@@ -621,7 +629,12 @@ if [ ! -d $mysql_unix_port_dir ]
  then
-   mkdir $mysql_unix_port_dir
--  chown $user $mysql_unix_port_dir
-+  if [ "$user" -a "$group" ]; then
-+    chown $user:$group $mysql_unix_port_dir
-+  else
-+    [ "$user" ] && chown $user $mysql_unix_port_dir
-+    [ "$group" ] && chgrp $group $mysql_unix_port_dir
-+  fi
-   chmod 755 $mysql_unix_port_dir
+   if [ ! -h $mysql_unix_port_dir ]; then
+     mkdir $mysql_unix_port_dir
+-    chown $user $mysql_unix_port_dir
++    if [ "$user" -a "$group" ]; then
++      chown $user:$group $mysql_unix_port_dir
++    else
++      [ "$user" ] && chown $user $mysql_unix_port_dir
++      [ "$group" ] && chgrp $group $mysql_unix_port_dir
++    fi
+     chmod 755 $mysql_unix_port_dir
+   fi
  fi
- 
 Index: scripts/mysql_install_db.sh
 ===================================================================
 --- scripts/mysql_install_db.sh.orig
@@ -126,7 +126,7 @@ Index: scripts/CMakeLists.txt
 ===================================================================
 --- scripts/CMakeLists.txt.orig
 +++ scripts/CMakeLists.txt
-@@ -138,6 +138,7 @@ ENDIF()
+@@ -161,6 +161,7 @@ ENDIF()
  
  SET(HOSTNAME "hostname")
  SET(MYSQLD_USER "mysql")
