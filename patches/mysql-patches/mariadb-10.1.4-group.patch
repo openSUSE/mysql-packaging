@@ -9,7 +9,7 @@ Index: scripts/mysqld_safe.sh
 ===================================================================
 --- scripts/mysqld_safe.sh.orig
 +++ scripts/mysqld_safe.sh
-@@ -26,6 +26,7 @@ logging=init
+@@ -28,6 +28,7 @@ logging=init
  want_syslog=0
  syslog_tag=
  user='@MYSQLD_USER@'
@@ -17,7 +17,7 @@ Index: scripts/mysqld_safe.sh
  pid_file=
  err_log=
  err_log_base=
-@@ -284,6 +285,7 @@ parse_arguments() {
+@@ -289,6 +290,7 @@ parse_arguments() {
        --pid[-_]file=*) pid_file="$val" ;;
        --plugin[-_]dir=*) PLUGIN_DIR="$val" ;;
        --user=*) user="$val"; SET_USER=1 ;;
@@ -25,7 +25,7 @@ Index: scripts/mysqld_safe.sh
        --log[-_]basename=*|--hostname=*|--loose[-_]log[-_]basename=*)
          pid_file="$val.pid";
  	err_log_base="$val";
-@@ -710,11 +712,17 @@ then
+@@ -748,11 +750,17 @@ then
    if test "$user" != "root" -o $SET_USER = 1
    then
      USER_OPTION="--user=$user"
@@ -44,8 +44,8 @@ Index: scripts/mysqld_safe.sh
    fi
    if test -n "$open_files"
    then
-@@ -737,7 +745,12 @@ then
-     echo "Fatal error Can't create database directory '$mysql_unix_port'"
+@@ -775,7 +783,12 @@ then
+     log_error "Fatal error Can't create database directory '$mysql_unix_port'"
      exit 1
    fi
 -  chown $user $mysql_unix_port_dir
@@ -96,7 +96,7 @@ Index: scripts/mysql_install_db.sh
        --skip-name-resolve) ip_only=1 ;;
        --verbose) verbose=1 ;; # Obsolete
        --rpm) in_rpm=1 ;;
-@@ -387,7 +393,12 @@ do
+@@ -392,7 +398,12 @@ do
    fi
    if test -n "$user"
    then
@@ -110,7 +110,7 @@ Index: scripts/mysql_install_db.sh
      if test $? -ne 0
      then
        echo "Cannot change ownership of the database directories to the '$user'"
-@@ -402,6 +413,11 @@ then
+@@ -407,6 +418,11 @@ then
    args="$args --user=$user"
  fi
  
@@ -126,7 +126,7 @@ Index: scripts/CMakeLists.txt
 ===================================================================
 --- scripts/CMakeLists.txt.orig
 +++ scripts/CMakeLists.txt
-@@ -135,6 +135,7 @@ ENDIF()
+@@ -134,6 +134,7 @@ ENDIF()
  
  SET(HOSTNAME "hostname")
  SET(MYSQLD_USER "mysql")
