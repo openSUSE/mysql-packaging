@@ -167,8 +167,10 @@ This package only contains the server-side programs.
 Summary:        %{pretty_name} development header files and libraries
 Group:          Development/Libraries/C and C++
 Requires:       glibc-devel
+Requires:       libaio-devel
 Requires:       libmysqlclient%{soname} = %{version}
 Requires:       libmysqlclient_r%{soname} = %{version}
+Requires:       lzo-devel
 Requires:       pkgconfig(libssl)
 Requires:       zlib-devel
 # mysql-devel needs to be provided as some pkgs still depend on it
