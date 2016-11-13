@@ -89,7 +89,7 @@ sleep 1
 
 echo
 echo "Packing configuration..."
-if ! tar -cjf configuration-tweaks.tar.bz2 *.cnf; then
+if ! tar -caf configuration-tweaks.tar.xz *.cnf; then
    echo "Unable to create configuration tarball!"
    exit 4
 fi
