@@ -10,7 +10,7 @@ Index: support-files/my-medium.cnf.sh
 ===================================================================
 --- support-files/my-medium.cnf.sh.orig
 +++ support-files/my-medium.cnf.sh
-@@ -154,3 +154,46 @@ write_buffer = 2M
+@@ -147,3 +147,46 @@ write_buffer = 2M
  
  [mysqlhotcopy]
  interactive-timeout
