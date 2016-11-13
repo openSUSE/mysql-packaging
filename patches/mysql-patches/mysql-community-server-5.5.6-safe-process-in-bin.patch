@@ -9,7 +9,7 @@ Index: mysql-test/lib/My/SafeProcess.pm
 ===================================================================
 --- mysql-test/lib/My/SafeProcess.pm.orig
 +++ mysql-test/lib/My/SafeProcess.pm
-@@ -102,7 +102,7 @@ sub find_bin {
+@@ -105,7 +105,7 @@ sub find_bin {
    if (IS_WIN32PERL or IS_CYGWIN)
    {
      # Use my_safe_process.exe
@@ -18,7 +18,7 @@ Index: mysql-test/lib/My/SafeProcess.pm
  			 "my_safe_process");
      push(@safe_process_cmd, $exe);
  
-@@ -112,7 +112,7 @@ sub find_bin {
+@@ -115,7 +115,7 @@ sub find_bin {
    else
    {
      # Use my_safe_process
