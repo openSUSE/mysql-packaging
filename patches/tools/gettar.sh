@@ -73,7 +73,7 @@ echo
 
 rm -f "$NAME.tar"
 tar -cf "$NAME.tar" --exclude '.git' --transform "s|^\./|$NAME/|" -C "$PATCHROOT" $TO_PACK || exit 1
-rm -f "$NAME.tar.bz2"
-bzip2 -9 "$NAME.tar" || exit 1
+rm -f "$NAME.tar.xz"
+xz -9 "$NAME.tar" || exit 1
 echo "Tarball ready!"
 echo
