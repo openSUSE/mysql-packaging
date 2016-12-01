@@ -1,7 +1,7 @@
 #
 # spec file for package {{pkg-name}}
 #
-# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2016 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -56,9 +56,9 @@ Source4:        suse-test-run
 Source5:        mysql.SuSEfirewall2
 Source7:        README.install
 Source8:        README.SUSE
-Source9:        mysql-patches.tar.bz2
+Source9:        mysql-patches.tar.xz
 Source12:       series
-Source13:       configuration-tweaks.tar.bz2
+Source13:       configuration-tweaks.tar.xz
 Source14:       my.ini
 Source15:       mysql.service
 Source16:       mysql.target
@@ -608,10 +608,10 @@ ln -s mysqlcheck '%{buildroot}'%{_bindir}/mysqloptimize
 # Use our configuration stuff instead of upstream one
 rm -rf '%{buildroot}'%{_sysconfdir}/my.cnf.d
 install -d -m 755 '%{buildroot}'%{_sysconfdir}/my.cnf.d
-bzip2 -cd '%{_sourcedir}'/configuration-tweaks.tar.bz2 | tar -C '%{buildroot}'%{_sysconfdir}/my.cnf.d -xvf -
+tar -C '%{buildroot}'%{_sysconfdir}/my.cnf.d -xvf %{SOURCE13}
 
 # Documentation that was copied to wrong folder
-rm -f  '%{buildroot}'%{_datadir}/doc/* 2> /dev/null || true
+rm -f '%{buildroot}'%{_datadir}/doc/* 2> /dev/null || true
 
 # Unwanted packaged stuff
 rm -rf '%{buildroot}'%{_datadir}/mysql/{solaris,SELinux}

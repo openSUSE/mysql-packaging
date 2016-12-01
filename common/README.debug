@@ -33,9 +33,9 @@ not allways work, eg. if the crash is caused by some race condition).
 Note that this log file may become extremly large, so if you decide to
 attach it whole to the bugzilla, don't forget to
 
-    bzip2 -k /var/lib/mysql/mysqld-query.log
+    xz -k9 /var/lib/mysql/mysqld-query.log
 
-and attach the bzipped file instead.
+and attach the xzipped file instead.
 
 2) Coredumps and Backtraces
 ---------------------------
