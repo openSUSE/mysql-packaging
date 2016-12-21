@@ -17,7 +17,7 @@ Index: scripts/mysqld_multi.sh
  
  $|=1;
  $VER="2.20";
-@@ -162,6 +163,7 @@ sub main
+@@ -163,6 +164,7 @@ sub main
    usage() if (!defined($ARGV[0]) ||
  	      (!($ARGV[0] =~ m/^start$/i) &&
  	       !($ARGV[0] =~ m/^stop$/i) &&
@@ -25,7 +25,7 @@ Index: scripts/mysqld_multi.sh
  	       !($ARGV[0] =~ m/^report$/i)));
  
    if (!$opt_no_log)
-@@ -175,7 +177,7 @@ sub main
+@@ -176,7 +178,7 @@ sub main
      print strftime "%a %b %e %H:%M:%S %Y", localtime;
      print "\n";
    }
@@ -34,7 +34,7 @@ Index: scripts/mysqld_multi.sh
    {
      if (!defined(($mysqld= my_which($opt_mysqld))) && $opt_verbose)
      {
-@@ -184,7 +186,11 @@ sub main
+@@ -185,7 +187,11 @@ sub main
        print "This is OK, if you are using option \"mysqld=...\" in ";
        print "groups [mysqldN] separately for each.\n\n";
      }
@@ -47,7 +47,7 @@ Index: scripts/mysqld_multi.sh
    }
    else
    {
-@@ -344,6 +350,39 @@ sub start_mysqlds()
+@@ -345,6 +351,39 @@ sub start_mysqlds()
      $com= "$mysqld";
      for ($j = 0, $tmp= ""; defined($options[$j]); $j++)
      {
@@ -87,7 +87,7 @@ Index: scripts/mysqld_multi.sh
        if ("--mysqladmin=" eq substr($options[$j], 0, 13))
        {
  	# catch this and ignore
-@@ -408,6 +447,58 @@ sub start_mysqlds()
+@@ -414,6 +453,58 @@ sub start_mysqlds()
  }
  
  ####
@@ -146,7 +146,7 @@ Index: scripts/mysqld_multi.sh
  #### stop multiple servers
  ####
  
-@@ -770,7 +861,7 @@ sub usage
+@@ -788,7 +879,7 @@ sub usage
  $my_progname version $VER by Jani Tolonen
  
  Description:
@@ -155,7 +155,7 @@ Index: scripts/mysqld_multi.sh
  mysqld processes running in different TCP/IP ports and UNIX sockets.
  
  $my_progname can read group [mysqld_multi] from my.cnf file. You may
-@@ -788,16 +879,16 @@ integer starting from 1. These groups sh
+@@ -806,16 +897,16 @@ integer starting from 1. These groups sh
  [mysqld] group, but with those port, socket and any other options
  that are to be used with each separate mysqld process. The number
  in the group name has another function; it can be used for starting,

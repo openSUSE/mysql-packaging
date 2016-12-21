@@ -49,7 +49,7 @@ Summary:        Server part of %{pretty_name}
 License:        SUSE-GPL-2.0-with-FLOSS-exception
 Group:          Productivity/Databases/Servers
 Url:            {{url}}
-Source:         {{source}}
+Source0:        {{source}}
 Source2:        baselibs.conf
 Source3:        README.debug
 Source4:        suse-test-run
@@ -359,7 +359,9 @@ EXTRA_FLAGS="-Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-param
 EXTRA_FLAGS="${EXTRA_FLAGS} -Wno-error"
 export CFLAGS="%{optflags} -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS"
 export CXXFLAGS="$CFLAGS -felide-constructors"
-%cmake -DWITH_SSL=system                                             \
+%cmake  -LA                                                          \
+        -DPLUGIN_TOKUDB=STATIC                                       \
+        -DWITH_SSL=system                                            \
         -DWITH_ASAN=OFF                                              \
         -DWITH_LIBWRAP=ON                                            \
         -DENABLED_PROFILING=ON                                       \

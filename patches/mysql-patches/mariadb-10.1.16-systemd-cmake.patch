@@ -22,7 +22,7 @@ Index: mariadb-10.1.14/cmake/systemd.cmake
            pkg_search_module(LIBSYSTEMD REQUIRED libsystemd libsystemd-daemon)
          ELSE()
            pkg_search_module(LIBSYSTEMD libsystemd libsystemd-daemon)
-@@ -74,7 +74,7 @@ MACRO(CHECK_SYSTEMD)
+@@ -75,7 +75,7 @@ MACRO(CHECK_SYSTEMD)
          UNSET(HAVE_SYSTEMD_SD_NOTIFY)
          UNSET(HAVE_SYSTEMD_SD_NOTIFYF)
          MESSAGE(STATUS "Systemd features not enabled")

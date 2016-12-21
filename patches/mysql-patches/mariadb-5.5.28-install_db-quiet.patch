@@ -9,7 +9,7 @@ Index: scripts/mysql_install_db.sh
 ===================================================================
 --- scripts/mysql_install_db.sh.orig
 +++ scripts/mysql_install_db.sh
-@@ -473,9 +473,10 @@ fi
+@@ -491,9 +491,10 @@ fi
  # the screen.
  if test "$cross_bootstrap" -eq 0 && test -z "$srcdir"
  then
@@ -23,7 +23,7 @@ Index: scripts/mysql_install_db.sh
  
    echo
    echo "PLEASE REMEMBER TO SET A PASSWORD FOR THE MariaDB root USER !"
-@@ -498,10 +499,9 @@ then
+@@ -516,10 +517,9 @@ then
    then
      echo
      echo "You can start the MariaDB daemon with:"
