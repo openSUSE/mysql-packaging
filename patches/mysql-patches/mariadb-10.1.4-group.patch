@@ -71,7 +71,7 @@ Index: scripts/mysql_install_db.sh
  
  All other options are passed to the mysqld program
  
-@@ -138,11 +141,11 @@ parse_arguments()
+@@ -135,11 +141,11 @@ parse_arguments()
        --builddir=*) builddir=`parse_arg "$arg"` ;;
        --srcdir=*)  srcdir=`parse_arg "$arg"` ;;
        --ldata=*|--datadir=*|--data=*) ldata=`parse_arg "$arg"` ;;
