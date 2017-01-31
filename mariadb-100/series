@@ -12,3 +12,4 @@ mariadb-10.0.10-string-overflow.patch
 mariadb-10.0.27-optimizer.patch
 mariadb-10.0.27-mysql-test_optimizer_switch_basic.patch
 mariadb-10.0.27-mysql_install_db-mariadb_dirs.patch
+mariadb-10.0.29-incorrect_list_handling.patch
