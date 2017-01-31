@@ -11,7 +11,6 @@ DEVELPKGS=(
 )
 # These MUST work
 SUPPORTED_PLATFORMS=(                                                          
-    "openSUSE_13.2"
     "openSUSE_Factory"
     "openSUSE_Leap_42.1"
 )
