@@ -9,7 +9,7 @@ Index: scripts/mysqld_safe.sh
 ===================================================================
 --- scripts/mysqld_safe.sh.orig
 +++ scripts/mysqld_safe.sh
-@@ -26,6 +26,7 @@ logging=init
+@@ -27,6 +27,7 @@ logging=init
  want_syslog=0
  syslog_tag=
  user='@MYSQLD_USER@'
@@ -17,7 +17,7 @@ Index: scripts/mysqld_safe.sh
  pid_file=
  err_log=
  err_log_base=
-@@ -201,6 +202,7 @@ parse_arguments() {
+@@ -221,6 +222,7 @@ parse_arguments() {
        --pid[-_]file=*) pid_file="$val" ;;
        --plugin[-_]dir=*) PLUGIN_DIR="$val" ;;
        --user=*) user="$val"; SET_USER=1 ;;
@@ -25,27 +25,16 @@ Index: scripts/mysqld_safe.sh
        --log[-_]basename=*|--hostname=*|--loose[-_]log[-_]basename=*)
          pid_file="$val.pid";
  	err_log_base="$val";
-@@ -619,11 +621,17 @@ then
+@@ -625,6 +627,7 @@ then
    if test "$user" != "root" -o $SET_USER = 1
    then
      USER_OPTION="--user=$user"
 +    GROUP_OPTION="--group=$group"
    fi
-   # Change the err log to the right user, if it is in use
-   if [ $want_syslog -eq 0 ]; then
-     touch "$err_log"
--    chown $user "$err_log"
-+    if [ "$user" -a "$group" ]; then
-+      chown $user:$group $err_log
-+    else
-+      [ "$user" ] && chown $user $err_log
-+      [ "$group" ] && chgrp $group $err_log
-+    fi
-   fi
    if test -n "$open_files"
    then
-@@ -646,7 +654,12 @@ then
-     echo "Fatal error Can't create database directory '$mysql_unix_port'"
+@@ -647,7 +650,12 @@ then
+     log_error "Fatal error Can't create database directory '$mysql_unix_port'"
      exit 1
    fi
 -  chown $user $mysql_unix_port_dir
@@ -96,7 +85,7 @@ Index: scripts/mysql_install_db.sh
        --skip-name-resolve) ip_only=1 ;;
        --verbose) verbose=1 ;; # Obsolete
        --rpm) in_rpm=1 ;;
-@@ -386,7 +392,12 @@ do
+@@ -388,7 +394,12 @@ do
    fi
    if test -n "$user"
    then
@@ -110,7 +99,7 @@ Index: scripts/mysql_install_db.sh
      if test $? -ne 0
      then
        echo "Cannot change ownership of the database directories to the '$user'"
-@@ -401,6 +412,11 @@ then
+@@ -403,6 +414,11 @@ then
    args="$args --user=$user"
  fi
  
