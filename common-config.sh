@@ -11,13 +11,14 @@ DEVELPKGS=(
 )
 # These MUST work
 SUPPORTED_PLATFORMS=(                                                          
-    "openSUSE_Factory"
+    "openSUSE_Tumbleweed"
     "openSUSE_Leap_42.1"
+    "openSUSE_Leap_42.2"
 )
 # These might work and it is up to packager
 # to decide if something needs fixing
 MAYBE_WORKING_PLATFORMS=(
-    "SLE_12"
+    "SLE_12_SP2"
 )
 
 # Color definition
