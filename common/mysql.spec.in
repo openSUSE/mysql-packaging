@@ -99,7 +99,7 @@ BuildRequires:  sqlite
 BuildRequires:  tcpd-devel
 BuildRequires:  time
 BuildRequires:  zlib-devel
-# Do not ever switch away from pkgconfig(libsystemd) BuildRequires: systemd/systemd-devel causes build cycles
+# Do not ever switch away from pkgconfig(libsystemd) BuildRequires; systemd/systemd-devel causes build cycles
 BuildRequires:  pkgconfig(libsystemd)
 # required by rcmysql
 Requires:       %{name}-client
