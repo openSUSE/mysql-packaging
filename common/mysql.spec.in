@@ -780,6 +780,7 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %dir %{_datadir}/mysql/policy/selinux
 %{_datadir}/mysql/policy/selinux/README
 %{_datadir}/mysql/policy/selinux/mariadb-server.*
+%{_datadir}/mysql/policy/selinux/mariadb.te
 %dir %{_datadir}/mysql/systemd
 %{_datadir}/mysql/systemd/mariadb.service
 %{_datadir}/mysql/systemd/mariadb@.service
