@@ -5,6 +5,7 @@ DEVELPKGS=(
     "mariadb"                                                                  
     "mariadb-100"                                                              
     "mariadb-101"                                                              
+    "mariadb-102"
     "mysql-community-server"
     "mysql-community-server-56"                                                
     "mysql-community-server-57"                                                

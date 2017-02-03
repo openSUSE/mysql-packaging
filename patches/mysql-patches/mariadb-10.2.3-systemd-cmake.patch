@@ -1,0 +1,33 @@
+PATCH-P1-FIX-HACK: Allow more case-insensitive values for 'WITH_SYSTEMD'
+
+Remove 'IF(WITH_SYSTEMD STREQUAL "yes")' and use 'IF(WITH_SYSTEMD)'
+expression in order to allow more case-insensitive values to be used
+here (1, ON, YES, TRUE or Y).
+
+Maintainer: Kristyna Streitova <kstreitova@suse.cz>
+
+Index: mariadb-10.2.3/cmake/systemd.cmake
+===================================================================
+--- mariadb-10.2.3.orig/cmake/systemd.cmake
++++ mariadb-10.2.3/cmake/systemd.cmake
+@@ -19,9 +19,9 @@ INCLUDE(FindPkgConfig)
+ MACRO(CHECK_SYSTEMD)
+   IF(UNIX)
+     SET(WITH_SYSTEMD "auto" CACHE STRING "Compile with systemd socket activation and notification")
+-    IF(WITH_SYSTEMD STREQUAL "yes" OR WITH_SYSTEMD STREQUAL "auto")
++    IF(WITH_SYSTEMD OR WITH_SYSTEMD STREQUAL "auto")
+       IF(PKG_CONFIG_FOUND)
+-        IF(WITH_SYSTEMD STREQUAL "yes")
++        IF(WITH_SYSTEMD)
+           pkg_search_module(LIBSYSTEMD REQUIRED libsystemd libsystemd-daemon)
+         ELSE()
+           pkg_search_module(LIBSYSTEMD libsystemd libsystemd-daemon)
+@@ -69,7 +69,7 @@ MACRO(CHECK_SYSTEMD)
+         UNSET(HAVE_SYSTEMD_SD_NOTIFY)
+         UNSET(HAVE_SYSTEMD_SD_NOTIFYF)
+         MESSAGE_ONCE(systemd "Systemd features not enabled")
+-        IF(WITH_SYSTEMD STREQUAL "yes")
++        IF(WITH_SYSTEMD)
+           MESSAGE(FATAL_ERROR "Requested WITH_SYSTEMD=YES however no dependencies installed/found")
+         ENDIF()
+       ENDIF()

@@ -1,0 +1,13 @@
+mysql-community-server-5.1.45-multi-configuration.patch
+mysql-community-server-5.1.46-logrotate.patch
+mariadb-5.5.28-install_db-quiet.patch
+mariadb-10.1.1-mysqld_multi-features.patch
+mariadb-5.2.3-cnf.patch
+mysql-community-server-5.5.6-safe-process-in-bin.patch
+mariadb-10.2.3-group.patch
+mariadb-10.1.12-deharcode-libdir.patch
+mariadb-10.0.15-logrotate-su.patch
+mariadb-10.1.12-fortify-and-O.patch
+mariadb-10.2.3-systemd-cmake.patch
+mariadb-10.2.3-mysql_install_db-mariadb_dirs.patch
+mariadb-10.1.20-incorrect_list_handling.patch
