@@ -27,13 +27,15 @@ checkout_package() {
     # If the branch already exist, recurse and quit
     if grep -q 'branch target package already exists:' $_branchstate ; then
         _prjname=`cat $_branchstate | grep "branch target package already exists" | sed 's/^.*branch target package already exists: //'`
-        osc -A https://api.opensuse.org rdelete -f $_prjname -m "Replacing with new checkout" &> /dev/null
+        osc -A https://api.opensuse.org rdelete -f $_prjname \
+            -m "Replacing with new checkout" &> /dev/null \
+            || { echo -e "${RED}Failed to remove $_prjname${NC}"; exit 1; }
         checkout_package $1 $2
         return
     elif grep -q 'A working copy of the branched package can be checked out with' $_branchstate ; then
         _prjname="`cat $_branchstate | tail -n1 | sed 's/osc co //'`"
     else
-	cat $_branchstate
+        cat $_branchstate
         echo -e "${RED}ERROR: branching of package $1/$2 failed${NC}"
         exit 1
     fi
