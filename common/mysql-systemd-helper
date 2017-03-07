@@ -52,8 +52,9 @@ read_config() {
 mysql_install() {
 	if [[ ! -d "$datadir/mysql" ]]; then
 		echo "Creating MySQL privilege database... "
-		mysql_install_db --user="$mysql_daemon_user" --datadir="$datadir" || \
-		die "Creation of MySQL databse in $datadir failed"
+		mysql_install_db --user="$mysql_daemon_user" --datadir="$datadir" \
+			"$MYSQLD_EXTRA_INSTALL_OPTS" || \
+			die "Creation of MySQL databse in $datadir failed"
 		echo -n "$MYSQLVER" > "$datadir"/mysql_upgrade_info
 	fi
 }
@@ -104,7 +105,8 @@ mysql_upgrade() {
 			$ignore_db_dir \
 			--log-error="$protected/log_upgrade_run" \
 			--socket="$protected/mysql.sock" \
-			--pid-file="$protected/mysqld.pid" &
+			--pid-file="$protected/mysqld.pid" \
+			"$MYSQLD_EXTRA_UPGRADE_OPTS" &
 
 		mysql_wait "$protected/mysql.sock" || die "MySQL didn't start, can't continue"
 
@@ -161,7 +163,8 @@ mysql_start() {
 	exec /usr/sbin/mysqld \
 		--defaults-file="$config" \
 		$ignore_db_dir \
-		--user="$mysql_daemon_user"
+		--user="$mysql_daemon_user" \
+		"$MYSQLD_EXTRA_START_OPTS"
 }
 
 # We rely on output in english at some points

@@ -64,6 +64,7 @@ Source15:       mysql.service
 Source16:       mysql.target
 Source17:       mysql-systemd-helper
 Source18:       mysql@.service
+Source19:       mysql.sysconfig
 BuildRequires:  bison
 BuildRequires:  cmake
 BuildRequires:  dos2unix
@@ -106,6 +107,7 @@ Requires:       %{name}-client
 Requires:       %{name}-errormessages = %{version}
 Requires:       perl-base
 Requires(pre):  pwdutils
+Requires(post): %fillup_prereq
 Recommends:     logrotate
 Conflicts:      otherproviders(mariadb-server)
 Conflicts:      otherproviders(mysql)
@@ -553,6 +555,9 @@ install -D -m 644 %{_sourcedir}/mysql@.service '%{buildroot}'%{_unitdir}/mysql@.
 install -D -m 644 %{_sourcedir}/mysql.target '%{buildroot}'%{_unitdir}/mysql.target
 rm -rf '%{buildroot}'%{_sysconfdir}/init.d
 
+# sysconfig
+install -D -m 644 %{SOURCE19} %{buildroot}%{_localstatedir}/adm/fillup-templates/sysconfig.mysql
+
 # Tmpfiles file to exclude mysql tempfiles that are auto-cleaned up
 # bnc#852451
 mkdir -p %{buildroot}%{_tmpfilesdir}
@@ -663,6 +668,7 @@ getent passwd mysql | cut -d: -f7 | grep '\b/bin/false\b' &>/dev/null || usermod
 %service_add_post mysql.service
 # Use %%tmpfiles_create when 13.2 is oldest in support scope
 %{_bindir}/systemd-tmpfiles --create %{_tmpfilesdir}/mysql.conf || :
+%{fillup_only -n mysql}
 
 # SLE11 Migration support
 for i in protected tmp; do
@@ -785,6 +791,7 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %{_datadir}/mysql/systemd/mariadb.service
 %{_datadir}/mysql/systemd/mariadb@.service
 %{_datadir}/mysql/systemd/use_galera_new_cluster.conf
+%{_localstatedir}/adm/fillup-templates/sysconfig.mysql
 %endif
 
 

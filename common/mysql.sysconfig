@@ -1,0 +1,24 @@
+## Path:            System/Management/Databases
+## Description:     Option to be passed to the daemon
+## ServiceReload:   mysql
+#
+## Type:            string
+## Default:         ""
+#
+# Options to pass to the daemon during startup
+#
+MYSQLD_EXTRA_START_OPTS=""
+
+## Type:            string
+## Default:         ""
+#
+# Options to pass to the daemon during install
+#
+MYSQLD_EXTRA_INSTALL_OPTS=""
+
+## Type:            string
+## Default:         ""
+#
+# Options to pass to the daemon during upgrade
+#
+MYSQLD_EXTRA_UPGRADE_OPTS=""
