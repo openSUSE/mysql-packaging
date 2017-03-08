@@ -1,7 +1,7 @@
 #
 # spec file for package {{pkg-name}}
 #
-# Copyright (c) 2016 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2017 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -357,7 +357,9 @@ EXTRA_FLAGS="-Wno-unused-but-set-variable -fno-strict-aliasing -Wno-unused-param
 EXTRA_FLAGS="${EXTRA_FLAGS} -Wno-error"
 export CFLAGS="%{optflags} -DOPENSSL_LOAD_CONF -DPIC -fPIC -DFORCE_INIT_OF_VARS $EXTRA_FLAGS"
 export CXXFLAGS="$CFLAGS -felide-constructors"
-%cmake -DWITH_SSL=system                                             \
+%cmake  -LA                                                          \
+        -PLUGIN_TOKUDB=STATIC                                        \
+        -DWITH_SSL=system                                            \
         -DWITH_ASAN=OFF                                              \
         -DWITH_LIBWRAP=ON                                            \
         -DENABLED_PROFILING=ON                                       \
