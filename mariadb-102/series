@@ -1,5 +1,5 @@
 mysql-community-server-5.1.45-multi-configuration.patch
-mysql-community-server-5.1.46-logrotate.patch
+mariadb-10.2.4-logrotate.patch
 mariadb-5.5.28-install_db-quiet.patch
 mariadb-10.1.1-mysqld_multi-features.patch
 mariadb-5.2.3-cnf.patch
