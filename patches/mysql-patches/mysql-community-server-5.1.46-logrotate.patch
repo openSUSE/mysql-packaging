@@ -18,10 +18,10 @@ Index: support-files/mysql-log-rotate.sh
          # create 600 mysql mysql
          notifempty
  	daily
-@@ -31,6 +31,14 @@
- 	   @bindir@/mysqladmin ping &>/dev/null
+@@ -32,6 +32,14 @@
  	then
- 	   @bindir@/mysqladmin flush-logs
+ 	   @bindir@/mysqladmin --local flush-error-log \
+               flush-engine-log flush-general-log flush-slow-log
 +	   ret=$?
 +	   if test $ret -ne 0
 +	   then
