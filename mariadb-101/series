@@ -10,4 +10,3 @@ mariadb-10.0.15-logrotate-su.patch
 mariadb-10.1.12-fortify-and-O.patch
 mariadb-10.1.16-systemd-cmake.patch
 mariadb-10.1.18-mysql_install_db-mariadb_dirs.patch
-mariadb-10.1.20-incorrect_list_handling.patch
