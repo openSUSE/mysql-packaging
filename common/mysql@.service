@@ -7,6 +7,7 @@ After=basic.target network.target
 [Service]
 Restart=on-failure
 Type=simple
+EnvironmentFile=-/etc/sysconfig/mysql
 ExecStartPre=/usr/lib/mysql/mysql-systemd-helper  install %i
 ExecStartPre=/usr/lib/mysql/mysql-systemd-helper  upgrade %i
 ExecStart=/usr/lib/mysql/mysql-systemd-helper     start   %i
