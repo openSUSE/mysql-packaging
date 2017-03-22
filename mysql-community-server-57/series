@@ -5,3 +5,4 @@ mysql-community-server-5.1.51-mysql_config.patch
 mysql-community-server-5.7.7-upgrade-exit-status.patch
 mysql-community-server-5.6.12-deharcode-libdir.patch
 mysql-community-server-5.6.12-logrotate-su.patch
+mysql-community-server-5.7.17-CVE-2016-5483.patch
