@@ -167,6 +167,9 @@ mysql_start() {
 # We rely on output in english at some points
 LC_ALL=C
 
+# set the default umask bsc#1020976
+umask 077
+
 INSTANCE="$2"
 read_config
 mkdir -p /var/run/mysql
