@@ -542,7 +542,7 @@ for i in "${DOCS[@]}"; do
 	install -m 644 "${i}" "${DOCDIR}" || true
 done
 # Default configuration file
-install -m 660 %{SOURCE14} %{buildroot}%{_sysconfdir}/my.cnf
+install -m 664 %{SOURCE14} %{buildroot}%{_sysconfdir}/my.cnf
 
 # Systemd/initscript
 install -D -m 755 %{_sourcedir}/mysql-systemd-helper '%{buildroot}'%{_libexecdir}/mysql/mysql-systemd-helper
@@ -742,9 +742,9 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 
 %files -f mysql.files
 %defattr(-, root, root)
-%config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/my.cnf
-%dir %attr(0750, root, mysql) %{_sysconfdir}/my.cnf.d
-%config(noreplace) %attr(0640, root, mysql) %{_sysconfdir}/my.cnf.d/*
+%config(noreplace) %attr(0644, root, mysql) %{_sysconfdir}/my.cnf
+%dir %attr(0755, root, mysql) %{_sysconfdir}/my.cnf.d
+%config(noreplace) %attr(0644, root, mysql) %{_sysconfdir}/my.cnf.d/*
 %config %{_sysconfdir}/logrotate.d/%{name}
 %doc %{_defaultdocdir}/%{name}
 %dir %{_libexecdir}/mysql
