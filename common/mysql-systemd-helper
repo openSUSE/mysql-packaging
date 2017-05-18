@@ -173,6 +173,8 @@ umask 077
 INSTANCE="$2"
 read_config
 mkdir -p /var/run/mysql
+# fix permissions for /var/run/mysql (bsc#1038740)
+chmod 755 /var/run/mysql
 chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" /var/run/mysql
 case "$1" in
 	install)
