@@ -12,10 +12,10 @@ read_config() {
 	mysql_daemon_group=mysql
 	if [[ -z "$INSTANCE" ]]; then
 		datadir=/var/lib/mysql
-		socket="/var/run/mysql/mysql.sock"
+		socket="/run/mysql/mysql.sock"
 	else
 		datadir="/var/lib/mysql-$INSTANCE"
-		socket="/var/run/mysql/mysql.${INSTANCE}.sock"
+		socket="/run/mysql/mysql.${INSTANCE}.sock"
 	fi
 
 	# Read options - important for multi setup
@@ -75,7 +75,7 @@ mysql_upgrade() {
 		echo "Trying to run upgrade of MySQL databases..."
 
 		# Check whether upgrade process is not already running
-		protected="$(cat "/var/run/mysql/protecteddir.$INSTANCE" 2> /dev/null)"
+		protected="$(cat "/run/mysql/protecteddir.$INSTANCE" 2> /dev/null)"
 		if [[ -n "$protected" && -d "$protected" ]]; then
 			pid="$(cat "$protected/mysqld.pid" 2> /dev/null)"
 			if [[ "$pid" && -d "/proc/$pid" ]] &&
@@ -84,10 +84,10 @@ mysql_upgrade() {
 			else
 				echo "Stale files from previous upgrade detected, cleaned them up"
 				rm -rf "$protected"
-				rm -f "/var/run/mysql/protecteddir.$INSTANCE"
+				rm -f "/run/mysql/protecteddir.$INSTANCE"
 			fi
 		fi
-		protected="$(mktemp -d -p /var/tmp mysql-protected.XXXXXX | tee "/var/run/mysql/protecteddir.$INSTANCE")"
+		protected="$(mktemp -d -p /var/tmp mysql-protected.XXXXXX | tee "/run/mysql/protecteddir.$INSTANCE")"
 		[ -n "$protected" ] || die "Can't create a tmp dir '$protected'"
 
 		# Create a secure tmp dir
@@ -134,7 +134,7 @@ mysql_upgrade() {
 		# Cleanup
 		echo "Final cleanup"
 		if [[ -z "$up_ok" ]]; then
-			rm -rf "$protected" "/var/run/mysql/protecteddir.$INSTANCE"
+			rm -rf "$protected" "/run/mysql/protecteddir.$INSTANCE"
 		else 
 			die "Something failed during upgrade, please check logs"
 		fi
@@ -172,10 +172,10 @@ umask 077
 
 INSTANCE="$2"
 read_config
-mkdir -p /var/run/mysql
-# fix permissions for /var/run/mysql (bsc#1038740)
-chmod 755 /var/run/mysql
-chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" /var/run/mysql
+mkdir -p /run/mysql
+# fix permissions for /run/mysql (bsc#1038740)
+chmod 755 /run/mysql
+chown --no-dereference "$mysql_daemon_user:$mysql_daemon_group" /run/mysql
 case "$1" in
 	install)
 		mysql_install ;;

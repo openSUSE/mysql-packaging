@@ -35,7 +35,7 @@ made some manual adjustments to your /etc/my.cnf, try to merge this file with
 
 File locations changes:
  - MySQL socket file and pid file were moved from /var/lib/mysql to more
-   reasonable location ( /var/run/mysql ) by default.
+   reasonable location ( /run/mysql ) by default.
  - MySQL log files are in /var/log/mysql.
 
 3) BerkeleyDB:
