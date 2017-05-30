@@ -16,7 +16,7 @@ replace_source_tarball(){
 	find . -regex '\./\(mariadb\|mysql\)-[0-9.]+\.tar\.\(xz\|gz\|bz2\)' -delete
 
     echo "Downloading the new source tarball..."
-    if `osc -A https://api.opensuse.org service localrun download_files` ; then
+    if osc -A https://api.opensuse.org service localrun download_files; then
         echo "    The new source tarball was downloaded"
     else
         echo -e "${RED}Download failed! ${NC}"

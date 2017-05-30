@@ -1,0 +1,21 @@
+PATCH-P1-FIX-HACK: Disable attributes globally to avoid GCC7 optimizing away null checks
+
+See boo#1041525.
+Source of this patch:
+https://jira.mariadb.org/browse/MDEV-12358?focusedCommentId=94692&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-94692
+
+Maintainer: Fabian Vogt <fvogt@suse.com>
+
+Index: mariadb-10.1.22/storage/xtradb/include/univ.i
+===================================================================
+--- mariadb-10.1.22.orig/storage/xtradb/include/univ.i
++++ mariadb-10.1.22/storage/xtradb/include/univ.i
+@@ -261,7 +261,7 @@ operations (very slow); also UNIV_DEBUG
+ that are only referenced from within InnoDB, not from MySQL. We disable the
+ GCC visibility directive on all Sun operating systems because there is no
+ easy way to get it to work. See http://bugs.mysql.com/bug.php?id=52263. */
+-#define MY_ATTRIBUTE __attribute__
++#define MY_ATTRIBUTE(X) /* empty */
+ #if defined(__GNUC__) && (__GNUC__ >= 4) && !defined(sun) || defined(__INTEL_COMPILER)
+ # define UNIV_INTERN MY_ATTRIBUTE((visibility ("hidden")))
+ #else
