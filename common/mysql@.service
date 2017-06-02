@@ -5,7 +5,7 @@ PartOf=mysql.target
 After=basic.target network.target
 
 [Service]
-Restart=on-failure
+Restart=on-abort
 Type=simple
 ExecStartPre=/usr/lib/mysql/mysql-systemd-helper  install %i
 ExecStartPre=/usr/lib/mysql/mysql-systemd-helper  upgrade %i
