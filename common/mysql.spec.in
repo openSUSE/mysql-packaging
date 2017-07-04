@@ -482,7 +482,7 @@ rm -f %{buildroot}'%{_unitdir}/mariadb@bootstrap.service.d/use_galera_new_cluste
 %endif
 
 # Generate various filelists
-filelist innochecksum my_print_defaults myisam_ftdump myisamchk myisamlog myisampack mysql_fix_extensions mysql_fix_privilege_tables mysql_ssl_rsa_setup mysql_install_db mysql_secure_installation mysql_upgrade mysqlbug mysqld mysqld_multi mysqld_safe mysqlbinlog mysqldumpslow mysqlmanager mroonga resolve_stack_dump resolveip {m,}aria_chk {m,}aria_dump_log {m,}aria_ftdump {m,}aria_pack {m,}aria_read_log xtstat tokuft_logprint tokuftdump >mysql.files
+filelist galera_new_cluster galera_recovery innochecksum mariadb-service-convert my_print_defaults myisam_ftdump myisamchk myisamlog myisampack mysql_fix_extensions mysql_fix_privilege_tables mysql_ssl_rsa_setup mysql_install_db mysql_secure_installation mysql_upgrade mysqlbug mysqld mysqld_multi mysqld_safe mysqlbinlog mysqldumpslow mysqlmanager mroonga resolve_stack_dump resolveip {m,}aria_chk {m,}aria_dump_log {m,}aria_ftdump {m,}aria_pack {m,}aria_read_log xtstat tokuft_logprint tokuft_logdump tokuftdump >mysql.files
 
 filelist mysql mysqladmin mysqlcheck mysqldump mysqlimport mysqlshow mysql_config_editor mysqld_safe_helper >mysql-client.files
 # The dialog stuff is mariadb only
@@ -504,7 +504,7 @@ filelist mysqlslap >mysql-bench.files
 
 filelist mysql_client_test mysql_client_test_embedded mysql_waitpid mysqltest mysqltest_embedded >mysql-test.files
 
-filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded %{name}_mytop hsclient %{_bindir}/wsrep* %{_datadir}/mysql/wsrep_notify >mysql-tools.files
+filelist msql2mysql mysql_plugin mysql_convert_table_format mysql_find_rows mysql_setpermission mysql_tzinfo_to_sql mysql_zap mysqlaccess mysqlhotcopy perror replace mysql_embedded %{name}_mytop hsclient wsrep_sst_common wsrep_sst_mariabackup wsrep_sst_mysqldump wsrep_sst_rsync wsrep_sst_xtrabackup-v2 wsrep_sst_xtrabackup %{_datadir}/mysql/wsrep_notify >mysql-tools.files
 
 filelist ndbd ndbmtd ndbd_redo_log_reader >mysql-ndb-storage.files
 
@@ -773,6 +773,8 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %{_bindir}/galera_new_cluster
 %{_bindir}/galera_recovery
 %{_bindir}/mariadb-service-convert
+%{_bindir}/mariabackup
+%{_bindir}/mbstream
 %dir %{_datadir}/mysql/policy
 %dir %{_datadir}/mysql/policy/apparmor
 %{_datadir}/mysql/policy/apparmor/README
@@ -830,6 +832,9 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %files test -f mysql-test.files
 %defattr(-, root, root)
 %{_bindir}/my_safe_process
+%if "%{extra_provides}" == "mariadb_101"
+%{_mandir}/man1/my_safe_process.1*
+%endif
 %{_mandir}/man1/mysql-test-run.pl.1*
 %{_mandir}/man1/mysql-stress-test.pl.1*
 %{_datadir}/mysql-test/valgrind.supp
