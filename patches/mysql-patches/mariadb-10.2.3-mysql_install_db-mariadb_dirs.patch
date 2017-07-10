@@ -5,11 +5,11 @@ when a user uses "--basedir" option [bsc#1006539]
 
 Maintainer: Kristyna Streitova <kstreitova@suse.com>
 
-Index: mariadb-10.2.3/scripts/mysql_install_db.sh
+Index: mariadb-10.2.4/scripts/mysql_install_db.sh
 ===================================================================
---- mariadb-10.2.3.orig/scripts/mysql_install_db.sh
-+++ mariadb-10.2.3/scripts/mysql_install_db.sh
-@@ -289,16 +289,16 @@ then
+--- mariadb-10.2.4.orig/scripts/mysql_install_db.sh
++++ mariadb-10.2.4/scripts/mysql_install_db.sh
+@@ -318,17 +318,17 @@ then
      cannot_find_file mysqld $basedir/libexec $basedir/sbin $basedir/bin
      exit 1
    fi
@@ -21,9 +21,10 @@ Index: mariadb-10.2.3/scripts/mysql_install_db.sh
 +    cannot_find_file errmsg.sys $basedir/share/english $basedir/share/mysql/english $basedir/share/mariadb/english
      exit 1
    fi
--  pkgdatadir=`find_in_basedir --dir fill_help_tables.sql share share/mysql`
-+  pkgdatadir=`find_in_basedir --dir fill_help_tables.sql share share/mysql share/mariadb`
-   if test -z "$pkgdatadir"
+-  srcpkgdatadir=`find_in_basedir --dir fill_help_tables.sql share share/mysql`
++  srcpkgdatadir=`find_in_basedir --dir fill_help_tables.sql share share/mysql share/mariadb`
+   buildpkgdatadir=$srcpkgdatadir
+   if test -z "$srcpkgdatadir"
    then
 -    cannot_find_file fill_help_tables.sql $basedir/share $basedir/share/mysql
 +    cannot_find_file fill_help_tables.sql $basedir/share $basedir/share/mysql $basedir/share/mariadb

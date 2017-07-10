@@ -9,14 +9,14 @@ Index: CMakeLists.txt
 ===================================================================
 --- CMakeLists.txt.orig
 +++ CMakeLists.txt
-@@ -220,7 +220,6 @@ IF(SECURITY_HARDENED)
+@@ -218,7 +218,6 @@ IF(SECURITY_HARDENED)
    MY_CHECK_AND_SET_COMPILER_FLAG("-pie -fPIC")
    MY_CHECK_AND_SET_COMPILER_FLAG("-Wl,-z,relro,-z,now")
    MY_CHECK_AND_SET_COMPILER_FLAG("-fstack-protector --param=ssp-buffer-size=4")
 -  MY_CHECK_AND_SET_COMPILER_FLAG("-D_FORTIFY_SOURCE=2" RELEASE RELWITHDEBINFO)
  ENDIF()
  
- # Always enable debug sync for debug builds.
+ OPTION(ENABLE_DEBUG_SYNC "Enable debug sync (debug builds only)" ON) 
 Index: storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake
 ===================================================================
 --- storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake.orig
