@@ -641,7 +641,7 @@ cd mysql-test
 # client does not require server and needs the user too
 
 %pre client
-getent group mysql >/dev/null || groupadd -r mysql
+getent group mysql >/dev/null || groupadd -r mysql -g 600
 getent passwd mysql >/dev/null || useradd -r -o -g mysql -u 60 -c "MySQL database admin" \
                   -s /bin/false -d %{_localstatedir}/lib/mysql mysql
 # if mysql user is not in mysql group or if mysql user doesn't have '/bin/false' shell set, do so
