@@ -15,9 +15,9 @@ Index: scripts/mysqld_safe.sh
  user='@MYSQLD_USER@'
 +group='@MYSQLD_GROUP@'
  pid_file=
+ pid_file_append=
  err_log=
- 
-@@ -210,6 +211,7 @@ parse_arguments() {
+@@ -220,6 +221,7 @@ parse_arguments() {
        --pid-file=*) pid_file="$val" ;;
        --plugin-dir=*) PLUGIN_DIR="$val" ;;
        --user=*) user="$val"; SET_USER=1 ;;
@@ -25,7 +25,7 @@ Index: scripts/mysqld_safe.sh
  
        # these might have been set in a [mysqld_safe] section of my.cnf
        # they are added to mysqld command line to override settings from my.cnf
-@@ -620,7 +622,15 @@ if [ $logging = "file" -o $logging = "bo
+@@ -626,7 +628,15 @@ if [ $logging = "file" -o $logging = "bo
            (
              umask 0137
              set -o noclobber
@@ -42,7 +42,7 @@ Index: scripts/mysqld_safe.sh
            ) ;;
          *) ;;
        esac
-@@ -658,6 +668,7 @@ then
+@@ -664,6 +674,7 @@ then
    if test "$user" != "root" -o $SET_USER = 1
    then
      USER_OPTION="--user=$user"
@@ -50,7 +50,7 @@ Index: scripts/mysqld_safe.sh
    fi
    if test -n "$open_files"
    then
-@@ -866,7 +877,15 @@ do
+@@ -875,7 +886,15 @@ do
            (
              umask 0137
              set -o noclobber
@@ -135,7 +135,7 @@ Index: scripts/CMakeLists.txt
 ===================================================================
 --- scripts/CMakeLists.txt.orig
 +++ scripts/CMakeLists.txt
-@@ -167,6 +167,7 @@ ENDIF()
+@@ -173,6 +173,7 @@ ENDIF()
  
  SET(HOSTNAME "hostname")
  SET(MYSQLD_USER "mysql")
