@@ -98,6 +98,7 @@ BuildRequires:  pwdutils
 BuildRequires:  sqlite
 BuildRequires:  tcpd-devel
 BuildRequires:  time
+BuildRequires:  unixODBC-devel
 BuildRequires:  zlib-devel
 # Do not ever switch away from pkgconfig(libsystemd) BuildRequires; systemd/systemd-devel causes build cycles
 BuildRequires:  pkgconfig(libsystemd)
