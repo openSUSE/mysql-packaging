@@ -670,14 +670,14 @@ for i in protected tmp; do
     rmdir "$datadir"/.$i 2>/dev/null || :
 done
 # Remove any messages that could've been in place about the upgrade
-rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
+rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}-something
 
 # During package rename (migration maria->mysql-community-server),
 # there might be config file move and we get rpmsave that we should keep
 if [ -f %{_sysconfdir}/my.cnf.rpmsave ]; then
     mv %{_sysconfdir}/my.cnf{,.rpmnew}
     mv %{_sysconfdir}/my.cnf{.rpmsave,}
-    cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+    cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}-something << EOF
 
 WARNING: %{_sysconfdir}/my.cnf.rpmsave file detected!
 
@@ -696,7 +696,7 @@ if [ -d "$datadir/mysql" ]; then
 fi
 if [ \! -f "$datadir/mysql_upgrade_info" ]; then
     if [ $1 -eq 1 ]; then
-        cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+        cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}-something << EOF
 
 %(cat %{_sourcedir}/README.install)
 
@@ -706,7 +706,7 @@ else
     MYSQLVER="`echo %{version} | sed 's|\.[0-9]\+$||'`"
     if [ -f "$datadir/mysql_upgrade_info" ] && \
         [ -z "`grep "^$MYSQLVER" "$datadir/mysql_upgrade_info" 2> /dev/null`" ]; then
-    cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release} << EOF
+    cat >> %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}-something << EOF
 
 WARNING: You are upgrading from different stable version of MySQL!
 
@@ -725,7 +725,7 @@ exit 0
 %postun
 %service_del_postun mysql.service
 # Remove the /var/adm updatemsg that was hand-created and thus not on filelist
-rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
+rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}-something
 
 %post -n lib%{libname}%{soname} -p /sbin/ldconfig
 
@@ -767,7 +767,7 @@ rm -f %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
 %config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/mysql
 %dir %{_libdir}/mysql/plugin
 %{_libdir}/mysql/plugin/[!d]*.so
-%ghost %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}
+%ghost %{_localstatedir}/adm/update-messages/%{name}-%{version}-%{release}-something
 %dir %attr(0750, mysql, mysql) /var/lib/mysql-files
 # Pack files for mariadb_101
 %if "%{extra_provides}" == "mariadb_101"
