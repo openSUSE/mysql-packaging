@@ -303,6 +303,7 @@ To run the testsuite, run %{_datadir}/mysql-test/suse-test-run.
 Summary:        %{pretty_name} tools
 Group:          Productivity/Databases/Servers
 Requires:       perl-DBD-mysql
+Requires:       socat
 Conflicts:      otherproviders(mysql-tools)
 # make sure this package is installed when updating from 10.2 and older
 Provides:       mysql-client:%{_bindir}/perror
