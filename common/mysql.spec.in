@@ -181,13 +181,12 @@ This package contains the development header files and libraries
 necessary to develop client applications for %{pretty_name}.
 
 %package -n libmysqld%{soname}
-Summary:        %{pretty_name} embedded server development files
-Group:          Development/Libraries/C and C++
+Summary:        %{pretty_name} embedded server
+Group:          System/Libraries
 Requires:       %{name}-errormessages = %{version}
 
 %description -n libmysqld%{soname}
-This package contains the development header files and libraries
-for developing applications that embed the %{pretty_name}.
+This package contains the embedded MySQL engine.
 
 %package -n libmysqld-devel
 Summary:        %{pretty_name} embedded server development files
@@ -203,16 +202,16 @@ for developing applications that embed the %{pretty_name}.
 %endif
 
 %package -n lib%{libname}%{soname}
-Summary:        Shared Libraries for %{pretty_name}
-Group:          Development/Libraries/Other
+Summary:        Shared libraries for %{pretty_name}
+Group:          System/Libraries
 
 %description -n lib%{libname}%{soname}
 This package contains the shared libraries (.so) which certain
 languages and applications need to dynamically load and use %{pretty_name}.
 
 %package -n lib%{libname}_r%{soname}
-Summary:        Shared Libraries for %{pretty_name}
-Group:          Development/Libraries/Other
+Summary:        Shared libraries for %{pretty_name}
+Group:          System/Libraries
 Requires:       lib%{libname}%{soname}
 
 %description -n lib%{libname}_r%{soname}
@@ -238,12 +237,13 @@ Obsoletes:      mysql-client < %{version}
 This package contains the standard clients for %{pretty_name}.
 
 %package errormessages
-Summary:        MySQL Community Server development header files and libraries
-Group:          Development/Libraries/C and C++
+Summary:        MySQL Community Server error message translations
+Group:          System/Localization
+BuildArch:      noarch
 
 %description errormessages
 This package provides the translated error messages for the standalone
-server daemon as well as the embedded server
+server daemon as well as the embedded server.
 
 %package bench
 Summary:        Benchmarks for %{pretty_name}
