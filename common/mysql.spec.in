@@ -139,7 +139,11 @@ BuildRequires:  readline5-devel
 BuildRequires:  libedit-devel
 %endif
 %if 0%{with_oqgraph} > 0 || 0%{with_cassandra} > 0
+%if 0%{?suse_version} > 1315
+BuildRequires:  libboost_headers-devel
+%else
 BuildRequires:  boost-devel
+%endif
 %endif
 # Build with jemalloc even for mariadb-100 to enable TokuDB there (bnc#970287)
 %if 0%{with_jemalloc} > 0 || "%{extra_provides}" == "mariadb_100"
