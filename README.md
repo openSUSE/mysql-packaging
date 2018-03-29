@@ -1,10 +1,8 @@
 # Set of tools to work with mysql/mariadb updates in openSUSE Leap
 
 **Important**:
-Please note that openSUSE:Factory mariadb package uses a classic
-OBS process, not this repository. This repository is used only
-for the purpose of updating openSUSE:Leap mariadb/mysql-community-server
-packages.
+**Please note that openSUSE:Factory/mariadb package uses a classic
+OBS process and not this repository anymore. This repository is old, for the current state of mariadb package please check [OBS](https://build.opensuse.org/package/show/server:database/mariadb).**
 
 This repository contains tools which allows one to maintain and develop
 various MariaDB/MySQL versions that are used in openSUSE Leap and
